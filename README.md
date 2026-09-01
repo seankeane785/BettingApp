@@ -30,3 +30,7 @@ npm run build
 `npm run dev` starts Vite's local development server. `npm run build` type-checks the application and creates a production bundle in `dist/`.
 
 See [`docs/PROJECT_SCOPE.md`](docs/PROJECT_SCOPE.md) for the full scope and product guardrails.
+
+## Stage 2 data contracts
+
+Three Draft 2020-12 contracts define the manual, local-only data boundary: `FixturePack v1` for scheduled fixtures, `ResearchPack v1` for cited team evidence, and `SavedAnalysisRun v1` for future deterministic local exports. Reusable TypeScript validators return structured errors and warnings without throwing on malformed content. The JSON files under `samples/` use fictional teams, are explicitly marked as synthetic test data, and are not live research, decisions or advice.

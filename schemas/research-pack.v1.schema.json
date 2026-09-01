@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema", "$id": "https://formfirst.local/schemas/research-pack.v1.schema.json",
+  "title": "ResearchPack v1", "description": "Source-backed team evidence; synthetic status prevents test data being treated as real research.",
+  "type": "object", "additionalProperties": false,
+  "required": ["packName", "schemaVersion", "fixturePackRef", "generatedAt", "dataStatus", "sources", "fixtures"],
+  "properties": {
+    "packName": {"const": "ResearchPack v1"}, "schemaVersion": {"const": "1.0.0"},
+    "fixturePackRef": {"type": "object", "additionalProperties": false, "required": ["schemaVersion", "fixtureDate"], "properties": {"schemaVersion": {"const": "1.0.0"}, "fixtureDate": {"type": "string", "format": "date"}}},
+    "generatedAt": {"type": "string", "format": "date-time"}, "dataStatus": {"enum": ["synthetic", "real"]},
+    "sources": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/source"}},
+    "fixtures": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/researchFixture"}}
+  },
+  "$defs": {
+    "competition": {"enum": ["Premier League", "Championship", "League One", "League Two"]},
+    "sourceIds": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+    "source": {"type": "object", "additionalProperties": false, "required": ["sourceId", "url", "title", "retrievedAt"], "properties": {"sourceId": {"type": "string", "minLength": 1}, "url": {"type": "string", "format": "uri", "pattern": "^https://"}, "title": {"type": "string", "minLength": 1}, "retrievedAt": {"type": "string", "format": "date-time"}}},
+    "metric": {"type": "object", "additionalProperties": false, "required": ["value", "sourceIds"], "properties": {"value": {"type": ["number", "null"], "minimum": 0}, "sourceIds": {"$ref": "#/$defs/sourceIds"}}},
+    "form": {"type": "object", "additionalProperties": false, "required": ["summary", "lastFive", "lastTen", "homeOrAway", "goalsScored", "goalsConceded", "sourceIds"], "properties": {
+      "summary": {"type": "string", "minLength": 1}, "lastFive": {"type": ["string", "null"]}, "lastTen": {"type": ["string", "null"]}, "homeOrAway": {"type": ["string", "null"]}, "goalsScored": {"type": ["number", "null"], "minimum": 0}, "goalsConceded": {"type": ["number", "null"], "minimum": 0}, "sourceIds": {"$ref": "#/$defs/sourceIds"}
+    }},
+    "teamEvidence": {"type": "object", "additionalProperties": false, "required": ["currentSeasonForm", "marketHitRates", "optionalMetrics"], "properties": {
+      "currentSeasonForm": {"$ref": "#/$defs/form"}, "marketHitRates": {"type": "array", "minItems": 1, "items": {"type": "object", "additionalProperties": false, "required": ["teamLevelMarket", "sampleSize", "hits", "sourceIds"], "properties": {"teamLevelMarket": {"type": "string", "minLength": 1}, "sampleSize": {"type": ["integer", "null"], "minimum": 1}, "hits": {"type": ["integer", "null"], "minimum": 0}, "sourceIds": {"$ref": "#/$defs/sourceIds"}}}},
+      "optionalMetrics": {"type": "object", "additionalProperties": false, "required": ["shots", "shotsOnTarget", "corners", "cards", "xG"], "properties": {"shots": {"anyOf": [{"$ref": "#/$defs/metric"}, {"type": "null"}]}, "shotsOnTarget": {"anyOf": [{"$ref": "#/$defs/metric"}, {"type": "null"}]}, "corners": {"anyOf": [{"$ref": "#/$defs/metric"}, {"type": "null"}]}, "cards": {"anyOf": [{"$ref": "#/$defs/metric"}, {"type": "null"}]}, "xG": {"anyOf": [{"$ref": "#/$defs/metric"}, {"type": "null"}]}}
+      }
+    }},
+    "context": {"type": "object", "additionalProperties": false, "required": ["status", "detail", "sourceIds"], "properties": {"status": {"enum": ["known", "unknown"]}, "detail": {"type": ["string", "null"]}, "sourceIds": {"$ref": "#/$defs/sourceIds"}}},
+    "researchFixture": {"type": "object", "additionalProperties": false, "required": ["fixtureId", "competition", "homeTeam", "awayTeam", "homeEvidence", "awayEvidence", "opponentStrength", "teamNews", "fixtureCongestion", "managerialContext", "reasonsFor", "reasonsAgainst", "dataQuality"], "properties": {
+      "fixtureId": {"type": "string", "minLength": 1}, "competition": {"$ref": "#/$defs/competition"}, "homeTeam": {"type": "string", "minLength": 1}, "awayTeam": {"type": "string", "minLength": 1}, "homeEvidence": {"$ref": "#/$defs/teamEvidence"}, "awayEvidence": {"$ref": "#/$defs/teamEvidence"}, "opponentStrength": {"$ref": "#/$defs/context"}, "teamNews": {"$ref": "#/$defs/context"}, "fixtureCongestion": {"$ref": "#/$defs/context"}, "managerialContext": {"$ref": "#/$defs/context"}, "reasonsFor": {"type": "array", "items": {"type": "string"}}, "reasonsAgainst": {"type": "array", "items": {"type": "string"}}, "dataQuality": {"enum": ["complete", "partial", "insufficient"]}
+    }}
+  }
+}

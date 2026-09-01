@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://formfirst.local/schemas/fixture-pack.v1.schema.json",
+  "title": "FixturePack v1", "description": "Scheduled team fixtures supplied manually to FormFirst.",
+  "type": "object", "additionalProperties": false,
+  "required": ["packName", "schemaVersion", "fixtureDate", "generatedAt", "competitions", "fixtures"],
+  "properties": {
+    "packName": {"const": "FixturePack v1"}, "schemaVersion": {"const": "1.0.0"},
+    "fixtureDate": {"type": "string", "format": "date"}, "generatedAt": {"type": "string", "format": "date-time"},
+    "competitions": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"$ref": "#/$defs/competition"}},
+    "fixtures": {"type": "array", "minItems": 1, "items": {"$ref": "#/$defs/fixture"}}
+  },
+  "$defs": {
+    "competition": {"enum": ["Premier League", "Championship", "League One", "League Two"]},
+    "fixture": {"type": "object", "additionalProperties": false, "required": ["fixtureId", "competition", "homeTeam", "awayTeam", "kickOff"], "properties": {
+      "fixtureId": {"type": "string", "minLength": 1, "pattern": "^[A-Za-z0-9._-]+$"}, "competition": {"$ref": "#/$defs/competition"},
+      "homeTeam": {"type": "string", "minLength": 1}, "awayTeam": {"type": "string", "minLength": 1},
+      "kickOff": {"type": "object", "additionalProperties": false, "required": ["utc", "localDate", "localTime", "timezone"], "properties": {
+        "utc": {"type": "string", "format": "date-time"}, "localDate": {"type": "string", "format": "date"}, "localTime": {"type": "string", "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d$"}, "timezone": {"const": "Europe/London"}
+      }}
+    }}
+  }
+}
