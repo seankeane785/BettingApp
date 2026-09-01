@@ -9,7 +9,7 @@ FormFirst is a local-first browser tool for structured, deterministic team-level
 - The app never uses, stores, displays or infers odds, prices, payouts, implied probability, expected value, value betting, bookmaker links or tipster opinions.
 - FormFirst gives no stake advice and must allow the outcome **“No qualifying builder today”** when evidence does not meet the deterministic rules.
 - Future analysis outputs must include **“Verify market availability and settlement rules in Paddy Power before placing.”** and **“18+; analysis only; only stake what you can afford to lose.”**
-- Version 1 has no backend, accounts, remote database or automated workflow. Stage 1 is only the application shell; fixture import, evidence import, schemas, validation, scoring and analysis arrive in later stages.
+- Version 1 has no backend, accounts, remote database or automated workflow.
 
 ## Local development
 
@@ -34,3 +34,7 @@ See [`docs/PROJECT_SCOPE.md`](docs/PROJECT_SCOPE.md) for the full scope and prod
 ## Stage 2 data contracts
 
 Three Draft 2020-12 contracts define the manual, local-only data boundary: `FixturePack v1` for scheduled fixtures, `ResearchPack v1` for cited team evidence, and `SavedAnalysisRun v1` for future deterministic local exports. Reusable TypeScript validators return structured errors and warnings without throwing on malformed content. The JSON files under `samples/` use fictional teams, are explicitly marked as synthetic test data, and are not live research, decisions or advice.
+
+## Stage 3 fixture workflow
+
+Choose an explicit date and one or more supported competitions, generate a deterministic prompt, and use it in ChatGPT Search manually. Paste the single JSON object returned into FormFirst to validate and preview FixturePack v1 fixtures. Nothing is fetched or persisted by the app, and empty scheduled-fixture days are valid.

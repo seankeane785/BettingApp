@@ -29,3 +29,15 @@ Use strict JSON Schema Draft 2020-12 documents with stable identifiers, major ve
 **Status:** Accepted — 2026-09-01
 
 Validation returns structured errors and warnings rather than throwing. It performs relationship, evidence, source, plausibility and prohibited-content checks locally. Freshness uses a caller-provided reference timestamp and maximum age; validators never read uncontrolled current time or contact external services.
+
+## D-006 — Empty FixturePack days are valid
+
+**Status:** Accepted — 2026-09-01
+
+Permit `fixtures: []` while retaining at least one explicitly selected competition. A real selected date can have no qualifying scheduled fixtures, and rejecting that truthful result would encourage invented data. This is a deliberate FixturePack v1 contract correction applied consistently to the schema and runtime validator.
+
+## D-007 — Prompt generation remains domain logic
+
+**Status:** Accepted — 2026-09-01
+
+Build fixture prompts in a pure TypeScript module from explicit date and competition inputs. React manages only transient workflow state and invokes the established parser and validator for imports.
