@@ -15,3 +15,7 @@ Later stages should keep input explicit and manual, validation deterministic, an
 ## Stage 2 contracts and validation
 
 Manual JSON crosses the application boundary through versioned Draft 2020-12 contracts in `schemas/`. Domain types and dependency-light validators in `src/domain/` first verify identity and structure, then enforce fixture relationships, evidence sources, explicit synthetic status, prohibited-content controls and deterministic freshness. Validation is local and performs no fetches. A caller supplies the reference timestamp and maximum source age, so identical inputs and settings produce identical outcomes. Validated packs remain separate from future presentation, scoring and persistence layers.
+
+## Stage 3 fixture workflow
+
+`src/domain/fixtureWorkflow.ts` owns deterministic prompt construction and composes the Stage 2 JSON parser and FixturePack validator. `src/App.tsx` holds criteria, prompt, pasted text and results in React memory only. It does not repair input, perform network requests or persist data. The UI renders only fixture identity and scheduling fields from validated packs.

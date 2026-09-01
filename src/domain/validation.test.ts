@@ -11,6 +11,7 @@ describe('FixturePack validation', () => {
   it('accepts the synthetic sample', () => expect(validateFixturePack(fixtureSample).valid).toBe(true))
   it('rejects duplicate fixtures', () => { const value = copy(fixtureSample); value.fixtures.push(copy(value.fixtures[0])); expect(validateFixturePack(value).errors.some(e => e.code === 'duplicate_id')).toBe(true) })
   it('rejects unsupported competitions', () => { const value: unknown = { ...copy(fixtureSample), competitions: ['Fantasy League'] }; expect(validateFixturePack(value).errors.some(e => e.code === 'unsupported_competition')).toBe(true) })
+  it('accepts an empty fixture day', () => { const value = { ...copy(fixtureSample), fixtures: [] }; expect(validateFixturePack(value).valid).toBe(true) })
 })
 
 describe('ResearchPack validation', () => {
