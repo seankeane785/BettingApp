@@ -30,3 +30,7 @@ npm run build
 - `npm run lint` — blocked because `@eslint/js` could not be resolved after installation failed.
 - `npm test` — blocked because the `vitest` executable was unavailable after installation failed.
 - `npm run build` — blocked because React, Vitest and Node dependencies/types were unavailable after installation failed.
+
+## Stage 4 verification (2026-09-01)
+
+Focused tests cover research gating, deterministic exact-fixture prompts, required and prohibited instructions, strict JSON import, cross-pack validation and future timestamps. `npm test -- --run` was blocked because `vitest` was absent. The required single `npm install` attempt failed with HTTP 403 for `https://registry.npmjs.org/vitest`; unit tests and production build therefore could not be completed; lint passed in this environment. JSON contracts are checked with `python3 -m json.tool` and patch hygiene with `git diff --check`.

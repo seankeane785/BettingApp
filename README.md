@@ -38,3 +38,7 @@ Three Draft 2020-12 contracts define the manual, local-only data boundary: `Fixt
 ## Stage 3 fixture workflow
 
 Choose an explicit date and one or more supported competitions, generate a deterministic prompt, and use it in ChatGPT Search manually. Paste the single JSON object returned into FormFirst to validate and preview FixturePack v1 fixtures. Nothing is fetched or persisted by the app, and empty scheduled-fixture days are valid.
+
+## Stage 4 research workflow
+
+After accepting a non-empty, non-synthetic FixturePack, FormFirst can generate a deterministic manual ChatGPT Search prompt from those exact fixtures and explicit freshness settings. A pasted ResearchPack v1 is validated without repair, cross-checked against the fixture pack, and summarized as source-backed evidence only. All research state remains in memory.

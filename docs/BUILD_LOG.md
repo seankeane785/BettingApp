@@ -23,3 +23,11 @@ This file is append-only. Add a dated entry after each material change; do not r
 - Corrected FixturePack v1 to permit an empty fixture array for truthful no-fixture days, with matching validator, schema documentation and tests.
 - Verified all six JSON schemas and samples with `python3 -m json.tool`; `git diff --check` passed.
 - `npm install` was attempted once and blocked by `403 Forbidden` for `https://registry.npmjs.org/@eslint%2fjs`. Consequently, `npm run lint` failed because `@eslint/js` was unavailable, `npm test` failed because `vitest` was unavailable, and `npm run build` failed because React, Vitest and Node packages/types were unavailable. A runnable screenshot could not be captured for the same dependency limitation.
+
+## 2026-09-01 — Stage 4 research workflow
+
+- Added deterministic ResearchPack prompt generation, fixture gates, strict paste validation, explicit source freshness, cross-pack checks, evidence-only summaries and research-only reset behavior.
+- Added focused workflow tests and extended shared validation for future sources, exact fixture coverage/reference matching and incomplete mandatory team evidence.
+- `npm test -- --run`: blocked (`vitest: not found`).
+- `npm install`: blocked by `403 Forbidden - GET https://registry.npmjs.org/vitest`.
+- Lint passed. Tests and production build remain unverified because the documented registry restriction prevented dependency restoration.
