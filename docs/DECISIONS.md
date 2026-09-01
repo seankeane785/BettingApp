@@ -59,3 +59,9 @@ Correct ResearchPack v1's ambiguous free-text market evidence into canonical tea
 **Status:** Accepted — 2026-09-01
 
 Default every market group to unknown, exclude unavailable groups and flag unknown groups for manual checks. Exclude defined near-duplicates, penalize other same-match relationships by 10% and same-family cross-fixture relationships by 2%, then exhaustively select builders using stable tie-breaks.
+
+## D-012 — Model-output-only analysis presentation
+
+**Status:** Accepted — 2026-09-01
+
+Render candidate, confidence, correlation and builder decisions only from the Stage 5 output. Keep manual-entry formatting in a deterministic pure helper, retain unavailable/no-builder outcomes honestly, and invalidate transient results whenever validated inputs or freshness settings change.

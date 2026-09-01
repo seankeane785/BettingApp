@@ -27,3 +27,7 @@ Manual JSON crosses the application boundary through versioned Draft 2020-12 con
 ## Stage 5 analysis domain
 
 `src/domain/analysisModel.ts` is a pure layer over validated FixturePack/ResearchPack inputs and explicit settings. It generates stable candidates, evaluates correlation-aware combinations and returns builders or a structured no-builder result. Canonical market evidence lives in ResearchPack v1 rather than a parallel format. SavedAnalysisRun v1 now reserves the exact input packs, settings and generated result arrays for future Stage 7 persistence; Stage 5 itself performs no storage. React exposes readiness only.
+
+## Stage 6 presentation
+
+`src/domain/analysisPresentation.ts` contains pure grouping, exclusion-state, no-builder and manual-entry formatting helpers. `src/App.tsx` invokes the existing model only after an explicit generation or availability change, then renders model output without reconstructing selections or scoring. Analysis and clipboard feedback are transient React state; input edits and clear actions invalidate results.

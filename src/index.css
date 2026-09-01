@@ -13,3 +13,20 @@ button { padding:.7rem 1rem; border:0; border-radius:.4rem; background:#183d29; 
 .evidence-card { margin-top:1rem; padding:1rem; border:1px solid #ccd4ce; border-radius:.5rem }
 .evidence-card a { color:#176035 }
 @media(max-width:650px){.freshness{grid-template-columns:1fr}}
+.analysis { margin-top:2.5rem; padding-top:2rem; border-top:1px solid #d5d8ce }
+.market-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:.75rem; margin:1.5rem 0 }
+.market-grid label { display:flex; flex-direction:column; gap:.4rem; text-transform:capitalize }
+select { padding:.65rem; border:1px solid #718078; border-radius:.4rem; background:#fff }
+button:disabled { cursor:not-allowed; opacity:.5 }
+.empty-state { margin-top:1.5rem; padding:1.5rem; border:1px dashed #718078; border-radius:.6rem }
+.analysis-results>section { margin-top:2rem }
+.candidate-fixture,.builder-card { margin:1rem 0; padding:1.25rem; border:1px solid #ccd4ce; border-radius:.65rem; background:#fff }
+.confidence-group { margin-top:1rem; padding:1rem; border-left:5px solid #718078; background:#f8f8f3 }
+.confidence-strong { border-color:#176035 }.confidence-good { border-color:#35729b }.confidence-moderate { border-color:#b67800 }.confidence-avoid { border-color:#a12828 }
+.candidate-card { margin-top:.75rem; padding:1rem; border:1px solid #d5d8ce; border-radius:.4rem; background:#fff }
+h4,h5,h6 { margin:.5rem 0 } h5 { font-size:1.1rem } h6 { font-size:1rem }
+.excluded { padding:.7rem; background:#f8eeee; border-left:4px solid #a12828 }
+.reason-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem }
+.builders { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem }.builders>h3 { grid-column:1/-1 }
+.manual-list { margin-top:1.25rem; padding:1rem; background:#edf3ee }.manual-list pre { white-space:pre-wrap; overflow-wrap:anywhere }
+@media(max-width:750px){.builders,.reason-grid{grid-template-columns:1fr}.builders>h3{grid-column:auto}}

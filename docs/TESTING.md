@@ -47,3 +47,16 @@ Focused tests cover research gating, deterministic exact-fixture prompts, requir
 - `npm test` — passed: 4 test files and 27 tests.
 - `npm run build` — passed with Vite 8.2.2 (20 modules transformed).
 - Dependencies were present; the conditional install step was not needed. npm printed a non-failing warning about the environment's unknown `http-proxy` config; the earlier HTTP 403 did not recur because no install was necessary.
+
+## Stage 6 coverage
+
+`src/domain/analysisPresentation.test.ts` covers stable fixture grouping, deterministic manual-entry formatting and allowed fields, exact no-builder display data, excluded Moderate/Avoid candidates, explicit stale-result invalidation and unavailable-market omission. Existing model and workflow suites remain unchanged.
+
+## Stage 6 verification (2026-09-01)
+
+- `python3 -m json.tool` for every JSON schema and sample — passed for all six files.
+- `git diff --check` — passed.
+- `npm run lint` — passed.
+- `npm test -- --run` — passed: 5 test files and 33 tests.
+- `npm run build` — passed with Vite production output.
+- Dependencies were already installed; no install was run. npm emitted only the existing non-failing `http-proxy` environment warning.

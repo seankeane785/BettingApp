@@ -1,0 +1,17 @@
+import { describe, expect, it } from 'vitest'
+import fixtureSample from '../../samples/fixture-pack.v1.sample.json'
+import researchSample from '../../samples/research-pack.v1.sample.json'
+import { analyse, defaultModelSettings } from './analysisModel'
+import { formatManualEntryList, groupCandidatesByFixture, invalidateAnalysis, isExcludedFromBuilders, noBuilderDisplay, NO_BUILDER_STATEMENT, SETTLEMENT_STATEMENT } from './analysisPresentation'
+import type { BuilderSuccess, FixturePack, ResearchPack } from './types'
+
+const packs = () => ({ fixture: structuredClone(fixtureSample) as unknown as FixturePack, research: structuredClone(researchSample) as unknown as ResearchPack })
+
+describe('analysis presentation helpers', () => {
+  it('groups candidates by fixture in stable order', () => { const { fixture, research } = packs(); const output = analyse(fixture, research, defaultModelSettings('2026-09-01T10:00:00Z', 24)); const reversed = [...output.candidates].reverse(); expect(groupCandidatesByFixture(reversed)[0].candidates.map(item => item.id)).toEqual([...output.candidates].map(item => item.id).sort()) })
+  it('formats deterministic, grouped manual entry text containing only allowed fixture fields and labels', () => { const { fixture, research } = packs(); const output = analyse(fixture, research, defaultModelSettings('2026-09-01T10:00:00Z', 24)); const legs = output.candidates; const builder: BuilderSuccess = { status: 'builder', kind: 'balanced', selectedLegs: legs, fixtureGroups: [{ fixtureId: fixture.fixtures[0].fixtureId, candidateIds: legs.map(item => item.id) }], estimatedCombinedProbability: 50, overallConfidence: 'Good', sourceIds: [], principalRisks: [], correlationNotes: [], rejectedCombinations: [], modelVersion: output.modelVersion, schemaVersions: { fixture: '1.0.0', research: '1.0.0' } }; const first = formatManualEntryList(builder, fixture); expect(formatManualEntryList(builder, fixture)).toBe(first); expect(first).toContain('League One | 2026-09-05 15:00 Europe/London'); expect(first).toContain(SETTLEMENT_STATEMENT); expect(first).not.toMatch(/probability|account|https?:\/\//i) })
+  it('returns exact no-builder display data', () => { const { fixture, research } = packs(); const outcome = analyse(fixture, research, defaultModelSettings('2026-09-01T10:00:00Z', 24)).builders.highProbability; expect(noBuilderDisplay(outcome)?.title).toBe(NO_BUILDER_STATEMENT); expect(noBuilderDisplay(outcome)?.reason).toBe(outcome.status === 'no_qualifying_builder' ? outcome.reason : '') })
+  it('marks Moderate and Avoid candidates as excluded', () => { const { fixture, research } = packs(); research.fixtures[0].dataQuality = 'partial'; const candidates = analyse(fixture, research, defaultModelSettings('2026-09-01T10:00:00Z', 24)).candidates; expect(candidates.every(isExcludedFromBuilders)).toBe(true) })
+  it('invalidates stale results explicitly', () => { const { fixture, research } = packs(); const output = analyse(fixture, research, defaultModelSettings('2026-09-01T10:00:00Z', 24)); expect(invalidateAnalysis(output)).toBeNull() })
+  it('does not present unavailable markets', () => { const { fixture, research } = packs(); const settings = defaultModelSettings('2026-09-01T10:00:00Z', 24); settings.marketAvailability.team_to_score = 'unavailable'; expect(analyse(fixture, research, settings).candidates.some(candidate => candidate.marketGroup === 'team_to_score')).toBe(false) })
+})
