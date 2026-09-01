@@ -30,3 +30,9 @@ The local dependency tree does not contain the `vitest` executable. On 2026-09-0
 ## Stage 5 verification note
 
 Dependencies were present for Stage 5 and lint, tests and build passed. npm still emits a non-failing warning that the environment's `http-proxy` configuration will be unsupported in its next major version.
+
+## Stage 6 limitations
+
+- Analysis results and copy feedback are intentionally in memory only and are lost on refresh; saved-run history and persistence remain deferred to Stage 7.
+- Clipboard copying depends on browser secure-context support and permissions. A copy failure is non-blocking because the formatted list remains visible and selectable.
+- Market availability is manually configured and never externally confirmed. Even an `available` setting does not determine settlement rules, so every displayed selection still requires manual verification.

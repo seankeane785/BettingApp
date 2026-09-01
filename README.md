@@ -46,3 +46,7 @@ After accepting a non-empty, non-synthetic FixturePack, FormFirst can generate a
 ## Stage 5 analysis model
 
 `FormFirst Model v1.0.0` adds a deterministic, current-season-first domain engine for transparent team-level candidate scoring, confidence and data-quality grading, explicit market availability, duplicate/correlation controls and exhaustive High-probability/Balanced builder search. Results remain domain data only until Stage 6; the UI displays only an analysis-ready status. See [`docs/SCORING_MODEL.md`](docs/SCORING_MODEL.md).
+
+## Stage 6 analysis results
+
+Validated, non-synthetic inputs can now be deliberately analysed with explicit per-market availability settings. The in-memory results interface presents every model candidate by fixture and confidence, both builder outcomes, evidence and risk context, and deterministic copyable manual-entry lists. Unavailable markets are omitted and a builder is never padded when thresholds fail. All availability and settlement checks remain manual, and refresh/reset discards results.
