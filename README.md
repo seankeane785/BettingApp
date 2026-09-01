@@ -42,3 +42,7 @@ Choose an explicit date and one or more supported competitions, generate a deter
 ## Stage 4 research workflow
 
 After accepting a non-empty, non-synthetic FixturePack, FormFirst can generate a deterministic manual ChatGPT Search prompt from those exact fixtures and explicit freshness settings. A pasted ResearchPack v1 is validated without repair, cross-checked against the fixture pack, and summarized as source-backed evidence only. All research state remains in memory.
+
+## Stage 5 analysis model
+
+`FormFirst Model v1.0.0` adds a deterministic, current-season-first domain engine for transparent team-level candidate scoring, confidence and data-quality grading, explicit market availability, duplicate/correlation controls and exhaustive High-probability/Balanced builder search. Results remain domain data only until Stage 6; the UI displays only an analysis-ready status. See [`docs/SCORING_MODEL.md`](docs/SCORING_MODEL.md).

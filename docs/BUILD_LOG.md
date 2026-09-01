@@ -31,3 +31,10 @@ This file is append-only. Add a dated entry after each material change; do not r
 - `npm test -- --run`: blocked (`vitest: not found`).
 - `npm install`: blocked by `403 Forbidden - GET https://registry.npmjs.org/vitest`.
 - Lint passed. Tests and production build remain unverified because the documented registry restriction prevented dependency restoration.
+
+## 2026-09-01 — Stage 5 deterministic analysis model
+
+- Added `FormFirst Model v1.0.0` with canonical team-level evidence scoring, explicit data-quality/confidence gates and structured non-throwing candidate output.
+- Added default-unknown market availability, duplicate/near-duplicate exclusions, conservative correlation penalties and exhaustive deterministic High-probability/Balanced builder selection with no-builder outcomes.
+- Clarified ResearchPack v1 canonical market evidence/context impact and extended SavedAnalysisRun v1 to retain exact model inputs/settings for future persistence. Added domain tests and model documentation; the UI exposes readiness only.
+- Verification passed: `git diff --check`; `python3 -m json.tool` for all six schema/sample JSON files; `npm run lint`; `npm test` (4 files, 27 tests); and `npm run build` (Vite production bundle). Dependencies were already present, so no install was required. npm emitted only its environment warning that `http-proxy` is an unknown config.

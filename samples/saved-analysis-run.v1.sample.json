@@ -1,1 +1,238 @@
-{"packName":"SavedAnalysisRun v1","schemaVersion":"1.0.0","runId":"synthetic-run-001","createdAt":"2026-09-01T10:10:00Z","dataStatus":"synthetic","fixturePackRef":{"packName":"FixturePack v1","schemaVersion":"1.0.0","fixtureDate":"2026-09-05"},"researchPackRef":{"packName":"ResearchPack v1","schemaVersion":"1.0.0","fixtureDate":"2026-09-05"},"modelVersion":"deterministic-rules-test-1","settings":{"deterministic":true,"referenceTimestamp":"2026-09-01T10:10:00Z","maximumSourceAgeHours":48},"validation":{"valid":true,"errors":[],"warnings":["Synthetic test data: not for real analysis."]},"candidates":[],"builders":[],"results":[{"itemId":"synthetic-placeholder","outcome":"pending","note":"Non-decision synthetic test record only."}]}
+{
+  "packName": "SavedAnalysisRun v1",
+  "schemaVersion": "1.0.0",
+  "runId": "synthetic-run-001",
+  "createdAt": "2026-09-01T10:10:00Z",
+  "dataStatus": "synthetic",
+  "fixturePackRef": {
+    "packName": "FixturePack v1",
+    "schemaVersion": "1.0.0",
+    "fixtureDate": "2026-09-05"
+  },
+  "researchPackRef": {
+    "packName": "ResearchPack v1",
+    "schemaVersion": "1.0.0",
+    "fixtureDate": "2026-09-05"
+  },
+  "modelVersion": "FormFirst Model v1.0.0",
+  "settings": {
+    "deterministic": true,
+    "referenceTimestamp": "2026-09-01T10:10:00Z",
+    "maximumSourceAgeHours": 48,
+    "marketAvailability": {
+      "match_result": "unknown",
+      "double_chance": "unknown",
+      "draw_no_bet": "unknown",
+      "both_teams_to_score": "unknown",
+      "total_goals": "unknown",
+      "team_goals": "unknown",
+      "team_to_score": "unknown",
+      "clean_sheet": "unknown",
+      "total_corners": "unknown",
+      "team_corners": "unknown",
+      "total_cards": "unknown",
+      "team_cards": "unknown",
+      "team_shots": "unknown",
+      "team_shots_on_target": "unknown"
+    }
+  },
+  "analysisInputs": {
+    "fixturePack": {
+      "packName": "FixturePack v1",
+      "schemaVersion": "1.0.0",
+      "fixtureDate": "2026-09-05",
+      "generatedAt": "2026-09-01T10:00:00Z",
+      "competitions": [
+        "League One"
+      ],
+      "fixtures": [
+        {
+          "fixtureId": "synthetic-l1-001",
+          "competition": "League One",
+          "homeTeam": "Northbridge Rovers (Fictional)",
+          "awayTeam": "Eastmere Athletic (Fictional)",
+          "kickOff": {
+            "utc": "2026-09-05T14:00:00Z",
+            "localDate": "2026-09-05",
+            "localTime": "15:00",
+            "timezone": "Europe/London"
+          }
+        }
+      ]
+    },
+    "researchPack": {
+      "packName": "ResearchPack v1",
+      "schemaVersion": "1.0.0",
+      "fixturePackRef": {
+        "schemaVersion": "1.0.0",
+        "fixtureDate": "2026-09-05"
+      },
+      "generatedAt": "2026-09-01T10:05:00Z",
+      "dataStatus": "synthetic",
+      "sources": [
+        {
+          "sourceId": "synthetic-source-1",
+          "url": "https://example.com/formfirst/synthetic-test-data",
+          "title": "Synthetic test evidence \u2014 not real research",
+          "retrievedAt": "2026-09-01T09:30:00Z"
+        }
+      ],
+      "fixtures": [
+        {
+          "fixtureId": "synthetic-l1-001",
+          "competition": "League One",
+          "homeTeam": "Northbridge Rovers (Fictional)",
+          "awayTeam": "Eastmere Athletic (Fictional)",
+          "homeEvidence": {
+            "currentSeasonForm": {
+              "summary": "Synthetic test sequence only",
+              "lastFive": "WDLWD",
+              "lastTen": "WDLWDDLWWD",
+              "homeOrAway": "Synthetic home record: 2-1-1",
+              "goalsScored": 7,
+              "goalsConceded": 5,
+              "sourceIds": [
+                "synthetic-source-1"
+              ]
+            },
+            "marketHitRates": [
+              {
+                "marketKey": "both_teams_to_score_yes",
+                "marketGroup": "both_teams_to_score",
+                "selectionLabel": "Both teams to score",
+                "teamSide": "both",
+                "threshold": null,
+                "sampleSize": 10,
+                "hits": 8,
+                "recentSampleSize": 5,
+                "recentHits": 4,
+                "venueSampleSize": 5,
+                "venueHits": 4,
+                "underlyingSupportPercent": 74,
+                "sourceIds": [
+                  "synthetic-source-1"
+                ]
+              }
+            ],
+            "optionalMetrics": {
+              "shots": {
+                "value": 12,
+                "sourceIds": [
+                  "synthetic-source-1"
+                ]
+              },
+              "shotsOnTarget": {
+                "value": 5,
+                "sourceIds": [
+                  "synthetic-source-1"
+                ]
+              },
+              "corners": null,
+              "cards": null,
+              "xG": null
+            }
+          },
+          "awayEvidence": {
+            "currentSeasonForm": {
+              "summary": "Synthetic test sequence only",
+              "lastFive": "LDWDD",
+              "lastTen": "LDWDDLWLDD",
+              "homeOrAway": "Synthetic away record: 1-2-2",
+              "goalsScored": 5,
+              "goalsConceded": 8,
+              "sourceIds": [
+                "synthetic-source-1"
+              ]
+            },
+            "marketHitRates": [
+              {
+                "marketKey": "away_team_to_score",
+                "marketGroup": "team_to_score",
+                "selectionLabel": "Eastmere Athletic (Fictional) to score",
+                "teamSide": "away",
+                "threshold": null,
+                "sampleSize": 10,
+                "hits": 7,
+                "recentSampleSize": 5,
+                "recentHits": 4,
+                "venueSampleSize": 5,
+                "venueHits": 4,
+                "underlyingSupportPercent": 68,
+                "sourceIds": [
+                  "synthetic-source-1"
+                ]
+              }
+            ],
+            "optionalMetrics": {
+              "shots": null,
+              "shotsOnTarget": null,
+              "corners": {
+                "value": 4,
+                "sourceIds": [
+                  "synthetic-source-1"
+                ]
+              },
+              "cards": null,
+              "xG": null
+            }
+          },
+          "opponentStrength": {
+            "status": "known",
+            "detail": "Fictional opponents were mixed strength in this test set.",
+            "sourceIds": [
+              "synthetic-source-1"
+            ],
+            "impact": "neutral"
+          },
+          "teamNews": {
+            "status": "unknown",
+            "detail": null,
+            "sourceIds": [
+              "synthetic-source-1"
+            ],
+            "impact": "unknown"
+          },
+          "fixtureCongestion": {
+            "status": "known",
+            "detail": "Synthetic schedule shows seven rest days.",
+            "sourceIds": [
+              "synthetic-source-1"
+            ],
+            "impact": "neutral"
+          },
+          "managerialContext": {
+            "status": "unknown",
+            "detail": null,
+            "sourceIds": [
+              "synthetic-source-1"
+            ],
+            "impact": "unknown"
+          },
+          "reasonsFor": [
+            "Synthetic positive test reason."
+          ],
+          "reasonsAgainst": [
+            "Synthetic caution test reason."
+          ],
+          "dataQuality": "partial"
+        }
+      ]
+    }
+  },
+  "validation": {
+    "valid": true,
+    "errors": [],
+    "warnings": [
+      "Synthetic test data: not for real analysis."
+    ]
+  },
+  "candidates": [],
+  "builders": [],
+  "results": [
+    {
+      "itemId": "synthetic-placeholder",
+      "outcome": "pending",
+      "note": "Non-decision synthetic test record only."
+    }
+  ]
+}

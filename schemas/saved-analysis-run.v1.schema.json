@@ -1,13 +1,357 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema", "$id": "https://formfirst.local/schemas/saved-analysis-run.v1.schema.json", "title": "SavedAnalysisRun v1", "description": "Local export contract for a deterministic analysis run.",
-  "type": "object", "additionalProperties": false, "required": ["packName", "schemaVersion", "runId", "createdAt", "dataStatus", "fixturePackRef", "researchPackRef", "modelVersion", "settings", "validation", "candidates", "builders", "results"],
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://formfirst.local/schemas/saved-analysis-run.v1.schema.json",
+  "title": "SavedAnalysisRun v1",
+  "description": "Local export contract for a deterministic analysis run.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "packName",
+    "schemaVersion",
+    "runId",
+    "createdAt",
+    "dataStatus",
+    "fixturePackRef",
+    "researchPackRef",
+    "modelVersion",
+    "settings",
+    "analysisInputs",
+    "validation",
+    "candidates",
+    "builders",
+    "results"
+  ],
   "properties": {
-    "packName": {"const": "SavedAnalysisRun v1"}, "schemaVersion": {"const": "1.0.0"}, "runId": {"type": "string", "minLength": 1}, "createdAt": {"type": "string", "format": "date-time"}, "dataStatus": {"enum": ["synthetic", "real"]},
-    "fixturePackRef": {"$ref": "#/$defs/packRef"}, "researchPackRef": {"$ref": "#/$defs/packRef"}, "modelVersion": {"type": "string", "minLength": 1},
-    "settings": {"type": "object", "additionalProperties": false, "required": ["deterministic", "referenceTimestamp", "maximumSourceAgeHours"], "properties": {"deterministic": {"const": true}, "referenceTimestamp": {"type": "string", "format": "date-time"}, "maximumSourceAgeHours": {"type": "integer", "minimum": 1}}},
-    "validation": {"type": "object", "additionalProperties": false, "required": ["valid", "errors", "warnings"], "properties": {"valid": {"type": "boolean"}, "errors": {"type": "array", "items": {"type": "string"}}, "warnings": {"type": "array", "items": {"type": "string"}}}},
-    "candidates": {"type": "array", "items": {"$ref": "#/$defs/generated"}}, "builders": {"type": "array", "items": {"$ref": "#/$defs/generated"}},
-    "results": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["itemId", "outcome", "note"], "properties": {"itemId": {"type": "string", "minLength": 1}, "outcome": {"enum": ["pending", "won", "lost", "void"]}, "note": {"type": ["string", "null"]}}}}
+    "packName": {
+      "const": "SavedAnalysisRun v1"
+    },
+    "schemaVersion": {
+      "const": "1.0.0"
+    },
+    "runId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "dataStatus": {
+      "enum": [
+        "synthetic",
+        "real"
+      ]
+    },
+    "fixturePackRef": {
+      "$ref": "#/$defs/packRef"
+    },
+    "researchPackRef": {
+      "$ref": "#/$defs/packRef"
+    },
+    "modelVersion": {
+      "type": "string",
+      "minLength": 1
+    },
+    "settings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "deterministic",
+        "referenceTimestamp",
+        "maximumSourceAgeHours",
+        "marketAvailability"
+      ],
+      "properties": {
+        "deterministic": {
+          "const": true
+        },
+        "referenceTimestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "maximumSourceAgeHours": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "marketAvailability": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "match_result",
+            "double_chance",
+            "draw_no_bet",
+            "both_teams_to_score",
+            "total_goals",
+            "team_goals",
+            "team_to_score",
+            "clean_sheet",
+            "total_corners",
+            "team_corners",
+            "total_cards",
+            "team_cards",
+            "team_shots",
+            "team_shots_on_target"
+          ],
+          "properties": {
+            "match_result": {
+              "enum": [
+                "unknown",
+                "available",
+                "unavailable"
+              ]
+            },
+            "double_chance": {
+              "enum": [
+                "unknown",
+                "available",
+                "unavailable"
+              ]
+            },
+            "draw_no_bet": {
+              "enum": [
+                "unknown",
+                "available",
+                "unavailable"
+              ]
+            },
+            "both_teams_to_score": {
+              "enum": [
+                "unknown",
+                "available",
+                "unavailable"
+              ]
+            },
+            "total_goals": {
+              "enum": [
+                "unknown",
+                "available",
+                "unavailable"
+              ]
+            },
+            "team_goals": {
+              "enum": [
+                "unknown",
+                "available",
+                "unavailable"
+              ]
+            },
+            "team_to_score": {
+              "enum": [
+                "unknown",
+                "available",
+                "unavailable"
+              ]
+            },
+            "clean_sheet": {
+              "enum": [
+                "unknown",
+                "available",
+                "unavailable"
+              ]
+            },
+            "total_corners": {
+              "enum": [
+                "unknown",
+                "available",
+                "unavailable"
+              ]
+            },
+            "team_corners": {
+              "enum": [
+                "unknown",
+                "available",
+                "unavailable"
+              ]
+            },
+            "total_cards": {
+              "enum": [
+                "unknown",
+                "available",
+                "unavailable"
+              ]
+            },
+            "team_cards": {
+              "enum": [
+                "unknown",
+                "available",
+                "unavailable"
+              ]
+            },
+            "team_shots": {
+              "enum": [
+                "unknown",
+                "available",
+                "unavailable"
+              ]
+            },
+            "team_shots_on_target": {
+              "enum": [
+                "unknown",
+                "available",
+                "unavailable"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "validation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "valid",
+        "errors",
+        "warnings"
+      ],
+      "properties": {
+        "valid": {
+          "type": "boolean"
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "candidates": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/generated"
+      }
+    },
+    "builders": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/generated"
+      }
+    },
+    "results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "itemId",
+          "outcome",
+          "note"
+        ],
+        "properties": {
+          "itemId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "outcome": {
+            "enum": [
+              "pending",
+              "won",
+              "lost",
+              "void"
+            ]
+          },
+          "note": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "analysisInputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "fixturePack",
+        "researchPack"
+      ],
+      "properties": {
+        "fixturePack": {
+          "type": "object"
+        },
+        "researchPack": {
+          "type": "object"
+        }
+      }
+    }
   },
-  "$defs": {"packRef": {"type": "object", "additionalProperties": false, "required": ["packName", "schemaVersion", "fixtureDate"], "properties": {"packName": {"type": "string", "minLength": 1}, "schemaVersion": {"const": "1.0.0"}, "fixtureDate": {"type": "string", "format": "date"}}}, "generated": {"type": "object", "additionalProperties": false, "required": ["itemId", "fixtureIds", "description", "reasonsFor", "reasonsAgainst", "dataQuality"], "properties": {"itemId": {"type": "string", "minLength": 1}, "fixtureIds": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string"}}, "description": {"type": "string"}, "reasonsFor": {"type": "array", "items": {"type": "string"}}, "reasonsAgainst": {"type": "array", "items": {"type": "string"}}, "dataQuality": {"enum": ["complete", "partial", "insufficient"]}}}}
+  "$defs": {
+    "packRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "packName",
+        "schemaVersion",
+        "fixtureDate"
+      ],
+      "properties": {
+        "packName": {
+          "type": "string",
+          "minLength": 1
+        },
+        "schemaVersion": {
+          "const": "1.0.0"
+        },
+        "fixtureDate": {
+          "type": "string",
+          "format": "date"
+        }
+      }
+    },
+    "generated": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "itemId",
+        "fixtureIds",
+        "description",
+        "reasonsFor",
+        "reasonsAgainst",
+        "dataQuality"
+      ],
+      "properties": {
+        "itemId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fixtureIds": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "description": {
+          "type": "string"
+        },
+        "reasonsFor": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "reasonsAgainst": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "dataQuality": {
+          "enum": [
+            "complete",
+            "partial",
+            "insufficient"
+          ]
+        }
+      }
+    }
+  }
 }

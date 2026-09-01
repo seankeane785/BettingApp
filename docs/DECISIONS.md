@@ -47,3 +47,15 @@ Build fixture prompts in a pure TypeScript module from explicit date and competi
 **Status:** Accepted — 2026-09-01
 
 Research is gated on a non-empty, non-synthetic validated FixturePack. Its prompt is a pure function of that pack and explicit freshness settings. Input is validated rather than repaired, and evidence output remains descriptive rather than scored or recommended.
+
+## D-010 — Canonical evidence and transparent model scoring
+
+**Status:** Accepted — 2026-09-01
+
+Correct ResearchPack v1's ambiguous free-text market evidence into canonical team-level identifiers and explicit current/recent/venue samples. Use `FormFirst Model v1.0.0`, documented fixed weights, quality gates and whole-percentage evidence scores. These scores are not derived from bookmaker material.
+
+## D-011 — Explicit availability and conservative correlation
+
+**Status:** Accepted — 2026-09-01
+
+Default every market group to unknown, exclude unavailable groups and flag unknown groups for manual checks. Exclude defined near-duplicates, penalize other same-match relationships by 10% and same-family cross-fixture relationships by 2%, then exhaustively select builders using stable tie-breaks.

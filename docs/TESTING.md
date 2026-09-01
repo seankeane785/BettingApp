@@ -34,3 +34,16 @@ npm run build
 ## Stage 4 verification (2026-09-01)
 
 Focused tests cover research gating, deterministic exact-fixture prompts, required and prohibited instructions, strict JSON import, cross-pack validation and future timestamps. `npm test -- --run` was blocked because `vitest` was absent. The required single `npm install` attempt failed with HTTP 403 for `https://registry.npmjs.org/vitest`; unit tests and production build therefore could not be completed; lint passed in this environment. JSON contracts are checked with `python3 -m json.tool` and patch hygiene with `git diff --check`.
+
+## Stage 5 coverage
+
+`src/domain/analysisModel.test.ts` covers byte-identical determinism, version propagation, whole-number scores and confidence boundaries, quality gates, availability, duplicate/near-duplicate controls, same-match penalties, correlation-caused failure, both builder rule sets and structured no-builder output. Validation tests continue to cover all Stage 2–4 contracts/workflows.
+
+## Stage 5 verification (2026-09-01)
+
+- `git diff --check` — passed.
+- `python3 -m json.tool` for every JSON schema and sample — passed for all six files.
+- `npm run lint` — passed.
+- `npm test` — passed: 4 test files and 27 tests.
+- `npm run build` — passed with Vite 8.2.2 (20 modules transformed).
+- Dependencies were present; the conditional install step was not needed. npm printed a non-failing warning about the environment's unknown `http-proxy` config; the earlier HTTP 403 did not recur because no install was necessary.
