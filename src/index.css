@@ -1,0 +1,39 @@
+:root {
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #17251d;
+  background: #f3f1e8;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* { box-sizing: border-box; }
+
+body { margin: 0; min-width: 320px; min-height: 100vh; }
+
+main { width: min(1080px, calc(100% - 40px)); margin: 0 auto; }
+
+.hero { padding: clamp(5rem, 14vw, 10rem) 0 clamp(4rem, 9vw, 7rem); }
+
+.eyebrow {
+  margin: 0 0 1.5rem;
+  color: #306443;
+  font-size: .78rem;
+  font-weight: 750;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+h1 { margin: 0; font-family: Georgia, serif; font-size: clamp(4rem, 15vw, 9rem); font-weight: 500; letter-spacing: -.065em; line-height: .82; }
+
+.intro { max-width: 680px; margin: 2.5rem 0; font-size: clamp(1.2rem, 2.6vw, 1.65rem); line-height: 1.5; }
+
+.league-list { display: flex; flex-wrap: wrap; gap: .65rem; padding: 0; margin: 0; list-style: none; }
+.league-list li { border: 1px solid #9aaa9f; border-radius: 999px; padding: .55rem .9rem; font-size: .9rem; }
+
+.next-stage { display: grid; grid-template-columns: auto 1fr; gap: clamp(1.5rem, 5vw, 4rem); padding: clamp(2rem, 5vw, 4rem); background: #183d29; color: #f8f6ee; border-radius: 1rem; }
+.stage-number { color: #a9d9b8; font-size: .85rem; font-weight: 700; letter-spacing: .12em; }
+h2 { margin: 0 0 1rem; font-family: Georgia, serif; font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 500; }
+.next-stage p { max-width: 650px; margin: 0; color: #d9e6dd; font-size: 1.05rem; line-height: 1.65; }
+footer { padding: 2rem 0 3rem; color: #58685e; font-size: .85rem; }
+
+@media (max-width: 520px) { main { width: min(100% - 24px, 1080px); } .next-stage { grid-template-columns: 1fr; } }
