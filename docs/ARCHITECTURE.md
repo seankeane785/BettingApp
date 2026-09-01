@@ -23,3 +23,7 @@ Manual JSON crosses the application boundary through versioned Draft 2020-12 con
 ## Stage 4 research workflow
 
 `src/domain/researchWorkflow.ts` sits between the accepted FixturePack and the shared ResearchPack validator. It owns deterministic prompt generation, workflow gating, strict paste parsing and evidence-summary helpers. React supplies explicit freshness settings; all state remains in memory.
+
+## Stage 5 analysis domain
+
+`src/domain/analysisModel.ts` is a pure layer over validated FixturePack/ResearchPack inputs and explicit settings. It generates stable candidates, evaluates correlation-aware combinations and returns builders or a structured no-builder result. Canonical market evidence lives in ResearchPack v1 rather than a parallel format. SavedAnalysisRun v1 now reserves the exact input packs, settings and generated result arrays for future Stage 7 persistence; Stage 5 itself performs no storage. React exposes readiness only.

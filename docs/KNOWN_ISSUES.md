@@ -20,3 +20,13 @@
 ## Stage 4 environment limitation
 
 The local dependency tree does not contain the `vitest` executable. On 2026-09-01, `npm install` remained blocked by `403 Forbidden - GET https://registry.npmjs.org/vitest`, so Stage 4 tests and build require verification; lint passed once registry access is restored.
+
+## Stage 5 limitations
+
+- Fixed scoring and correlation factors are transparent conservative rules, not learned causal estimates. Missing venue or underlying evidence lowers quality and uses a documented midpoint.
+- Market availability defaults to unknown and always requires manual verification; the app does not inspect any external market catalogue or settlement rules.
+- Candidate/builder presentation is intentionally deferred to Stage 6 and SavedAnalysisRun persistence to Stage 7.
+
+## Stage 5 verification note
+
+Dependencies were present for Stage 5 and lint, tests and build passed. npm still emits a non-failing warning that the environment's `http-proxy` configuration will be unsupported in its next major version.
