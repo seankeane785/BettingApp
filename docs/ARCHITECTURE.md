@@ -31,3 +31,7 @@ Manual JSON crosses the application boundary through versioned Draft 2020-12 con
 ## Stage 6 presentation
 
 `src/domain/analysisPresentation.ts` contains pure grouping, exclusion-state, no-builder and manual-entry formatting helpers. `src/App.tsx` invokes the existing model only after an explicit generation or availability change, then renders model output without reconstructing selections or scoring. Analysis and clipboard feedback are transient React state; input edits and clear actions invalidate results.
+
+## Stage 7 local persistence
+
+`src/domain/savedRuns.ts` owns snapshot creation, strict hydration, versioned collection storage, deterministic serialization/import and immutable outcome updates. It depends on a minimal `StorageAdapter`, enabling in-memory tests. `src/domain/savedRunBrowser.ts` contains the small UUID/download browser adapters. React explicitly invokes these services; it never recomputes a historical run or replaces current unsaved workflow state when a snapshot is opened. The only persistent key is `formfirst.saved-analysis-runs.v1`; malformed collections are reported and retained rather than repaired or pruned.

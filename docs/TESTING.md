@@ -60,3 +60,9 @@ Focused tests cover research gating, deterministic exact-fixture prompts, requir
 - `npm test -- --run` — passed: 5 test files and 33 tests.
 - `npm run build` — passed with Vite production output.
 - Dependencies were already installed; no install was run. npm emitted only the existing non-failing `http-proxy` environment warning.
+
+## Stage 7 coverage
+
+Focused Vitest coverage now exercises complete snapshot creation, validation at persistence boundaries, in-memory save/list/load, malformed storage retention, duplicate rejection, deterministic complete export, strict import rejection, immutable manual outcome updates and JSON export/import round trips. Manual browser review should additionally confirm keyboard-accessible save/history/import/export/result controls and that opening history leaves unsaved current inputs intact.
+
+Stage 7 automated verification passed on 2026-09-01: `npm run lint`, `npm test -- --run` (6 files, 42 tests), and `npm run build`. All schemas and samples passed `python3 -m json.tool`; `git diff --check` passed.

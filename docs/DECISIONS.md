@@ -65,3 +65,15 @@ Default every market group to unknown, exclude unavailable groups and flag unkno
 **Status:** Accepted — 2026-09-01
 
 Render candidate, confidence, correlation and builder decisions only from the Stage 5 output. Keep manual-entry formatting in a deterministic pure helper, retain unavailable/no-builder outcomes honestly, and invalidate transient results whenever validated inputs or freshness settings change.
+
+## D-013 — Complete snapshots with separate manual outcomes
+
+**Status:** Accepted — 2026-09-01
+
+Store a SavedAnalysisRun v1 only on explicit request, as one complete validated fixture, research, settings and model-output snapshot. Keep manual `pending`, `won`, `lost` and `void` records in a distinct results section and update only that section and its timestamps. Never infer settlement or recompute historical output.
+
+## D-014 — Versioned browser-only history
+
+**Status:** Accepted — 2026-09-01
+
+Use a versioned localStorage collection behind a small adapter. Validate before every write and after every read/import; reject duplicates and unsafe synthetic imports without repair. Do not sync, prune or silently discard records.

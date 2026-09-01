@@ -45,3 +45,10 @@ This file is append-only. Add a dated entry after each material change; do not r
 - Added accessible responsible-gambling and manual-verification presentation plus pure, stable, copyable manual-entry list formatting with non-blocking clipboard feedback.
 - Added tests for grouping, deterministic formatting, no-builder data, excluded candidates, stale-result invalidation and unavailable markets; documented the in-memory-only Stage 6 boundary.
 - Verification passed: `git diff --check`; `python3 -m json.tool` for all six schema/sample JSON files; `npm run lint`; `npm test -- --run` (5 files, 33 tests); and `npm run build`. Dependencies were already installed, so no install was required. npm emitted only its existing non-failing `http-proxy` environment warning.
+
+## 2026-09-01 — Stage 7 local saved-run history
+
+- Added explicit, browser-only SavedAnalysisRun v1 persistence with strict save/load/import validation, complete JSON export, read-only historical review and separate manual builder/leg outcomes.
+- Preserved exact model output snapshots and added safe handling for malformed, duplicate, unavailable and quota-limited storage without automatic deletion or repair.
+- Added focused persistence/serialization/outcome tests and documented that browser site-data clearing can remove local history.
+- Verification passed with dependencies already installed: `git diff --check`; `python3 -m json.tool` for all six schemas/samples; `npm run lint`; `npm test -- --run` (6 files, 42 tests); and `npm run build` (Vite production bundle). npm emitted only its existing non-failing `http-proxy` environment warning.

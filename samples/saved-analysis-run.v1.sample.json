@@ -227,12 +227,49 @@
     ]
   },
   "candidates": [],
-  "builders": [],
-  "results": [
-    {
-      "itemId": "synthetic-placeholder",
-      "outcome": "pending",
-      "note": "Non-decision synthetic test record only."
+  "builders": {
+    "highProbability": {
+      "status": "no_qualifying_builder",
+      "kind": "high_probability",
+      "reason": "Synthetic sample has no qualifying builder.",
+      "principalRisks": [
+        "Synthetic test record only."
+      ],
+      "rejectedCombinations": [],
+      "modelVersion": "FormFirst Model v1.0.0",
+      "schemaVersions": {
+        "fixture": "1.0.0",
+        "research": "1.0.0"
+      }
+    },
+    "balanced": {
+      "status": "no_qualifying_builder",
+      "kind": "balanced",
+      "reason": "Synthetic sample has no qualifying builder.",
+      "principalRisks": [
+        "Synthetic test record only."
+      ],
+      "rejectedCombinations": [],
+      "modelVersion": "FormFirst Model v1.0.0",
+      "schemaVersions": {
+        "fixture": "1.0.0",
+        "research": "1.0.0"
+      }
     }
-  ]
+  },
+  "results": {
+    "builders": {
+      "high_probability": {
+        "outcome": "pending",
+        "updatedAt": null
+      },
+      "balanced": {
+        "outcome": "pending",
+        "updatedAt": null
+      }
+    },
+    "legs": {},
+    "updatedAt": null
+  },
+  "generatedAt": "2026-09-01T10:10:00Z"
 }
