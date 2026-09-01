@@ -13,7 +13,18 @@ export interface TeamEvidence { currentSeasonForm: { summary: string; lastFive: 
 export interface ContextEvidence { status: 'known' | 'unknown'; impact: 'positive' | 'neutral' | 'caution' | 'material' | 'unknown'; detail: string | null; sourceIds: string[] }
 export interface ResearchFixture { fixtureId: string; competition: Competition; homeTeam: string; awayTeam: string; homeEvidence: TeamEvidence; awayEvidence: TeamEvidence; opponentStrength: ContextEvidence; teamNews: ContextEvidence; fixtureCongestion: ContextEvidence; managerialContext: ContextEvidence; reasonsFor: string[]; reasonsAgainst: string[]; dataQuality: 'complete' | 'partial' | 'insufficient' }
 export interface ResearchPack { packName: 'ResearchPack v1'; schemaVersion: '1.0.0'; fixturePackRef: { schemaVersion: '1.0.0'; fixtureDate: string }; generatedAt: string; dataStatus: 'synthetic' | 'real'; sources: SourceReference[]; fixtures: ResearchFixture[] }
-export interface SavedAnalysisRun { packName: 'SavedAnalysisRun v1'; schemaVersion: '1.0.0'; runId: string; createdAt: string; dataStatus: 'synthetic' | 'real'; [key: string]: unknown }
+export type ManualOutcome = 'pending' | 'won' | 'lost' | 'void'
+export interface RecordedOutcome { outcome: ManualOutcome; updatedAt: string | null }
+export interface SavedAnalysisRun {
+  packName: 'SavedAnalysisRun v1'; schemaVersion: '1.0.0'; runId: string; createdAt: string; generatedAt: string
+  dataStatus: 'synthetic' | 'real'; fixturePackRef: { packName: 'FixturePack v1'; schemaVersion: '1.0.0'; fixtureDate: string }
+  researchPackRef: { packName: 'ResearchPack v1'; schemaVersion: '1.0.0'; fixtureDate: string }
+  modelVersion: string; settings: ModelSettings & { deterministic: true }
+  analysisInputs: { fixturePack: FixturePack; researchPack: ResearchPack }
+  validation: { valid: true; errors: ValidationIssue[]; warnings: ValidationIssue[] }
+  candidates: CandidateSelection[]; builders: { highProbability: BuilderOutcome; balanced: BuilderOutcome }
+  results: { builders: Record<BuilderKind, RecordedOutcome>; legs: Record<string, RecordedOutcome>; updatedAt: string | null }
+}
 export interface ValidationIssue { code: string; path: string; message: string }
 export interface ValidationResult<T> { valid: boolean; data?: T; errors: ValidationIssue[]; warnings: ValidationIssue[] }
 export interface FreshnessOptions { referenceTimestamp: string; maximumAgeHours: number }

@@ -50,3 +50,7 @@ After accepting a non-empty, non-synthetic FixturePack, FormFirst can generate a
 ## Stage 6 analysis results
 
 Validated, non-synthetic inputs can now be deliberately analysed with explicit per-market availability settings. The in-memory results interface presents every model candidate by fixture and confidence, both builder outcomes, evidence and risk context, and deterministic copyable manual-entry lists. Unavailable markets are omitted and a builder is never padded when thresholds fail. All availability and settlement checks remain manual, and refresh/reset discards results.
+
+## Stage 7 local saved history
+
+A generated analysis is stored only after **Save current analysis** is selected. SavedAnalysisRun v1 keeps the complete fixture/research inputs, model settings and output as an immutable snapshot; manual builder and leg outcomes remain separate. History stays in this browser, has no remote sync, and may be lost when browser site data is cleared. Complete validated JSON exports can be downloaded and real-data SavedAnalysisRun v1 exports can be imported back into local history.

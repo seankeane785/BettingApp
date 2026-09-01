@@ -36,3 +36,9 @@ Dependencies were present for Stage 5 and lint, tests and build passed. npm stil
 - Analysis results and copy feedback are intentionally in memory only and are lost on refresh; saved-run history and persistence remain deferred to Stage 7.
 - Clipboard copying depends on browser secure-context support and permissions. A copy failure is non-blocking because the formatted list remains visible and selectable.
 - Market availability is manually configured and never externally confirmed. Even an `available` setting does not determine settlement rules, so every displayed selection still requires manual verification.
+
+## Stage 7 limitations
+
+- Saved history exists only in the current browser and can be lost if site data is cleared. There is no remote backup, sync, account or automatic pruning.
+- Browser privacy settings, unavailable localStorage and storage quota limits can prevent saves or updates; the UI reports these conditions without deleting existing valid history.
+- Results are manual records only. Builder outcomes are not derived from leg outcomes because external settlement rules may differ.

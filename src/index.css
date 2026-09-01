@@ -30,3 +30,7 @@ h4,h5,h6 { margin:.5rem 0 } h5 { font-size:1.1rem } h6 { font-size:1rem }
 .builders { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem }.builders>h3 { grid-column:1/-1 }
 .manual-list { margin-top:1.25rem; padding:1rem; background:#edf3ee }.manual-list pre { white-space:pre-wrap; overflow-wrap:anywhere }
 @media(max-width:750px){.builders,.reason-grid{grid-template-columns:1fr}.builders>h3{grid-column:auto}}
+.history { margin-top:2.5rem; padding-top:2rem; border-top:1px solid #d5d8ce }
+.history input[type=file] { display:block; margin:.6rem 0 1rem }
+.saved-review { margin-top:2rem; padding:1.5rem; border:2px solid #744b00; border-radius:.7rem; background:#fffdf7 }
+.saved-review select { display:block; margin:.35rem 0 .75rem }

@@ -46,4 +46,36 @@ export function validateResearchPack(value: unknown, fixturePack?: FixturePack, 
   const walkNumbers = (x: unknown, path: string) => { if (typeof x === 'number' && (!Number.isFinite(x) || x < 0 || x > 10000)) errors.push(issue('implausible_number', path, 'Numeric evidence is obviously implausible.')); else if (Array.isArray(x)) x.forEach((n, i) => walkNumbers(n, `${path}[${i}]`)); else if (record(x)) Object.entries(x).forEach(([k, n]) => walkNumbers(n, `${path}.${k}`)) }; walkNumbers(v.fixtures, '$.fixtures')
   return finish(value, errors, warnings)
 }
-export function validateSavedAnalysisRun(value: unknown): ValidationResult<SavedAnalysisRun> { const errors: ValidationIssue[] = [], warnings: ValidationIssue[] = []; if (!identity(value, 'SavedAnalysisRun v1', errors)) return finish(value, errors, warnings); const v = value as Record<string, unknown>; if (!timestamp(v.createdAt)) errors.push(issue('invalid_timestamp', '$.createdAt', 'Created timestamp is invalid.')); if (v.dataStatus === 'synthetic') warnings.push(issue('synthetic_data', '$.dataStatus', 'Synthetic test run must not be treated as real analysis.')); const settings = v.settings; if (!record(settings) || settings.deterministic !== true || !timestamp(settings.referenceTimestamp) || typeof settings.maximumSourceAgeHours !== 'number' || !record(settings.marketAvailability) || MARKET_GROUPS.some(group => !['unknown','available','unavailable'].includes(String((settings.marketAvailability as Record<string, unknown>)[group])))) errors.push(issue('invalid_settings', '$.settings', 'Deterministic settings and every market availability status are required.')); for (const key of ['fixturePackRef','researchPackRef','analysisInputs','validation']) if (!record(v[key])) errors.push(issue('missing_field', `$.${key}`, `${key} is required.`)); if (record(v.analysisInputs) && (!record(v.analysisInputs.fixturePack) || !record(v.analysisInputs.researchPack))) errors.push(issue('invalid_analysis_inputs', '$.analysisInputs', 'The exact FixturePack and ResearchPack inputs are required.')); for (const key of ['candidates','builders','results']) if (!Array.isArray(v[key])) errors.push(issue('missing_field', `$.${key}`, `${key} must be an array.`)); scanStrings(v, '$', errors); return finish(value, errors, warnings) }
+export function validateSavedAnalysisRun(value: unknown): ValidationResult<SavedAnalysisRun> {
+  const errors: ValidationIssue[] = [], warnings: ValidationIssue[] = []
+  if (!identity(value, 'SavedAnalysisRun v1', errors)) return finish(value, errors, warnings)
+  const v = value as Record<string, unknown>
+  if (typeof v.runId !== 'string' || !/^[A-Za-z0-9._-]{1,120}$/.test(v.runId)) errors.push(issue('invalid_run_id', '$.runId', 'Run ID must use 1–120 safe filename characters.'))
+  if (!timestamp(v.createdAt) || !timestamp(v.generatedAt)) errors.push(issue('invalid_timestamp', '$', 'Created and generated timestamps are required.'))
+  if (v.dataStatus !== 'real' && v.dataStatus !== 'synthetic') errors.push(issue('invalid_data_status', '$.dataStatus', 'Data status must be real or synthetic.'))
+  else if (v.dataStatus === 'synthetic') warnings.push(issue('synthetic_data', '$.dataStatus', 'Synthetic test run must not be treated as real analysis.'))
+  const settings = v.settings
+  if (!record(settings) || settings.deterministic !== true || !timestamp(settings.referenceTimestamp) || typeof settings.maximumSourceAgeHours !== 'number' || settings.maximumSourceAgeHours < 0 || !record(settings.marketAvailability) || Object.keys(settings.marketAvailability).length !== MARKET_GROUPS.length || MARKET_GROUPS.some(group => !['unknown','available','unavailable'].includes(String((settings.marketAvailability as Record<string, unknown>)[group])))) errors.push(issue('invalid_settings', '$.settings', 'Deterministic settings and every market availability status are required.'))
+  if (!record(v.analysisInputs) || !record(v.analysisInputs.fixturePack) || !record(v.analysisInputs.researchPack)) errors.push(issue('invalid_analysis_inputs', '$.analysisInputs', 'The exact FixturePack and ResearchPack inputs are required.'))
+  else {
+    const fixture = validateFixturePack(v.analysisInputs.fixturePack); const research = fixture.valid ? validateResearchPack(v.analysisInputs.researchPack, fixture.data) : validateResearchPack(v.analysisInputs.researchPack)
+    errors.push(...fixture.errors.map(item => ({ ...item, path: `$.analysisInputs.fixturePack${item.path.slice(1)}` })), ...research.errors.map(item => ({ ...item, path: `$.analysisInputs.researchPack${item.path.slice(1)}` })))
+    if (fixture.valid && research.valid && v.dataStatus !== research.data!.dataStatus) errors.push(issue('data_status_mismatch', '$.dataStatus', 'Run data status must match the research snapshot.'))
+  }
+  for (const key of ['fixturePackRef','researchPackRef','validation']) if (!record(v[key])) errors.push(issue('missing_field', `$.${key}`, `${key} is required.`))
+  if (typeof v.modelVersion !== 'string' || !v.modelVersion) errors.push(issue('invalid_model_version', '$.modelVersion', 'Model version is required.'))
+  if (!Array.isArray(v.candidates) || v.candidates.some(candidate => !record(candidate) || typeof candidate.id !== 'string' || typeof candidate.estimatedProbability !== 'number' || !record(candidate.supportingEvidence) || !record(candidate.correlation))) errors.push(issue('invalid_candidates', '$.candidates', 'Complete model candidates are required.'))
+  if (!record(v.builders) || !record(v.builders.highProbability) || !record(v.builders.balanced) || v.builders.highProbability.kind !== 'high_probability' || v.builders.balanced.kind !== 'balanced') errors.push(issue('invalid_builders', '$.builders', 'Both complete builder outcomes are required.'))
+  const results = v.results
+  if (!record(results) || !record(results.builders) || !record(results.legs) || !record(results.builders.high_probability) || !record(results.builders.balanced)) errors.push(issue('invalid_results', '$.results', 'Manual outcomes for both builders and every selected leg are required.'))
+  else {
+    const entries = [...Object.entries(results.builders), ...Object.entries(results.legs)]
+    for (const [id, outcome] of entries) if (!record(outcome) || !['pending','won','lost','void'].includes(String(outcome.outcome)) || (outcome.updatedAt !== null && !timestamp(outcome.updatedAt))) errors.push(issue('invalid_outcome', `$.results.${id}`, 'Outcome must be pending, won, lost or void with an optional update timestamp.'))
+    const expectedLegs = new Set<string>(); if (record(v.builders)) for (const builder of [v.builders.highProbability, v.builders.balanced]) if (record(builder) && builder.status === 'builder' && Array.isArray(builder.selectedLegs)) for (const leg of builder.selectedLegs) if (record(leg) && typeof leg.id === 'string') expectedLegs.add(leg.id)
+    const resultLegs = results.legs as Record<string, unknown>
+    if (Object.keys(resultLegs).length !== expectedLegs.size || [...expectedLegs].some(id => !(id in resultLegs))) errors.push(issue('result_leg_mismatch', '$.results.legs', 'Manual leg outcomes must exactly match saved builder legs.'))
+    if (results.updatedAt !== null && !timestamp(results.updatedAt)) errors.push(issue('invalid_timestamp', '$.results.updatedAt', 'Result update timestamp is invalid.'))
+  }
+  scanStrings({ candidates: v.candidates, builders: v.builders }, '$', errors)
+  return finish(value, errors, warnings)
+}

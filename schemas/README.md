@@ -11,3 +11,7 @@ Contract filenames and stable `$id` values carry the major version; `schemaVersi
 FixturePack v1 deliberately permits an empty `fixtures` array so a selected date with no qualifying scheduled fixtures can be represented truthfully. Its `competitions` array remains non-empty to record the explicit search scope.
 
 Stage 5 clarifies ResearchPack v1 market evidence with canonical market groups, exact team-level selection identity, current/recent/venue hit samples, underlying support and explicit context impact. SavedAnalysisRun v1 now retains the exact input packs and all market-availability settings required to reproduce model output; persistence remains deferred.
+
+## Stage 7 SavedAnalysisRun v1
+
+SavedAnalysisRun v1 is the sole persistence/export format. It contains complete immutable FixturePack and ResearchPack inputs, explicit deterministic settings, validation summary, exact candidates and both builder outcomes. Its separate `results` object contains only manually recorded builder/leg states and timestamps. Runtime validation additionally cross-validates embedded packs, exact selected-leg result coverage and safe run IDs. Synthetic samples remain contract fixtures and are rejected by the history import workflow.
