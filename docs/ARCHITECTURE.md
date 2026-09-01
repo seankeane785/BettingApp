@@ -19,3 +19,7 @@ Manual JSON crosses the application boundary through versioned Draft 2020-12 con
 ## Stage 3 fixture workflow
 
 `src/domain/fixtureWorkflow.ts` owns deterministic prompt construction and composes the Stage 2 JSON parser and FixturePack validator. `src/App.tsx` holds criteria, prompt, pasted text and results in React memory only. It does not repair input, perform network requests or persist data. The UI renders only fixture identity and scheduling fields from validated packs.
+
+## Stage 4 research workflow
+
+`src/domain/researchWorkflow.ts` sits between the accepted FixturePack and the shared ResearchPack validator. It owns deterministic prompt generation, workflow gating, strict paste parsing and evidence-summary helpers. React supplies explicit freshness settings; all state remains in memory.

@@ -16,3 +16,7 @@
 
 - On 2026-09-01, Stage 1 dependency installation was blocked by the environment's package-registry policy (`npm install` received HTTP 403 from the npm registry). The Stage 2 `npm install` attempt was likewise blocked with `403 Forbidden` for `https://registry.npmjs.org/@eslint%2fjs`; dependencies remain unavailable, so lint, tests and build cannot execute until registry access is restored.
 - The Stage 3 `npm install` attempt on 2026-09-01 was also blocked with `403 Forbidden` for `https://registry.npmjs.org/@eslint%2fjs`. Lint, tests, production build and the runnable UI screenshot remain blocked until dependencies can be installed.
+
+## Stage 4 environment limitation
+
+The local dependency tree does not contain the `vitest` executable. On 2026-09-01, `npm install` remained blocked by `403 Forbidden - GET https://registry.npmjs.org/vitest`, so Stage 4 tests and build require verification; lint passed once registry access is restored.

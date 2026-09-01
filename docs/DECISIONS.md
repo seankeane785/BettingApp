@@ -41,3 +41,9 @@ Permit `fixtures: []` while retaining at least one explicitly selected competiti
 **Status:** Accepted — 2026-09-01
 
 Build fixture prompts in a pure TypeScript module from explicit date and competition inputs. React manages only transient workflow state and invokes the established parser and validator for imports.
+
+## D-009 — Deterministic manual research
+
+**Status:** Accepted — 2026-09-01
+
+Research is gated on a non-empty, non-synthetic validated FixturePack. Its prompt is a pure function of that pack and explicit freshness settings. Input is validated rather than repaired, and evidence output remains descriptive rather than scored or recommended.
