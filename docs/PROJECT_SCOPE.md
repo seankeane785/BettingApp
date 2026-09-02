@@ -33,3 +33,6 @@ New analysis uses current-season league team, opponent, competition-benchmark, s
 
 ## Model v1.4.0 market coverage
 ResearchPack v1.4 distinguishes selectable `candidate_market` evidence from `supporting_only` evidence. Every approved team-level market family is processed only by its documented market-specific evidence gate; missing current-season support or a same-key/threshold competition benchmark is reported as unavailable. No specialist statistic is inferred from goals, and prior saved schema versions remain readable without recomputation. See `docs/SCORING_MODEL.md` and `schemas/research-pack.v1.4.schema.json`.
+
+## AnalysisPack workflow
+The local-only scope includes a manual one-prompt, one-import AnalysisPack workflow for fixture discovery and team-level research. It adds no backend or automated collection. Legacy separate pack imports remain supported. Missing specialist evidence produces unavailable coverage and may validly produce “No qualifying builder today”.

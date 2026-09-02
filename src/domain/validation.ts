@@ -1,4 +1,4 @@
-import { MARKET_GROUPS, SUPPORTED_COMPETITIONS, type FixturePack, type FreshnessOptions, type ResearchPack, type SavedAnalysisRun, type ValidationIssue, type ValidationResult } from './types'
+import { MARKET_GROUPS, SUPPORTED_COMPETITIONS, type AnalysisPack, type FixturePack, type FreshnessOptions, type ResearchPack, type SavedAnalysisRun, type ValidationIssue, type ValidationResult } from './types'
 
 const datePattern = /^\d{4}-\d{2}-\d{2}$/
 const timePattern = /^(?:[01]\d|2[0-3]):[0-5]\d$/
@@ -50,6 +50,7 @@ export function validateResearchPack(value: unknown, fixturePack?: FixturePack, 
   else if (freshness && generatedAtValid && Date.parse(v.generatedAt as string) > Date.parse(validationTime)) errors.push(issue('future_generated_at', '$.generatedAt', 'ResearchPack generatedAt is later than the import validation time.'))
   if (v.dataStatus !== 'synthetic' && v.dataStatus !== 'real') errors.push(issue('invalid_data_status', '$.dataStatus', 'Data status must be synthetic or real.')); else if (v.dataStatus === 'synthetic') warnings.push(issue('synthetic_data', '$.dataStatus', 'Synthetic test data must not be used for real analysis.'))
   const sources = Array.isArray(v.sources) ? v.sources : []; if (!sources.length) errors.push(issue('missing_sources', '$.sources', 'At least one source is required.')); const sourceIds = new Set<string>(); sources.forEach((s, i) => { const declaredId = record(s) && typeof s.sourceId === 'string' && s.sourceId.length > 0 ? s.sourceId : undefined; if (declaredId) { if (sourceIds.has(declaredId)) errors.push(issue('duplicate_source', `$.sources[${i}].sourceId`, 'Source IDs must be unique.')); sourceIds.add(declaredId) } if (!record(s) || !declaredId || typeof s.title !== 'string' || !s.title || typeof s.url !== 'string' || !/^https:\/\/[^\s]+$/i.test(s.url) || !utcTimestamp(s.retrievedAt)) errors.push(issue('invalid_source', `$.sources[${i}]`, 'Source requires ID, title, HTTPS URL and valid ISO UTC retrieval timestamp.')); else { if (generatedAtValid && Date.parse(s.retrievedAt) > Date.parse(v.generatedAt as string)) errors.push(issue('source_after_generated_at', `$.sources[${i}].retrievedAt`, 'Source retrieval timestamp is later than ResearchPack generatedAt.')); if (freshness && freshnessValid && Date.parse(s.retrievedAt) > Date.parse(validationTime)) errors.push(issue('future_source', `$.sources[${i}].retrievedAt`, 'Source retrieval timestamp is later than the import validation time.')); if (freshness && freshnessValid && Date.parse(validationTime) - Date.parse(s.retrievedAt) > Math.min(freshness.maximumAgeHours, 24) * 3_600_000) errors.push(issue('stale_source', `$.sources[${i}].retrievedAt`, 'Source exceeds the configured maximum age at import validation time.')) } })
+  if (v.schemaVersion === '1.4.0') sources.forEach((s, i) => { if (record(s) && typeof s.sourceId === 'string' && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(s.sourceId)) errors.push(issue('invalid_source_id', `$.sources[${i}].sourceId`, 'ResearchPack v1.4 source IDs must use kebab-case.')) })
   if (v.schemaVersion === '1.3.0' || v.schemaVersion === '1.4.0') {
     const benchmarks = Array.isArray(v.competitionBenchmarks) ? v.competitionBenchmarks : []
     if (!benchmarks.length) errors.push(issue('missing_competition_benchmark', '$.competitionBenchmarks', 'ResearchPack 1.3 requires current-season competition benchmarks.'))
@@ -78,6 +79,22 @@ export function validateResearchPack(value: unknown, fixturePack?: FixturePack, 
   }
   const checkCitations = (x: unknown, path: string) => { if (record(x) && 'sourceIds' in x) { if (!Array.isArray(x.sourceIds) || x.sourceIds.length === 0) errors.push(issue('missing_source_citation', `${path}.sourceIds`, 'Populated evidence requires at least one source citation.')); else x.sourceIds.forEach((id, i) => { if (typeof id !== 'string' || !sourceIds.has(id)) errors.push(issue('unknown_source_citation', `${path}.sourceIds[${i}]`, `Unknown source ID: ${String(id)}.`)) }) } if (Array.isArray(x)) x.forEach((n, i) => checkCitations(n, `${path}[${i}]`)); else if (record(x)) Object.entries(x).forEach(([k, n]) => checkCitations(n, `${path}.${k}`)) }; checkCitations(v.fixtures, '$.fixtures'); if (v.schemaVersion === '1.3.0' || v.schemaVersion === '1.4.0') checkCitations(v.competitionBenchmarks, '$.competitionBenchmarks')
   const walkNumbers = (x: unknown, path: string) => { if (typeof x === 'number' && (!Number.isFinite(x) || x < 0 || x > 10000)) errors.push(issue('implausible_number', path, 'Numeric evidence is obviously implausible.')); else if (Array.isArray(x)) x.forEach((n, i) => walkNumbers(n, `${path}[${i}]`)); else if (record(x)) Object.entries(x).forEach(([k, n]) => walkNumbers(n, `${path}.${k}`)) }; walkNumbers(v.fixtures, '$.fixtures')
+  return finish(value, errors, warnings)
+}
+export function validateAnalysisPack(value: unknown, freshness?: FreshnessOptions, validationTime: string = new Date().toISOString()): ValidationResult<AnalysisPack> {
+  const errors: ValidationIssue[] = [], warnings: ValidationIssue[] = []
+  if (!identity(value, 'AnalysisPack v1', errors)) return finish(value, errors, warnings)
+  const v = value as Record<string, unknown>
+  const allowed = new Set(['packName', 'schemaVersion', 'generatedAt', 'fixturePack', 'researchPack'])
+  for (const key of Object.keys(v)) if (!allowed.has(key)) errors.push(issue('unexpected_field', `$.${key}`, `Unexpected AnalysisPack field: ${key}.`))
+  if (!utcTimestamp(v.generatedAt)) errors.push(issue('invalid_timestamp', '$.generatedAt', 'AnalysisPack generatedAt must be a valid ISO UTC timestamp.'))
+  const fixture = validateFixturePack(v.fixturePack)
+  errors.push(...fixture.errors.map(item => ({ ...item, path: `$.fixturePack${item.path.slice(1)}` })))
+  warnings.push(...fixture.warnings.map(item => ({ ...item, path: `$.fixturePack${item.path.slice(1)}` })))
+  const research = fixture.valid ? validateResearchPack(v.researchPack, fixture.data, freshness, validationTime) : validateResearchPack(v.researchPack, undefined, freshness, validationTime)
+  errors.push(...research.errors.map(item => ({ ...item, path: `$.researchPack${item.path.slice(1)}` })))
+  warnings.push(...research.warnings.map(item => ({ ...item, path: `$.researchPack${item.path.slice(1)}` })))
+  if (record(v.researchPack) && v.researchPack.schemaVersion !== '1.4.0') errors.push(issue('unsupported_version', '$.researchPack.schemaVersion', 'AnalysisPack v1 requires ResearchPack schema version 1.4.0.'))
   return finish(value, errors, warnings)
 }
 export function validateSavedAnalysisRun(value: unknown): ValidationResult<SavedAnalysisRun> {

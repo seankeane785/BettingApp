@@ -65,3 +65,6 @@ ResearchPack v1.2 distinguishes visible descriptive caveats from current, source
 
 ## Model v1.4.0 market coverage
 ResearchPack v1.4 distinguishes selectable `candidate_market` evidence from `supporting_only` evidence. Every approved team-level market family is processed only by its documented market-specific evidence gate; missing current-season support or a same-key/threshold competition benchmark is reported as unavailable. No specialist statistic is inferred from goals, and prior saved schema versions remain readable without recomputation. See `docs/SCORING_MODEL.md` and `schemas/research-pack.v1.4.schema.json`.
+
+## One-prompt match research
+Select a Europe/London date and supported competitions, choose **Generate match research request**, run the prompt manually in ChatGPT Search, and import its single `AnalysisPack v1` JSON response. FormFirst validates the nested FixturePack v1.0.0 and ResearchPack v1.4.0 before reusing the existing deterministic analysis pipeline. The former separate imports remain under the legacy/advanced workflow. Specialist markets shown as unavailable indicate missing dedicated evidence, not a negative forecast. ResearchPack v1.4 source IDs use kebab-case.

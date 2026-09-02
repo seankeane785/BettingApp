@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://formfirst.local/schemas/analysis-pack.v1.schema.json",
+  "title": "AnalysisPack v1",
+  "description": "One-import envelope for verified fixtures and current research.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "packName",
+    "schemaVersion",
+    "generatedAt",
+    "fixturePack",
+    "researchPack"
+  ],
+  "properties": {
+    "packName": {
+      "const": "AnalysisPack v1"
+    },
+    "schemaVersion": {
+      "const": "1.0.0"
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "fixturePack": {
+      "$ref": "fixture-pack.v1.schema.json"
+    },
+    "researchPack": {
+      "$ref": "research-pack.v1.4.schema.json"
+    }
+  }
+}

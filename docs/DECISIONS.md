@@ -109,3 +109,6 @@ ResearchPack v1.2 separates descriptive caveats from direct candidate penalties 
 
 ## Model v1.4.0 market coverage
 ResearchPack v1.4 distinguishes selectable `candidate_market` evidence from `supporting_only` evidence. Every approved team-level market family is processed only by its documented market-specific evidence gate; missing current-season support or a same-key/threshold competition benchmark is reported as unavailable. No specialist statistic is inferred from goals, and prior saved schema versions remain readable without recomputation. See `docs/SCORING_MODEL.md` and `schemas/research-pack.v1.4.schema.json`.
+
+## Decision: AnalysisPack v1 envelope
+Use a thin versioned envelope around FixturePack v1.0.0 and ResearchPack v1.4.0. Keep the nested contracts and scoring pipeline unchanged, enforce exact fixture cardinality/identity, and retain legacy imports. v1.4 source identifiers are kebab-case to make generated citations predictable.

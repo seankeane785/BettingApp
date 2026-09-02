@@ -15,3 +15,13 @@ describe('analysis presentation helpers', () => {
   it('invalidates stale results explicitly', () => { const { fixture, research } = packs(); const output = analyse(fixture, research, defaultModelSettings('2026-09-01T10:00:00Z', 24)); expect(invalidateAnalysis(output)).toBeNull() })
   it('does not present unavailable markets', () => { const { fixture, research } = packs(); const settings = defaultModelSettings('2026-09-01T10:00:00Z', 24); settings.marketAvailability.team_to_score = 'unavailable'; expect(analyse(fixture, research, settings).candidates.some(candidate => candidate.marketGroup === 'team_to_score')).toBe(false) })
 })
+
+describe('evidence-use trace labels', () => {
+  it('never returns blank labels and supports the empty fallback', async () => {
+    const { evidenceTraceLabels } = await import('./analysisPresentation')
+    expect(evidenceTraceLabels()).toEqual([])
+    const labels = evidenceTraceLabels({ candidate: '4/4', opponent: '  ', benchmark: '80.7%', venue: '2/2', context: 'none applied', sourceIds: [] })
+    expect(labels).toEqual(['Candidate record: 4/4', 'Competition benchmark: 80.7%', 'Relevant venue record: 2/2', 'Scoped context penalty: none applied'])
+    expect(labels.every(label => label.trim().length > 0)).toBe(true)
+  })
+})

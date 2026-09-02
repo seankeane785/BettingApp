@@ -68,3 +68,6 @@ The deterministic weighting and smoothing policy has not undergone a documented 
 ## Model v1.4 calibration
 - Percentages use documented conservative benchmark smoothing and fixed deterministic weights. They are not claimed to be empirically calibrated because no out-of-sample calibration study is available.
 - Coverage depends on manually researched, source-backed current-season statistics; a market remains unavailable when any mandatory component is absent.
+
+## AnalysisPack v1 limitations
+The combined prompt still depends on manual ChatGPT Search execution and credible current-season sources. Some specialist statistics may be unavailable; FormFirst deliberately reports that evidence gap and does not synthesize a candidate. The legacy workflow remains more verbose but compatible.
