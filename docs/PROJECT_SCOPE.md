@@ -22,3 +22,7 @@ Stage 1 delivers governance documentation and an accessible React, TypeScript an
 ## Early-season scope
 
 Early-season analysis uses team-level competitive league evidence only: current-season league form plus separate previous-season final-five, final-ten and relevant venue windows. Friendlies, cups, player markets and automated collection remain excluded.
+
+## v1.2 calibration boundary
+
+Context may alter a team-to-score candidate only when ResearchPack v1.2 marks current, sourced, team-level evidence as `candidate_penalty` and scopes it to that candidate. Generic and descriptive context remains visible without changing probability. Partial evidence is uncertainty rather than missing required evidence; it is capped at Good and must still satisfy every unchanged Balanced builder rule. Builders are never forced.

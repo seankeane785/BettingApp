@@ -96,3 +96,9 @@ Require `currentSeasonForm`, `marketHitRates` and `optionalMetrics` containers f
 ## ADR: Period-separated early-season evidence
 
 **Decision:** Before five league matches, blend add-one-adjusted current form with the previous season final-ten league baseline using observed sample weights capped at ten; halve historical weight for a sourced material discontinuity. Require final-five and venue records as separate checks, never aggregate overlapping windows. Missing or unassessable history is insufficient. Unknown context and manual market verification do not penalise confidence.
+
+## D-017 — Candidate-scoped context and partial-evidence calibration
+
+**Status:** Accepted — 2026-09-02
+
+ResearchPack v1.2 separates descriptive caveats from direct candidate penalties and requires explicit home/away/both scope. Historical representativeness is the sole historical-weight reduction mechanism; its evidence cannot be reused for a penalty without distinct current evidence. Legacy context is descriptive under model v1.2. `usable_partial` expresses uncertainty, uses normal probability tiers capped at Good, and remains subject to unchanged builder thresholds and correlation rules.

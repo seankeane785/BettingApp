@@ -79,3 +79,10 @@ This file is append-only. Add a dated entry after each material change; do not r
 
 - Added ResearchPack v1.1.0 period-labelled previous-season competitive league evidence while retaining v1.0.0 import support.
 - Added conservative early-season blending, representativeness reductions, corrected source-backed context penalties, prompt guidance, validation and focused regression coverage.
+
+## 2026-09-02 — Audited scoped-context scoring correction
+
+- Added ResearchPack v1.2 with explicit context scope/application and strict candidate-penalty validation while retaining v1.0/v1.1 input and snapshot support.
+- Released model v1.2.0: legacy/descriptive context has zero penalty, valid caution/material penalties affect only scoped candidates, and historical representativeness is not double counted.
+- Reclassified usable partial evidence as uncertainty capped at Good, retaining every 72%, 62%, 55% and 35% builder threshold and valid no-builder outcomes.
+- Added focused deterministic, regression, compatibility and path-specific validation coverage.

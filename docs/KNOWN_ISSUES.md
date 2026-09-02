@@ -54,3 +54,9 @@ Dependencies were present for Stage 5 and lint, tests and build passed. npm stil
 - Generated prompts remain a manual ChatGPT Search hand-off. FormFirst does not verify whether ChatGPT followed the embedded contract until the returned JSON is pasted and validated.
 
 - Historical representativeness is a manual, source-backed assessment; when it cannot be assessed the deterministic model deliberately returns insufficient evidence and may produce no builder.
+
+## Model v1.2 limitations
+
+- Existing ResearchPack v1.0/v1.1 context has no candidate scope, so model v1.2 deliberately treats it as descriptive and applies no direct context penalty. A fresh v1.2 import is required for a current candidate-specific penalty.
+- Scope and application validation can enforce structure, sourcing, freshness and separation from representativeness citations; the manual research workflow remains responsible for ensuring prose is genuinely team-level and candidate-relevant.
+- Partial evidence can qualify only for Balanced and only when all unchanged probability, combination and correlation rules pass. It never qualifies for High-probability, and no qualifying builder remains a valid output.

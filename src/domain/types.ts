@@ -12,15 +12,16 @@ export interface MarketEvidence { marketKey: string; marketGroup: MarketGroup; s
 export type EvidencePeriod = 'current_season_league' | 'previous_season_final_5_league' | 'previous_season_final_10_league' | 'previous_season_venue_league'
 export interface PeriodMarketEvidence { marketKey: string; marketGroup: MarketGroup; selectionLabel: string; teamSide: TeamSide; threshold: number | null; evidencePeriod: EvidencePeriod; competitionScope: Competition; sampleSize: number; hits: number; venueRelevance: 'all' | 'home' | 'away'; sourceIds: string[] }
 export interface TeamEvidence { currentSeasonForm: { summary: string; lastFive: string | null; lastTen: string | null; homeOrAway: string | null; goalsScored: number | null; goalsConceded: number | null; sourceIds: string[] }; currentSeasonLeagueMatches?: number; marketHitRates: MarketEvidence[]; historicalMarketHitRates?: PeriodMarketEvidence[]; historicalRepresentativeness?: { status: 'representative' | 'reduced' | 'unassessable'; reason: 'none' | 'promoted_or_relegated' | 'material_manager_change' | 'material_squad_disruption' | 'unknown'; sourceIds: string[] }; optionalMetrics: Record<string, { value: number | null; sourceIds: string[] } | null> }
-export interface ContextEvidence { status: 'known' | 'unknown'; impact: 'positive' | 'neutral' | 'caution' | 'material' | 'unknown'; detail: string | null; sourceIds: string[] }
+export interface ContextEvidence { status: 'known' | 'unknown'; impact: 'positive' | 'neutral' | 'caution' | 'material' | 'unknown'; scope?: 'home' | 'away' | 'both'; application?: 'descriptive_only' | 'candidate_penalty'; detail: string | null; sourceIds: string[] }
+export interface ScopedContextEvidence extends ContextEvidence { scope: 'home' | 'away' | 'both'; application: 'descriptive_only' | 'candidate_penalty' }
 export interface ResearchFixture { fixtureId: string; competition: Competition; homeTeam: string; awayTeam: string; homeEvidence: TeamEvidence; awayEvidence: TeamEvidence; opponentStrength: ContextEvidence; teamNews: ContextEvidence; fixtureCongestion: ContextEvidence; managerialContext: ContextEvidence; reasonsFor: string[]; reasonsAgainst: string[]; dataQuality: 'complete' | 'partial' | 'insufficient' }
-export interface ResearchPack { packName: 'ResearchPack v1'; schemaVersion: '1.0.0' | '1.1.0'; fixturePackRef: { schemaVersion: '1.0.0'; fixtureDate: string }; generatedAt: string; dataStatus: 'synthetic' | 'real'; sources: SourceReference[]; fixtures: ResearchFixture[] }
+export interface ResearchPack { packName: 'ResearchPack v1'; schemaVersion: '1.0.0' | '1.1.0' | '1.2.0'; fixturePackRef: { schemaVersion: '1.0.0'; fixtureDate: string }; generatedAt: string; dataStatus: 'synthetic' | 'real'; sources: SourceReference[]; fixtures: ResearchFixture[] }
 export type ManualOutcome = 'pending' | 'won' | 'lost' | 'void'
 export interface RecordedOutcome { outcome: ManualOutcome; updatedAt: string | null }
 export interface SavedAnalysisRun {
   packName: 'SavedAnalysisRun v1'; schemaVersion: '1.0.0'; runId: string; createdAt: string; generatedAt: string
   dataStatus: 'synthetic' | 'real'; fixturePackRef: { packName: 'FixturePack v1'; schemaVersion: '1.0.0'; fixtureDate: string }
-  researchPackRef: { packName: 'ResearchPack v1'; schemaVersion: '1.0.0' | '1.1.0'; fixtureDate: string }
+  researchPackRef: { packName: 'ResearchPack v1'; schemaVersion: '1.0.0' | '1.1.0' | '1.2.0'; fixtureDate: string }
   modelVersion: string; settings: ModelSettings & { deterministic: true }
   analysisInputs: { fixturePack: FixturePack; researchPack: ResearchPack }
   validation: { valid: true; errors: ValidationIssue[]; warnings: ValidationIssue[] }

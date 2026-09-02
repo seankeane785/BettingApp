@@ -21,3 +21,7 @@ SavedAnalysisRun v1 is the sole persistence/export format. It contains complete 
 ## ResearchPack v1.1.0
 
 `research-pack.v1.1.schema.json` adds `currentSeasonLeagueMatches`, separate period-labelled `historicalMarketHitRates`, and `historicalRepresentativeness`. Every historical statistic declares its league competition, period, sample, hits, venue relevance and sources. The runtime reader continues to accept valid v1.0.0 packs for deterministic saved-run replay.
+
+## ResearchPack v1.2.0
+
+`research-pack.v1.2.schema.json` requires `scope` and `application` on team news, fixture congestion and managerial context. Candidate penalties must be known, caution/material, non-empty and sourced; unknown, neutral and positive evidence is descriptive-only. Runtime validation also rejects reuse of an affected team's historical-representativeness citations as the sole direct-penalty evidence. Valid v1.0/v1.1 inputs remain readable, with unspecific legacy context treated as descriptive by model v1.2.

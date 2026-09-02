@@ -39,3 +39,7 @@ Manual JSON crosses the application boundary through versioned Draft 2020-12 con
 ## ResearchPack v1.1 and early-season scoring
 
 The import boundary reads both v1.0.0 and v1.1.0. Version 1.1 adds period-labelled league market observations and a sourced historical-representativeness assessment. The pure model selects the final-ten baseline, uses the venue record only for its venue component, and reduces historical weight for material discontinuity.
+
+## ResearchPack v1.2 and model v1.2
+
+The import boundary accepts v1.0, v1.1 and v1.2. Legacy unspecific context is adapted by model semantics to descriptive-only (zero penalty), preserving immutable saved snapshots without recomputation. Pure helpers independently calculate early-season history, candidate-scoped direct penalties, evidence quality and tiers. Only valid v1.2 `candidate_penalty` context matching the candidate's home/away side (or `both`) can deduct points or force Avoid.
