@@ -93,3 +93,7 @@ Model tests cover two-match rejection without history, conservative blending wit
 ## Scoped-context scoring correction (2026-09-02)
 
 Focused tests cover home/away material isolation, descriptive squad and manager context, exact 10/30 point policies, reduced historical weighting without double counting, audited 89% and 57% early-season blends, 70% reliability and 76% venue support, partial-evidence Good capping, unchanged builder gates, legacy snapshot compatibility, v1.2 determinism, and path-specific scope/application/penalty validation.
+
+## Model v1.3 focused coverage
+
+Unit coverage checks the exact four-fixture smoothing example, opponent moderation, candidate-scoped context isolation, missing-core insufficiency, early-season confidence/builder restrictions, deterministic output, current-only prompt contract, and legacy suite compatibility. Lint, Vitest, production build, and whitespace checks are delivery gates.

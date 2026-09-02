@@ -25,3 +25,7 @@ SavedAnalysisRun v1 is the sole persistence/export format. It contains complete 
 ## ResearchPack v1.2.0
 
 `research-pack.v1.2.schema.json` requires `scope` and `application` on team news, fixture congestion and managerial context. Candidate penalties must be known, caution/material, non-empty and sourced; unknown, neutral and positive evidence is descriptive-only. Runtime validation also rejects reuse of an affected team's historical-representativeness citations as the sole direct-penalty evidence. Valid v1.0/v1.1 inputs remain readable, with unspecific legacy context treated as descriptive by model v1.2.
+
+## ResearchPack v1.3.0
+
+`research-pack.v1.3.schema.json` requires `competitionBenchmarks` built only from completed current-season league fixtures. It retains current-season team market/form/venue/optional metrics and v1.2 scoped context, and removes historical market records and representativeness from the new contract. v1.0, v1.1, and v1.2 schema files remain unchanged and readable for immutable saved-run replay.

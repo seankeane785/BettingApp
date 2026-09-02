@@ -43,3 +43,7 @@ The import boundary reads both v1.0.0 and v1.1.0. Version 1.1 adds period-labell
 ## ResearchPack v1.2 and model v1.2
 
 The import boundary accepts v1.0, v1.1 and v1.2. Legacy unspecific context is adapted by model semantics to descriptive-only (zero penalty), preserving immutable saved snapshots without recomputation. Pure helpers independently calculate early-season history, candidate-scoped direct penalties, evidence quality and tiers. Only valid v1.2 `candidate_penalty` context matching the candidate's home/away side (or `both`) can deduct points or force Avoid.
+
+## ResearchPack and model v1.3
+
+The v1.3 import boundary adds top-level current-season competition benchmarks while retaining current team evidence and scoped v1.2 context. The pure domain model joins candidate, opponent, and benchmark records by canonical market identity, produces an evidence-use trace, and marks missing joins insufficient. React renders that output and does not recreate calculations. Older schemas remain readable snapshot inputs.

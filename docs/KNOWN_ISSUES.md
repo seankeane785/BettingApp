@@ -60,3 +60,7 @@ Dependencies were present for Stage 5 and lint, tests and build passed. npm stil
 - Existing ResearchPack v1.0/v1.1 context has no candidate scope, so model v1.2 deliberately treats it as descriptive and applies no direct context penalty. A fresh v1.2 import is required for a current candidate-specific penalty.
 - Scope and application validation can enforce structure, sourcing, freshness and separation from representativeness citations; the manual research workflow remains responsible for ensuring prose is genuinely team-level and candidate-relevant.
 - Partial evidence can qualify only for Balanced and only when all unchanged probability, combination and correlation rules pass. It never qualifies for High-probability, and no qualifying builder remains a valid output.
+
+## Model v1.3 calibration
+
+The deterministic weighting and smoothing policy has not undergone a documented out-of-sample calibration study. Estimates must not be described as empirically calibrated until that validation exists. Canonical market identity currently depends on manually prepared, consistently named candidate/opponent/benchmark records; a mismatch correctly produces insufficient evidence rather than a fallback estimate.

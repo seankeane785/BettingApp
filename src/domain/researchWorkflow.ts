@@ -55,99 +55,18 @@ export function buildResearchPrompt(
       kickOff,
     }),
   );
-  return `This research task is only for Premier League and/or Championship fixtures. Use ChatGPT Search to research every fixture and both teams listed below.
+  return `Research every supplied Premier League and Championship fixture and return only strict ResearchPack v1 JSON with schemaVersion "1.3.0".
 
-Return only one strict JSON object representing ResearchPack v1 with schema version 1.2.0. Include every supplied fixture even when its dataQuality is "insufficient" or evidence is unknown. Do not add fields.
+FixturePack reference: schema ${pack.schemaVersion}, date ${pack.fixtureDate}. Maximum source age: ${maximumSourceAgeHours} hours.
+Fixtures: ${JSON.stringify(fixtures, null, 2)}
 
-Maximum source age: ${maximumSourceAgeHours} hours
-Set fixturePackRef.schemaVersion to "${pack.schemaVersion}", fixturePackRef.fixtureDate to "${pack.fixtureDate}", and dataStatus to "real".
+Require top-level packName, schemaVersion, fixturePackRef, generatedAt, dataStatus, sources, competitionBenchmarks, and fixtures. For each competition, competitionBenchmarks must contain currentSeasonCompletedFixtures, marketBenchmarks, and optionalMetrics. Each market benchmark requires marketKey, supported team-level marketGroup, selectionLabel, sampleSize, hits, supportPercent (number or null), and sourceIds. Use only completed current-season league fixtures; never mix cups, friendlies, prior seasons, or unsourced averages.
 
-Fixtures to research (copy all identity and kick-off fields accurately; ResearchPack fixture entries copy fixtureId, competition, homeTeam and awayTeam):
-${JSON.stringify(fixtures, null, 2)}
+For both teams retain currentSeasonLeagueMatches; currentSeasonForm with summary, lastFive, lastTen, current home/away record, goalsScored, goalsConceded, and sourceIds; current-season marketHitRates; and sourced optionalMetrics (xG, shots, shotsOnTarget, corners, cards). Request every supported current-season team-level statistic needed for each populated market and the matching opponent evidence plus competition benchmark. Every populated item requires declared sourceIds. Missing evidence stays null/unknown or omitted where permitted; never insert a neutral default. Do not include historicalMarketHitRates, historicalRepresentativeness, prior-season results, historic venue records, or historic market rates.
 
-ResearchPack v1 complete output contract (all shown fields are required; no additional fields):
-{
-  "packName": "ResearchPack v1",
-  "schemaVersion": "1.2.0",
-  "fixturePackRef": {"schemaVersion": "1.0.0", "fixtureDate": "YYYY-MM-DD"},
-  "generatedAt": "ISO 8601 UTC date-time ending in Z, with optional fractional seconds",
-  "dataStatus": "real",
-  "sources": [{"sourceId": "unique non-empty string", "url": "HTTPS URL", "title": "non-empty string", "retrievedAt": "ISO 8601 UTC date-time ending in Z, with optional fractional seconds"}],
-  "fixtures": [{
-    "fixtureId": "copied fixture ID",
-    "competition": "Premier League" or "Championship",
-    "homeTeam": "copied home team",
-    "awayTeam": "copied away team",
-    "homeEvidence": TEAM_EVIDENCE,
-    "awayEvidence": TEAM_EVIDENCE,
-    "opponentStrength": CONTEXT_EVIDENCE,
-    "teamNews": CONTEXT_EVIDENCE,
-    "fixtureCongestion": CONTEXT_EVIDENCE,
-    "managerialContext": CONTEXT_EVIDENCE,
-    "reasonsFor": [strings],
-    "reasonsAgainst": [strings],
-    "dataQuality": "complete" or "partial" or "insufficient"
-  }]
-}
+Retain v1.2 context objects. teamNews, fixtureCongestion, and managerialContext require scope (home/away/both) and application (descriptive_only/candidate_penalty). Only known, current, sourced, candidate-relevant caution/material disruption may be candidate_penalty. Generic, unknown, neutral, positive, descriptive, non-directional, transfers, manager changes, or squad turnover without current candidate-relevant disruption are descriptive_only and have no numerical effect. opponentStrength is descriptive context.
 
-TEAM_EVIDENCE is exactly:
-{
-  "currentSeasonForm": {
-    "summary": "non-empty sourced string, or unknown",
-    "lastFive": string or null,
-    "lastTen": string or null,
-    "homeOrAway": string or null,
-    "goalsScored": non-negative number or null,
-    "goalsConceded": non-negative number or null,
-    "sourceIds": [one or more source IDs]
-  },
-  "currentSeasonLeagueMatches": "non-negative integer count of league matches played",
-  "marketHitRates": [{
-    "marketKey": "lowercase canonical key using letters, numbers and underscores",
-    "marketGroup": one of "match_result", "double_chance", "draw_no_bet", "both_teams_to_score", "total_goals", "team_goals", "team_to_score", "clean_sheet", "total_corners", "team_corners", "total_cards", "team_cards", "team_shots", "team_shots_on_target",
-    "selectionLabel": "non-empty team-level statistic label",
-    "teamSide": "home" or "away" or "both" or "match",
-    "threshold": non-negative number or null,
-    "sampleSize": non-negative integer,
-    "hits": non-negative integer no greater than sampleSize,
-    "recentSampleSize": non-negative integer,
-    "recentHits": non-negative integer no greater than recentSampleSize,
-    "venueSampleSize": non-negative integer or null,
-    "venueHits": non-negative integer or null and no greater than venueSampleSize,
-    "underlyingSupportPercent": number from 0 to 100 or null,
-    "sourceIds": [one or more source IDs]
-  }],
-  "historicalMarketHitRates": [{
-    "marketKey": "same canonical key as current market evidence", "marketGroup": "same supported group", "selectionLabel": "same label", "teamSide": "home/away/both/match", "threshold": non-negative number or null,
-    "evidencePeriod": "previous_season_final_5_league" or "previous_season_final_10_league" or "previous_season_venue_league",
-    "competitionScope": "Premier League" or "Championship", "sampleSize": positive integer, "hits": non-negative integer no greater than sampleSize,
-    "venueRelevance": "all" or "home" or "away", "sourceIds": [one or more source IDs]
-  }],
-  "historicalRepresentativeness": {"status": "representative" or "reduced" or "unassessable", "reason": "none" or "promoted_or_relegated" or "material_manager_change" or "material_squad_disruption" or "unknown", "sourceIds": [one or more source IDs]},
-  "optionalMetrics": {"metric_name": {"value": non-negative number or null, "sourceIds": [one or more source IDs]} or null}
-}
-For partial or insufficient fixture data, marketHitRates may be [] when no supported team-level market evidence is available, and optionalMetrics may be {} when no optional metrics are sourced. Never invent evidence to populate either field.
-
-For opponentStrength, CONTEXT_EVIDENCE is exactly:
-{
-  "status": "known" or "unknown",
-  "impact": "positive" or "neutral" or "caution" or "material" or "unknown",
-  "detail": string or null,
-  "sourceIds": [one or more source IDs]
-}
-For teamNews, fixtureCongestion, and managerialContext add required "scope": "home" or "away" or "both" and "application": "descriptive_only" or "candidate_penalty". Scope identifies the team-to-score candidate directly supported for a penalty, not merely a club mentioned by the source. A candidate_penalty requires known, current, team-level, candidate-relevant evidence; caution or material impact; non-empty detail; and valid source IDs. Unknown, neutral, positive, generic, conflicting, or non-directional context must be descriptive_only. Descriptive context remains visible but has zero direct numerical penalty. Never reuse evidence supporting historicalRepresentativeness as a direct candidate penalty without distinct present-tense evidence.
-
-Use status "unknown", impact "unknown", null detail, and valid supporting source IDs when a source establishes that the information is unavailable or conflicting.
-
-When currentSeasonLeagueMatches is fewer than five, keep current-season league form separate and require the previous season final 5 and final 10 competitive league windows plus the relevant previous-season home/away league sample. Supply separate historicalMarketHitRates records for every supported market and each evidence period; never merge or sum overlapping windows. Exclude friendlies and cup matches. Assess promotion/relegation, material manager change and material squad disruption, using reduced or unassessable representativeness as warranted. If the baseline or change assessment is unreliable, set dataQuality to insufficient. With a reliable baseline, early-season dataQuality is partial, not automatically insufficient. For every fixture and team, research: current-season form; last 5 and last 10; relevant home/away records; goals scored and conceded; supported team-level market hit rates where evidence exists; shots, shots on target, corners and cards where available; opponent strength; credible team news; fixture congestion; managerial changes; and sourced xG where available. Record shots, shots on target, corners, cards and xG in optionalMetrics. Use team-level evidence only.
-
-Set ResearchPack.generatedAt to the actual UTC time at which you complete the research response. Set each source retrievedAt to its actual UTC retrieval time. Every source retrievedAt must be no later than ResearchPack.generatedAt and must be within ${maximumSourceAgeHours} hours of import/validation.
-
-Every evidence claim or populated evidence area must reference sourceIds declared in sources. Each source needs a unique ID, a direct HTTPS source URL, a non-empty title, and an ISO UTC retrieval timestamp. Prefer credible primary or official sources and cross-check conflicts.
-
-Current-season evidence takes priority. Older seasons are secondary context only and must never override material squad or manager changes. Wherever evidence is unavailable, conflicting, or cannot be sourced, use null or the schema's "unknown" value as applicable. Never invent, estimate, infer, or backfill statistics; mark dataQuality "insufficient" where warranted. Do not omit a supplied fixture.
-
-Prohibited content: odds; bookmaker prices; implied probability; payouts; bookmaker or tipster links; value claims; stake advice; player-specific markets; tipster opinions; predictions; selections; confidence grades; and accumulator suggestions. Include no player-specific evidence and no betting advice. Output only the JSON object, with no prose, commentary, or Markdown fences outside it.`;
+Use team-level evidence only. Dedicated corners, cards, shots, and shots-on-target market evidence must never be inferred from goals. Exclude player markets, automated collection, predictions, selections, prices, bookmaker content, implied probability, expected value, payouts, links, and stake advice. Prefer primary sources, cross-check contradictions, and mark fixture dataQuality insufficient when core evidence is absent. Set actual UTC generatedAt/retrievedAt values and output JSON only without Markdown.`
 }
 export function parseAndValidateResearchPack(
   input: string,

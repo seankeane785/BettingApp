@@ -86,3 +86,9 @@ This file is append-only. Add a dated entry after each material change; do not r
 - Released model v1.2.0: legacy/descriptive context has zero penalty, valid caution/material penalties affect only scoped candidates, and historical representativeness is not double counted.
 - Reclassified usable partial evidence as uncertainty capped at Good, retaining every 72%, 62%, 55% and 35% builder threshold and valid no-builder outcomes.
 - Added focused deterministic, regression, compatibility and path-specific validation coverage.
+
+## 2026-09-02 — Current-season benchmark model
+
+- Added ResearchPack v1.3 with sourced current-season competition benchmarks and no prior-season evidence contract.
+- Released deterministic FormFirst Model v1.3.0 with explicit empirical-Bayes smoothing, market-specific candidate/opponent joins, scoped context, insufficiency audits, and evidence-use traces.
+- Updated validation, prompt generation, React presentation, focused tests, and model documentation while retaining legacy schemas and saved snapshots.

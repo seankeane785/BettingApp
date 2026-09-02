@@ -102,3 +102,7 @@ Require `currentSeasonForm`, `marketHitRates` and `optionalMetrics` containers f
 **Status:** Accepted — 2026-09-02
 
 ResearchPack v1.2 separates descriptive caveats from direct candidate penalties and requires explicit home/away/both scope. Historical representativeness is the sole historical-weight reduction mechanism; its evidence cannot be reused for a penalty without distinct current evidence. Legacy context is descriptive under model v1.2. `usable_partial` expresses uncertainty, uses normal probability tiers capped at Good, and remains subject to unchanged builder thresholds and correlation rules.
+
+## 2026-09-02 — Current-season benchmark evidence (v1.3)
+
+**Decision:** Replace mandatory previous-season snapshots with sourced current-season competition benchmarks and opponent evidence. Apply the explicit four-fixture empirical-Bayes prior and market-specific weights documented in `SCORING_MODEL.md`; omit unavailable optional components rather than manufacturing neutral values. Preserve v1.0–v1.2 snapshots without recomputation.
