@@ -67,9 +67,7 @@
     "competition": {
       "enum": [
         "Premier League",
-        "Championship",
-        "League One",
-        "League Two"
+        "Championship"
       ]
     },
     "sourceIds": {

@@ -42,3 +42,9 @@ Dependencies were present for Stage 5 and lint, tests and build passed. npm stil
 - Saved history exists only in the current browser and can be lost if site data is cleared. There is no remote backup, sync, account or automatic pruning.
 - Browser privacy settings, unavailable localStorage and storage quota limits can prevent saves or updates; the UI reports these conditions without deleting existing valid history.
 - Results are manual records only. Builder outcomes are not derived from leg outcomes because external settlement rules may differ.
+
+
+## Supported-competition compatibility
+
+- FormFirst now supports exactly Premier League and Championship. Previously stored or exported League One/League Two runs are incompatible and cannot be opened, analysed, re-exported or imported. The application reports the validation error and deliberately leaves browser storage untouched; users must retain or remove that data themselves.
+- Generated prompts remain a manual ChatGPT Search hand-off. FormFirst does not verify whether ChatGPT followed the embedded contract until the returned JSON is pasted and validated.

@@ -66,3 +66,10 @@ Focused tests cover research gating, deterministic exact-fixture prompts, requir
 Focused Vitest coverage now exercises complete snapshot creation, validation at persistence boundaries, in-memory save/list/load, malformed storage retention, duplicate rejection, deterministic complete export, strict import rejection, immutable manual outcome updates and JSON export/import round trips. Manual browser review should additionally confirm keyboard-accessible save/history/import/export/result controls and that opening history leaves unsaved current inputs intact.
 
 Stage 7 automated verification passed on 2026-09-01: `npm run lint`, `npm test -- --run` (6 files, 42 tests), and `npm run build`. All schemas and samples passed `python3 -m json.tool`; `git diff --check` passed.
+
+
+## Supported competitions and self-contained prompts (2026-09-01)
+
+Focused coverage verifies Premier League and Championship acceptance; League One and League Two rejection in FixturePack, standalone ResearchPack, saved-run import validation and untouched browser restoration; and complete deterministic fixture/research prompt contracts, criteria, fixture identities, evidence tasks, sourcing/freshness rules and prohibited-content instructions.
+
+`npm test -- --run` passed (6 files, 52 tests) and `npm run build` passed (Vite production bundle, 25 modules transformed).

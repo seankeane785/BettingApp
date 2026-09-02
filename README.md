@@ -1,6 +1,6 @@
 # FormFirst
 
-FormFirst is a local-first browser tool for structured, deterministic team-level analysis of fixtures in the Premier League, Championship, League One and League Two. It supports a manual ChatGPT copy/paste workflow for people who may later place selections manually with Paddy Power. FormFirst never connects to Paddy Power or any betting account.
+FormFirst is a local-first browser tool for structured, deterministic team-level analysis of fixtures in the Premier League and Championship. It supports a manual ChatGPT copy/paste workflow for people who may later place selections manually with Paddy Power. FormFirst never connects to Paddy Power or any betting account.
 
 ## Version 1 guardrails
 
@@ -37,7 +37,7 @@ Three Draft 2020-12 contracts define the manual, local-only data boundary: `Fixt
 
 ## Stage 3 fixture workflow
 
-Choose an explicit date and one or more supported competitions, generate a deterministic prompt, and use it in ChatGPT Search manually. Paste the single JSON object returned into FormFirst to validate and preview FixturePack v1 fixtures. Nothing is fetched or persisted by the app, and empty scheduled-fixture days are valid.
+Choose an explicit date and one or both supported competitions (Premier League and Championship), generate a deterministic prompt, and use it in ChatGPT Search manually. Paste the single JSON object returned into FormFirst to validate and preview FixturePack v1 fixtures. Nothing is fetched or persisted by the app, and empty scheduled-fixture days are valid.
 
 ## Stage 4 research workflow
 
@@ -53,4 +53,4 @@ Validated, non-synthetic inputs can now be deliberately analysed with explicit p
 
 ## Stage 7 local saved history
 
-A generated analysis is stored only after **Save current analysis** is selected. SavedAnalysisRun v1 keeps the complete fixture/research inputs, model settings and output as an immutable snapshot; manual builder and leg outcomes remain separate. History stays in this browser, has no remote sync, and may be lost when browser site data is cleared. Complete validated JSON exports can be downloaded and real-data SavedAnalysisRun v1 exports can be imported back into local history.
+A generated analysis is stored only after **Save current analysis** is selected. SavedAnalysisRun v1 keeps the complete fixture/research inputs, model settings and output as an immutable snapshot; manual builder and leg outcomes remain separate. History stays in this browser, has no remote sync, and may be lost when browser site data is cleared. Complete validated JSON exports can be downloaded and real-data SavedAnalysisRun v1 exports can be imported back into local history. League One and League Two payloads, including legacy browser records, are rejected as incompatible without deleting stored data.

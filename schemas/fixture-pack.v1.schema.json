@@ -11,7 +11,7 @@
     "fixtures": {"type": "array", "items": {"$ref": "#/$defs/fixture"}}
   },
   "$defs": {
-    "competition": {"enum": ["Premier League", "Championship", "League One", "League Two"]},
+    "competition": {"enum": ["Premier League", "Championship"]},
     "fixture": {"type": "object", "additionalProperties": false, "required": ["fixtureId", "competition", "homeTeam", "awayTeam", "kickOff"], "properties": {
       "fixtureId": {"type": "string", "minLength": 1, "pattern": "^[A-Za-z0-9._-]+$"}, "competition": {"$ref": "#/$defs/competition"},
       "homeTeam": {"type": "string", "minLength": 1}, "awayTeam": {"type": "string", "minLength": 1},

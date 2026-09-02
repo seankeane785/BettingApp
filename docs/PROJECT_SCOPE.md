@@ -2,7 +2,7 @@
 
 ## Purpose
 
-FormFirst is a local-first browser tool for deterministic, team-level analysis across the Premier League, Championship, League One and League Two. Users manually copy fixture and evidence material between FormFirst and ChatGPT. There are no APIs, scraping or automatic collection.
+FormFirst is a local-first browser tool for deterministic, team-level analysis across the Premier League and Championship. Users manually copy fixture and evidence material between FormFirst and ChatGPT. There are no APIs, scraping or automatic collection.
 
 The tool is intended only to support analysis before a user manually places anything with Paddy Power. It must never connect to Paddy Power, a bookmaker integration or a betting account.
 

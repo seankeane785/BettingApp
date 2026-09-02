@@ -1,4 +1,4 @@
-export const SUPPORTED_COMPETITIONS = ['Premier League', 'Championship', 'League One', 'League Two'] as const
+export const SUPPORTED_COMPETITIONS = ['Premier League', 'Championship'] as const
 export type Competition = (typeof SUPPORTED_COMPETITIONS)[number]
 export interface KickOff { utc: string; localDate: string; localTime: string; timezone: 'Europe/London' }
 export interface Fixture { fixtureId: string; competition: Competition; homeTeam: string; awayTeam: string; kickOff: KickOff }

@@ -77,3 +77,10 @@ Store a SavedAnalysisRun v1 only on explicit request, as one complete validated 
 **Status:** Accepted — 2026-09-01
 
 Use a versioned localStorage collection behind a small adapter. Validate before every write and after every read/import; reject duplicates and unsafe synthetic imports without repair. Do not sync, prune or silently discard records.
+
+
+## D-015 — Two-competition boundary and self-contained hand-offs
+
+**Status:** Accepted — 2026-09-01
+
+Support exactly Premier League and Championship throughout runtime types, schemas, prompts, validation and persistence. Reject League One and League Two payloads at every manual, import and browser-hydration boundary without repair or deletion. Generated fixture and research hand-offs embed their complete v1 contracts so ChatGPT needs no prior FormFirst context.
