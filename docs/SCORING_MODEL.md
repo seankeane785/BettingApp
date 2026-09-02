@@ -25,3 +25,7 @@ Scoped current candidate penalties remain 10 points for caution and 30 for mater
 
 ## Evidence coverage and AnalysisPack
 AnalysisPack changes acquisition and validation, not scoring. Candidate evidence, required opponent support, mandatory venue evidence, and an exact market-key/threshold benchmark remain gates. Dedicated corner, card, shot, and shot-on-target evidence is never inferred from goal evidence. “Unavailable” describes missing evidence rather than a negative forecast.
+
+## Specialist evidence acquisition boundary
+
+Research requests seek dedicated current-season threshold hit rates for total/team corners, total/team cards, team shots, and team shots on target, plus required opponent allowance/support and exact same-key/same-threshold competition benchmarks. The scoring model is unchanged: it does not infer these records from goals, possession, generic averages, xG alone, narrative reporting, fouls, or referee averages. Manual availability cannot create evidence, probabilities, confidence, or candidates.

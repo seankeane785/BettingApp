@@ -49,8 +49,30 @@ export function validateResearchPack(value: unknown, fixturePack?: FixturePack, 
   if (!freshnessValid) errors.push(issue('invalid_freshness_settings', '$', 'Freshness settings or validation time are invalid.'))
   else if (freshness && generatedAtValid && Date.parse(v.generatedAt as string) > Date.parse(validationTime)) errors.push(issue('future_generated_at', '$.generatedAt', 'ResearchPack generatedAt is later than the import validation time.'))
   if (v.dataStatus !== 'synthetic' && v.dataStatus !== 'real') errors.push(issue('invalid_data_status', '$.dataStatus', 'Data status must be synthetic or real.')); else if (v.dataStatus === 'synthetic') warnings.push(issue('synthetic_data', '$.dataStatus', 'Synthetic test data must not be used for real analysis.'))
-  const sources = Array.isArray(v.sources) ? v.sources : []; if (!sources.length) errors.push(issue('missing_sources', '$.sources', 'At least one source is required.')); const sourceIds = new Set<string>(); sources.forEach((s, i) => { const declaredId = record(s) && typeof s.sourceId === 'string' && s.sourceId.length > 0 ? s.sourceId : undefined; if (declaredId) { if (sourceIds.has(declaredId)) errors.push(issue('duplicate_source', `$.sources[${i}].sourceId`, 'Source IDs must be unique.')); sourceIds.add(declaredId) } if (!record(s) || !declaredId || typeof s.title !== 'string' || !s.title || typeof s.url !== 'string' || !/^https:\/\/[^\s]+$/i.test(s.url) || !utcTimestamp(s.retrievedAt)) errors.push(issue('invalid_source', `$.sources[${i}]`, 'Source requires ID, title, HTTPS URL and valid ISO UTC retrieval timestamp.')); else { if (generatedAtValid && Date.parse(s.retrievedAt) > Date.parse(v.generatedAt as string)) errors.push(issue('source_after_generated_at', `$.sources[${i}].retrievedAt`, 'Source retrieval timestamp is later than ResearchPack generatedAt.')); if (freshness && freshnessValid && Date.parse(s.retrievedAt) > Date.parse(validationTime)) errors.push(issue('future_source', `$.sources[${i}].retrievedAt`, 'Source retrieval timestamp is later than the import validation time.')); if (freshness && freshnessValid && Date.parse(validationTime) - Date.parse(s.retrievedAt) > Math.min(freshness.maximumAgeHours, 24) * 3_600_000) errors.push(issue('stale_source', `$.sources[${i}].retrievedAt`, 'Source exceeds the configured maximum age at import validation time.')) } })
-  if (v.schemaVersion === '1.4.0') sources.forEach((s, i) => { if (record(s) && typeof s.sourceId === 'string' && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(s.sourceId)) errors.push(issue('invalid_source_id', `$.sources[${i}].sourceId`, 'ResearchPack v1.4 source IDs must use kebab-case.')) })
+  const sources = Array.isArray(v.sources) ? v.sources : []
+  if (!sources.length) errors.push(issue('missing_sources', '$.sources', 'At least one source is required.'))
+  const sourceIds = new Set<string>()
+  sources.forEach((s, i) => {
+    const path = `$.sources[${i}]`
+    if (!record(s)) { errors.push(issue('invalid_source_type', path, 'Source must be an object.')); return }
+    if ('id' in s) errors.push(issue('unsupported_source_id_field', `${path}.id`, 'Source must use sourceId; id is not supported.'))
+    for (const key of Object.keys(s)) if (!['sourceId', 'url', 'title', 'retrievedAt'].includes(key) && key !== 'id') errors.push(issue('unexpected_source_field', `${path}.${key}`, `Unexpected source field: ${key}.`))
+    const declaredId = typeof s.sourceId === 'string' && s.sourceId.length > 0 ? s.sourceId : undefined
+    if (!declaredId) errors.push(issue('missing_source_id', `${path}.sourceId`, 'Source requires a non-empty sourceId.'))
+    else {
+      if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(declaredId)) errors.push(issue('invalid_source_id', `${path}.sourceId`, 'sourceId must match ^[a-z0-9]+(?:-[a-z0-9]+)*$ (lowercase kebab-case).'))
+      if (sourceIds.has(declaredId)) errors.push(issue('duplicate_source', `${path}.sourceId`, 'Source IDs must be unique.'))
+      sourceIds.add(declaredId)
+    }
+    if (typeof s.url !== 'string' || !/^https:\/\/[^\s]+$/i.test(s.url)) errors.push(issue('invalid_source_url', `${path}.url`, 'Source URL must be a valid HTTPS URL.'))
+    if (typeof s.title !== 'string' || !s.title.trim()) errors.push(issue('invalid_source_title', `${path}.title`, 'Source title must be a non-empty string.'))
+    if (!utcTimestamp(s.retrievedAt)) errors.push(issue('invalid_source_timestamp', `${path}.retrievedAt`, 'Source retrievedAt must be a valid ISO 8601 UTC timestamp ending in Z.'))
+    else {
+      if (generatedAtValid && Date.parse(s.retrievedAt) > Date.parse(v.generatedAt as string)) errors.push(issue('source_after_generated_at', `${path}.retrievedAt`, 'Source retrieval timestamp is later than ResearchPack generatedAt.'))
+      if (freshness && freshnessValid && Date.parse(s.retrievedAt) > Date.parse(validationTime)) errors.push(issue('future_source', `${path}.retrievedAt`, 'Source retrieval timestamp is later than the import validation time.'))
+      if (freshness && freshnessValid && Date.parse(validationTime) - Date.parse(s.retrievedAt) > Math.min(freshness.maximumAgeHours, 24) * 3_600_000) errors.push(issue('stale_source', `${path}.retrievedAt`, 'Source exceeds the configured maximum age at import validation time.'))
+    }
+  })
   if (v.schemaVersion === '1.3.0' || v.schemaVersion === '1.4.0') {
     const benchmarks = Array.isArray(v.competitionBenchmarks) ? v.competitionBenchmarks : []
     if (!benchmarks.length) errors.push(issue('missing_competition_benchmark', '$.competitionBenchmarks', 'ResearchPack 1.3 requires current-season competition benchmarks.'))

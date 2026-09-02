@@ -112,3 +112,7 @@ ResearchPack v1.4 distinguishes selectable `candidate_market` evidence from `sup
 
 ## Decision: AnalysisPack v1 envelope
 Use a thin versioned envelope around FixturePack v1.0.0 and ResearchPack v1.4.0. Keep the nested contracts and scoring pipeline unchanged, enforce exact fixture cardinality/identity, and retain legacy imports. v1.4 source identifiers are kebab-case to make generated citations predictable.
+
+## D-013 — One source identity and explicit specialist discovery
+
+Research sources use `sourceId` exclusively, constrained to lowercase kebab-case, with HTTPS, a non-empty title, and a UTC `retrievedAt` ending in `Z`. `id` is rejected with migration guidance. Manual research requests prioritise dedicated current-season specialist threshold records, opponent support, and exact competition benchmarks; unavailable evidence is never inferred. Availability dropdowns remain settlement/availability metadata only.
