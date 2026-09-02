@@ -1,0 +1,749 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://formfirst.local/schemas/research-pack.v1.2.schema.json",
+  "title": "ResearchPack v1.2",
+  "description": "Source-backed team evidence with scoped, explicitly applied candidate context.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "packName",
+    "schemaVersion",
+    "fixturePackRef",
+    "generatedAt",
+    "dataStatus",
+    "sources",
+    "fixtures"
+  ],
+  "properties": {
+    "packName": {
+      "const": "ResearchPack v1"
+    },
+    "schemaVersion": {
+      "const": "1.2.0"
+    },
+    "fixturePackRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schemaVersion",
+        "fixtureDate"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0.0"
+        },
+        "fixtureDate": {
+          "type": "string",
+          "format": "date"
+        }
+      }
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "dataStatus": {
+      "enum": [
+        "synthetic",
+        "real"
+      ]
+    },
+    "sources": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/source"
+      }
+    },
+    "fixtures": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/researchFixture"
+      }
+    }
+  },
+  "$defs": {
+    "competition": {
+      "enum": [
+        "Premier League",
+        "Championship"
+      ]
+    },
+    "sourceIds": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sourceId",
+        "url",
+        "title",
+        "retrievedAt"
+      ],
+      "properties": {
+        "sourceId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "retrievedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "metric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "value",
+        "sourceIds"
+      ],
+      "properties": {
+        "value": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "sourceIds": {
+          "$ref": "#/$defs/sourceIds"
+        }
+      }
+    },
+    "form": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "summary",
+        "lastFive",
+        "lastTen",
+        "homeOrAway",
+        "goalsScored",
+        "goalsConceded",
+        "sourceIds"
+      ],
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "lastFive": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "lastTen": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "homeOrAway": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "goalsScored": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "goalsConceded": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "sourceIds": {
+          "$ref": "#/$defs/sourceIds"
+        }
+      }
+    },
+    "teamEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "currentSeasonForm",
+        "marketHitRates",
+        "optionalMetrics",
+        "currentSeasonLeagueMatches",
+        "historicalMarketHitRates",
+        "historicalRepresentativeness"
+      ],
+      "properties": {
+        "currentSeasonForm": {
+          "$ref": "#/$defs/form"
+        },
+        "marketHitRates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "marketKey",
+              "marketGroup",
+              "selectionLabel",
+              "teamSide",
+              "threshold",
+              "sampleSize",
+              "hits",
+              "recentSampleSize",
+              "recentHits",
+              "venueSampleSize",
+              "venueHits",
+              "underlyingSupportPercent",
+              "sourceIds"
+            ],
+            "properties": {
+              "marketKey": {
+                "type": "string",
+                "pattern": "^[a-z0-9_]+$",
+                "minLength": 1
+              },
+              "marketGroup": {
+                "enum": [
+                  "match_result",
+                  "double_chance",
+                  "draw_no_bet",
+                  "both_teams_to_score",
+                  "total_goals",
+                  "team_goals",
+                  "team_to_score",
+                  "clean_sheet",
+                  "total_corners",
+                  "team_corners",
+                  "total_cards",
+                  "team_cards",
+                  "team_shots",
+                  "team_shots_on_target"
+                ]
+              },
+              "selectionLabel": {
+                "type": "string",
+                "minLength": 1
+              },
+              "teamSide": {
+                "enum": [
+                  "home",
+                  "away",
+                  "both",
+                  "match"
+                ]
+              },
+              "threshold": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "sampleSize": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "hits": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "recentSampleSize": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "recentHits": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "venueSampleSize": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 1
+              },
+              "venueHits": {
+                "type": [
+                  "integer",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "underlyingSupportPercent": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "minimum": 0,
+                "maximum": 100
+              },
+              "sourceIds": {
+                "$ref": "#/$defs/sourceIds"
+              }
+            }
+          }
+        },
+        "optionalMetrics": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "shots": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/metric"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "shotsOnTarget": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/metric"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "corners": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/metric"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "cards": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/metric"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "xG": {
+              "anyOf": [
+                {
+                  "$ref": "#/$defs/metric"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          }
+        },
+        "currentSeasonLeagueMatches": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "historicalMarketHitRates": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "marketKey",
+              "marketGroup",
+              "selectionLabel",
+              "teamSide",
+              "threshold",
+              "evidencePeriod",
+              "competitionScope",
+              "sampleSize",
+              "hits",
+              "venueRelevance",
+              "sourceIds"
+            ],
+            "properties": {
+              "marketKey": {
+                "type": "string",
+                "pattern": "^[a-z0-9_]+$",
+                "minLength": 1
+              },
+              "marketGroup": {
+                "enum": [
+                  "match_result",
+                  "double_chance",
+                  "draw_no_bet",
+                  "both_teams_to_score",
+                  "total_goals",
+                  "team_goals",
+                  "team_to_score",
+                  "clean_sheet",
+                  "total_corners",
+                  "team_corners",
+                  "total_cards",
+                  "team_cards",
+                  "team_shots",
+                  "team_shots_on_target"
+                ]
+              },
+              "selectionLabel": {
+                "type": "string",
+                "minLength": 1
+              },
+              "teamSide": {
+                "enum": [
+                  "home",
+                  "away",
+                  "both",
+                  "match"
+                ]
+              },
+              "threshold": {
+                "type": [
+                  "number",
+                  "null"
+                ],
+                "minimum": 0
+              },
+              "sampleSize": {
+                "type": "integer",
+                "minimum": 1
+              },
+              "hits": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "sourceIds": {
+                "$ref": "#/$defs/sourceIds"
+              },
+              "evidencePeriod": {
+                "enum": [
+                  "previous_season_final_5_league",
+                  "previous_season_final_10_league",
+                  "previous_season_venue_league"
+                ]
+              },
+              "competitionScope": {
+                "$ref": "#/$defs/competition"
+              },
+              "venueRelevance": {
+                "enum": [
+                  "all",
+                  "home",
+                  "away"
+                ]
+              }
+            }
+          }
+        },
+        "historicalRepresentativeness": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "reason",
+            "sourceIds"
+          ],
+          "properties": {
+            "status": {
+              "enum": [
+                "representative",
+                "reduced",
+                "unassessable"
+              ]
+            },
+            "reason": {
+              "enum": [
+                "none",
+                "promoted_or_relegated",
+                "material_manager_change",
+                "material_squad_disruption",
+                "unknown"
+              ]
+            },
+            "sourceIds": {
+              "$ref": "#/$defs/sourceIds"
+            }
+          }
+        }
+      }
+    },
+    "context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "impact",
+        "detail",
+        "sourceIds"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "known",
+            "unknown"
+          ]
+        },
+        "detail": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "sourceIds": {
+          "$ref": "#/$defs/sourceIds"
+        },
+        "impact": {
+          "enum": [
+            "positive",
+            "neutral",
+            "caution",
+            "material",
+            "unknown"
+          ]
+        }
+      }
+    },
+    "researchFixture": {
+      "type": "object",
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "dataQuality": {
+                "const": "complete"
+              }
+            },
+            "required": [
+              "dataQuality"
+            ]
+          },
+          "then": {
+            "properties": {
+              "homeEvidence": {
+                "properties": {
+                  "marketHitRates": {
+                    "minItems": 1
+                  }
+                }
+              },
+              "awayEvidence": {
+                "properties": {
+                  "marketHitRates": {
+                    "minItems": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
+      "required": [
+        "fixtureId",
+        "competition",
+        "homeTeam",
+        "awayTeam",
+        "homeEvidence",
+        "awayEvidence",
+        "opponentStrength",
+        "teamNews",
+        "fixtureCongestion",
+        "managerialContext",
+        "reasonsFor",
+        "reasonsAgainst",
+        "dataQuality"
+      ],
+      "properties": {
+        "fixtureId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "competition": {
+          "$ref": "#/$defs/competition"
+        },
+        "homeTeam": {
+          "type": "string",
+          "minLength": 1
+        },
+        "awayTeam": {
+          "type": "string",
+          "minLength": 1
+        },
+        "homeEvidence": {
+          "$ref": "#/$defs/teamEvidence"
+        },
+        "awayEvidence": {
+          "$ref": "#/$defs/teamEvidence"
+        },
+        "opponentStrength": {
+          "$ref": "#/$defs/context"
+        },
+        "teamNews": {
+          "$ref": "#/$defs/scopedContext"
+        },
+        "fixtureCongestion": {
+          "$ref": "#/$defs/scopedContext"
+        },
+        "managerialContext": {
+          "$ref": "#/$defs/scopedContext"
+        },
+        "reasonsFor": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "reasonsAgainst": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "dataQuality": {
+          "enum": [
+            "complete",
+            "partial",
+            "insufficient"
+          ]
+        }
+      }
+    },
+    "scopedContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "impact",
+        "scope",
+        "application",
+        "detail",
+        "sourceIds"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "known",
+            "unknown"
+          ]
+        },
+        "detail": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "sourceIds": {
+          "$ref": "#/$defs/sourceIds"
+        },
+        "impact": {
+          "enum": [
+            "positive",
+            "neutral",
+            "caution",
+            "material",
+            "unknown"
+          ]
+        },
+        "scope": {
+          "enum": [
+            "home",
+            "away",
+            "both"
+          ]
+        },
+        "application": {
+          "enum": [
+            "descriptive_only",
+            "candidate_penalty"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "application": {
+                "const": "candidate_penalty"
+              }
+            },
+            "required": [
+              "application"
+            ]
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "const": "known"
+              },
+              "impact": {
+                "enum": [
+                  "caution",
+                  "material"
+                ]
+              },
+              "detail": {
+                "type": "string",
+                "minLength": 1
+              },
+              "sourceIds": {
+                "$ref": "#/$defs/sourceIds"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "anyOf": [
+              {
+                "properties": {
+                  "status": {
+                    "const": "unknown"
+                  }
+                }
+              },
+              {
+                "properties": {
+                  "impact": {
+                    "enum": [
+                      "unknown",
+                      "neutral",
+                      "positive"
+                    ]
+                  }
+                }
+              }
+            ]
+          },
+          "then": {
+            "properties": {
+              "application": {
+                "const": "descriptive_only"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

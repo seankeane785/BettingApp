@@ -45,7 +45,7 @@ After accepting a non-empty, non-synthetic FixturePack, FormFirst can generate a
 
 ## Stage 5 analysis model
 
-`FormFirst Model v1.0.0` adds a deterministic, current-season-first domain engine for transparent team-level candidate scoring, confidence and data-quality grading, explicit market availability, duplicate/correlation controls and exhaustive High-probability/Balanced builder search. Results remain domain data only until Stage 6; the UI displays only an analysis-ready status. See [`docs/SCORING_MODEL.md`](docs/SCORING_MODEL.md).
+`FormFirst Model v1.2.0` provides a deterministic, current-season-first domain engine for transparent team-level candidate scoring, confidence and data-quality grading, explicit market availability, duplicate/correlation controls and exhaustive High-probability/Balanced builder search. Results remain domain data only until Stage 6; the UI displays only an analysis-ready status. See [`docs/SCORING_MODEL.md`](docs/SCORING_MODEL.md).
 
 ## Stage 6 analysis results
 
@@ -57,4 +57,8 @@ A generated analysis is stored only after **Save current analysis** is selected.
 
 ## Early-season evidence
 
-Before five current-season league matches, ResearchPack v1.1 requires separate current league data and source-backed previous-season final-five, final-ten and venue league baselines. The deterministic model blends them conservatively and permits no qualifying builder when history or material-change assessment is unreliable. Manual market verification remains separate from statistical confidence.
+Before five current-season league matches, ResearchPack v1.2 requires separate current league data and source-backed previous-season final-five, final-ten and venue league baselines. The deterministic model blends them conservatively and permits no qualifying builder when history or material-change assessment is unreliable. Manual market verification remains separate from statistical confidence.
+
+## Scoped context calibration
+
+ResearchPack v1.2 distinguishes visible descriptive caveats from current, sourced, candidate-specific penalties. Legacy v1.0/v1.1 fixture context is descriptive when analysed by model v1.2. Partial evidence represents uncertainty, not insufficiency: it may reach Good and the unchanged Balanced threshold, but is capped below Strong and cannot enter the High-probability builder. Existing thresholds remain unchanged, and “No qualifying builder today” remains valid.

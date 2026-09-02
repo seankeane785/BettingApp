@@ -57,7 +57,7 @@ export function buildResearchPrompt(
   );
   return `This research task is only for Premier League and/or Championship fixtures. Use ChatGPT Search to research every fixture and both teams listed below.
 
-Return only one strict JSON object representing ResearchPack v1 with schema version 1.1.0. Include every supplied fixture even when its dataQuality is "insufficient" or evidence is unknown. Do not add fields.
+Return only one strict JSON object representing ResearchPack v1 with schema version 1.2.0. Include every supplied fixture even when its dataQuality is "insufficient" or evidence is unknown. Do not add fields.
 
 Maximum source age: ${maximumSourceAgeHours} hours
 Set fixturePackRef.schemaVersion to "${pack.schemaVersion}", fixturePackRef.fixtureDate to "${pack.fixtureDate}", and dataStatus to "real".
@@ -68,7 +68,7 @@ ${JSON.stringify(fixtures, null, 2)}
 ResearchPack v1 complete output contract (all shown fields are required; no additional fields):
 {
   "packName": "ResearchPack v1",
-  "schemaVersion": "1.1.0",
+  "schemaVersion": "1.2.0",
   "fixturePackRef": {"schemaVersion": "1.0.0", "fixtureDate": "YYYY-MM-DD"},
   "generatedAt": "ISO 8601 UTC date-time ending in Z, with optional fractional seconds",
   "dataStatus": "real",
@@ -128,13 +128,15 @@ TEAM_EVIDENCE is exactly:
 }
 For partial or insufficient fixture data, marketHitRates may be [] when no supported team-level market evidence is available, and optionalMetrics may be {} when no optional metrics are sourced. Never invent evidence to populate either field.
 
-CONTEXT_EVIDENCE is exactly:
+For opponentStrength, CONTEXT_EVIDENCE is exactly:
 {
   "status": "known" or "unknown",
   "impact": "positive" or "neutral" or "caution" or "material" or "unknown",
   "detail": string or null,
   "sourceIds": [one or more source IDs]
 }
+For teamNews, fixtureCongestion, and managerialContext add required "scope": "home" or "away" or "both" and "application": "descriptive_only" or "candidate_penalty". Scope identifies the team-to-score candidate directly supported for a penalty, not merely a club mentioned by the source. A candidate_penalty requires known, current, team-level, candidate-relevant evidence; caution or material impact; non-empty detail; and valid source IDs. Unknown, neutral, positive, generic, conflicting, or non-directional context must be descriptive_only. Descriptive context remains visible but has zero direct numerical penalty. Never reuse evidence supporting historicalRepresentativeness as a direct candidate penalty without distinct present-tense evidence.
+
 Use status "unknown", impact "unknown", null detail, and valid supporting source IDs when a source establishes that the information is unavailable or conflicting.
 
 When currentSeasonLeagueMatches is fewer than five, keep current-season league form separate and require the previous season final 5 and final 10 competitive league windows plus the relevant previous-season home/away league sample. Supply separate historicalMarketHitRates records for every supported market and each evidence period; never merge or sum overlapping windows. Exclude friendlies and cup matches. Assess promotion/relegation, material manager change and material squad disruption, using reduced or unassessable representativeness as warranted. If the baseline or change assessment is unreliable, set dataQuality to insufficient. With a reliable baseline, early-season dataQuality is partial, not automatically insufficient. For every fixture and team, research: current-season form; last 5 and last 10; relevant home/away records; goals scored and conceded; supported team-level market hit rates where evidence exists; shots, shots on target, corners and cards where available; opponent strength; credible team news; fixture congestion; managerial changes; and sourced xG where available. Record shots, shots on target, corners, cards and xG in optionalMetrics. Use team-level evidence only.

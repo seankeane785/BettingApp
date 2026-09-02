@@ -3,7 +3,7 @@ import fixtureSample from '../../samples/fixture-pack.v1.sample.json'
 import researchSample from '../../samples/research-pack.v1.sample.json'
 import savedRunSample from '../../samples/saved-analysis-run.v1.sample.json'
 import { validateFixturePack, validateResearchPack, validateSavedAnalysisRun } from './validation'
-import type { FixturePack } from './types'
+import type { FixturePack, ResearchPack } from './types'
 
 const copy = <T>(value: T): T => structuredClone(value)
 
@@ -79,4 +79,10 @@ describe('SavedAnalysisRun validation', () => {
     ;(inputs.researchPack.fixtures as Record<string, unknown>[])[0].competition = competition
     expect(validateSavedAnalysisRun(value).errors.some(e => e.code === 'unsupported_competition')).toBe(true)
   })
+})
+
+describe('ResearchPack v1.2 scoped context validation', () => {
+  const pack = () => { const value = structuredClone(researchSample) as unknown as ResearchPack; value.schemaVersion = '1.2.0'; for (const key of ['teamNews','fixtureCongestion','managerialContext'] as const) Object.assign(value.fixtures[0][key], { scope: 'home', application: 'descriptive_only' }); for (const team of [value.fixtures[0].homeEvidence, value.fixtures[0].awayEvidence]) { team.currentSeasonLeagueMatches = 6; team.historicalMarketHitRates = []; team.historicalRepresentativeness = { status: 'representative', reason: 'none', sourceIds: ['synthetic-source-1'] } } return value }
+  it.each([['scope', undefined, 'invalid_context_scope'], ['scope', 'match', 'invalid_context_scope'], ['application', undefined, 'invalid_context_application'], ['application', 'generic', 'invalid_context_application']] as const)('rejects invalid %s with a path-specific error', (field, invalid, code) => { const value = pack(); Object.assign(value.fixtures[0].teamNews, { [field]: invalid }); const result = validateResearchPack(value); expect(result.errors.some(e => e.code === code && e.path === `$.fixtures[0].teamNews.${field}`)).toBe(true) })
+  it('rejects invalid candidate-penalty combinations and reused representativeness sources', () => { const value = pack(); Object.assign(value.fixtures[0].managerialContext, { application: 'candidate_penalty', status: 'unknown', impact: 'neutral', detail: null }); let result = validateResearchPack(value); expect(result.errors.some(e => e.code === 'invalid_candidate_penalty' && e.path === '$.fixtures[0].managerialContext')).toBe(true); Object.assign(value.fixtures[0].managerialContext, { status: 'known', impact: 'material', detail: 'Current candidate-specific impact.' }); result = validateResearchPack(value); expect(result.errors.some(e => e.code === 'reused_representativeness_evidence' && e.path.endsWith('.sourceIds'))).toBe(true) })
 })

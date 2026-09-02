@@ -89,3 +89,7 @@ Verification passed: `npm run lint`; `npm test` (6 files, 67 tests); `npm run bu
 ## Early-season regression coverage
 
 Model tests cover two-match rejection without history, conservative blending with complete period-labelled league history, reduced weight after promotion/material change, source-backed context penalties, unknown-context neutrality, verification independence, and unchanged builder/non-early-season rules. Schema validation covers the v1.1 contract while v1.0.0 remains readable.
+
+## Scoped-context scoring correction (2026-09-02)
+
+Focused tests cover home/away material isolation, descriptive squad and manager context, exact 10/30 point policies, reduced historical weighting without double counting, audited 89% and 57% early-season blends, 70% reliability and 76% venue support, partial-evidence Good capping, unchanged builder gates, legacy snapshot compatibility, v1.2 determinism, and path-specific scope/application/penalty validation.
