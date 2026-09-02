@@ -196,7 +196,6 @@
         },
         "marketHitRates": {
           "type": "array",
-          "minItems": 1,
           "items": {
             "type": "object",
             "additionalProperties": false,
@@ -305,13 +304,6 @@
         "optionalMetrics": {
           "type": "object",
           "additionalProperties": false,
-          "required": [
-            "shots",
-            "shotsOnTarget",
-            "corners",
-            "cards",
-            "xG"
-          ],
           "properties": {
             "shots": {
               "anyOf": [
@@ -406,6 +398,38 @@
     "researchFixture": {
       "type": "object",
       "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "dataQuality": {
+                "const": "complete"
+              }
+            },
+            "required": [
+              "dataQuality"
+            ]
+          },
+          "then": {
+            "properties": {
+              "homeEvidence": {
+                "properties": {
+                  "marketHitRates": {
+                    "minItems": 1
+                  }
+                }
+              },
+              "awayEvidence": {
+                "properties": {
+                  "marketHitRates": {
+                    "minItems": 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      ],
       "required": [
         "fixtureId",
         "competition",

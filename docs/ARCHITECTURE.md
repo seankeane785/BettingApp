@@ -14,7 +14,7 @@ Later stages should keep input explicit and manual, validation deterministic, an
 
 ## Stage 2 contracts and validation
 
-Manual JSON crosses the application boundary through versioned Draft 2020-12 contracts in `schemas/`. Domain types and dependency-light validators in `src/domain/` first verify identity and structure, then enforce the Premier League/Championship competition boundary, fixture relationships, evidence sources, explicit synthetic status, prohibited-content controls and freshness. Validation is local and performs no fetches. Research import injects its validation time, enforces the 24-hour source-age ceiling, requires UTC timestamps, and checks source retrieval against the pack's completion time. The injected time makes boundary tests deterministic; accepted packs and saved analysis snapshots are subsequently evaluated from their stored inputs rather than the live clock.
+Manual JSON crosses the application boundary through versioned Draft 2020-12 contracts in `schemas/`. Domain types and dependency-light validators in `src/domain/` first verify identity and structure, then enforce the Premier League/Championship competition boundary, fixture relationships, evidence sources, explicit synthetic status, prohibited-content controls and freshness. Validation is local and performs no fetches. Research import injects its validation time, enforces the 24-hour source-age ceiling, accepts standard UTC timestamps ending in `Z` with or without fractional seconds, and checks source retrieval against both the pack's completion time and import time. Declared source IDs remain available to citation validation even when another field in their source object is malformed, so one structural root cause does not cascade into false unknown-citation errors. The injected time makes boundary tests deterministic; accepted packs and saved analysis snapshots are subsequently evaluated from their stored inputs rather than the live clock.
 
 ## Stage 3 fixture workflow
 
@@ -22,7 +22,7 @@ Manual JSON crosses the application boundary through versioned Draft 2020-12 con
 
 ## Stage 4 research workflow
 
-`src/domain/researchWorkflow.ts` sits between the accepted FixturePack and the shared ResearchPack validator. It owns deterministic prompt generation, workflow gating, strict paste parsing and evidence-summary helpers. The prompt contains no precomputed retrieval cutoff: it asks ChatGPT to record actual UTC retrieval and completion times. React supplies explicit freshness settings and the validator captures the current time only at import; all transient workflow state remains in memory.
+`src/domain/researchWorkflow.ts` sits between the accepted FixturePack and the shared ResearchPack validator. It owns deterministic prompt generation, workflow gating, strict paste parsing and evidence-summary helpers. The prompt contains no precomputed retrieval cutoff: it asks ChatGPT to record actual UTC retrieval and completion times. It also permits empty market-hit-rate and optional-metric containers for partial or insufficient evidence rather than encouraging fabricated records. React supplies explicit freshness settings and the validator captures the current time only at import; all transient workflow state remains in memory.
 
 ## Stage 5 analysis domain
 

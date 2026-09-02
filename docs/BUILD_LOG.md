@@ -66,3 +66,11 @@ This file is append-only. Add a dated entry after each material change; do not r
 - Changed import freshness validation to use an injectable validation time, enforce a 24-hour ceiling, reject sources after pack completion and reject future pack completion with no clock-skew tolerance.
 - Preserved saved-run determinism by keeping live-clock freshness at the initial ResearchPack import boundary only, and added focused regression tests and documentation.
 - Verification passed: `npm run lint`; `npm test -- --run` (6 files, 55 tests); `npm run build` (Vite production bundle, 25 modules transformed); `git diff --check`; and ResearchPack schema JSON parsing.
+
+## 2026-09-02 — ResearchPack import validation regressions
+
+- Corrected source validation to accept standard `Z` UTC timestamps with or without fractional seconds and unrestricted non-empty IDs such as `src-pl-results`, while retaining HTTPS, chronology, future-time and 24-hour freshness checks.
+- Prevented malformed declared sources from producing cascading unknown-citation errors, while preserving errors for genuinely undeclared citations.
+- Permitted truthful empty market-hit-rate and optional-metric containers for partial or insufficient fixture evidence; populated market records remain strictly validated and source-backed.
+- Aligned the ResearchPack schema and generated prompt with these rules and added focused import regression coverage.
+- Verification passed: `npm run lint`; `npm test` (6 files, 67 tests); `npm run build` (Vite production bundle, 25 modules transformed); `python3 -m json.tool schemas/research-pack.v1.schema.json`; and `git diff --check`.
