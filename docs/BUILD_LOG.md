@@ -108,3 +108,9 @@ This file is append-only. Add a dated entry after each material change; do not r
 - Restored the canonical `sourceId`-only source contract across ResearchPack v1.4 and nested AnalysisPack validation, with field-specific migration and format errors.
 - Expanded both manual research prompts to prioritise exact current-season corners, cards, shots and shots-on-target candidate, opponent-support and benchmark records without inference.
 - Added regression coverage for multi-source AnalysisPack imports, citation resolution, specialist evidence gates, deterministic replay and availability metadata isolation.
+
+## 2026-09-02 — AnalysisPack source URL validation correction
+
+- Replaced the source URL regular-expression check with platform URL parsing and an explicit HTTPS protocol/non-empty hostname rule.
+- Aligned ResearchPack v1.4 schema and both generated research prompts with absolute HTTPS direct-page URLs without a domain allowlist.
+- Added focused standalone and nested AnalysisPack regression coverage for the reported Sports Mole and FotMob URLs, query/fragment support, rejected malformed URL forms, and exact error paths.

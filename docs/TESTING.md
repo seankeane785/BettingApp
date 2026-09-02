@@ -107,3 +107,7 @@ Focused tests cover combined prompt content, successful pipeline hand-off, neste
 ## Source-contract regression coverage
 
 Validation tests cover canonical standalone and nested sources, multiple kebab-case IDs, `id` migration feedback, underscore rejection at the exact path, and citation lookup against `sourceId`. Workflow tests assert that generated requests state the exact contract and prioritise dedicated corners, cards, shots, and shots-on-target evidence. Existing model tests cover missing specialist gates, forbidden proxy inference, availability isolation, and deterministic saved-run validation/replay.
+
+## Source URL validation regression coverage
+
+Focused validation covers the five reported Sports Mole and FotMob direct HTTPS pages, an HTTPS URL with query and fragment, and a complete AnalysisPack containing all five sources. Negative cases cover HTTP, protocol-relative, relative, malformed, whitespace-only, and non-string values, including exact standalone and nested error paths. All JSON schemas are parsed and compiled locally in addition to the standard lint, unit, build, and whitespace gates.
