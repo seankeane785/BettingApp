@@ -114,3 +114,10 @@ This file is append-only. Add a dated entry after each material change; do not r
 - Replaced the source URL regular-expression check with platform URL parsing and an explicit HTTPS protocol/non-empty hostname rule.
 - Aligned ResearchPack v1.4 schema and both generated research prompts with absolute HTTPS direct-page URLs without a domain allowlist.
 - Added focused standalone and nested AnalysisPack regression coverage for the reported Sports Mole and FotMob URLs, query/fragment support, rejected malformed URL forms, and exact error paths.
+
+## 2026-09-02 — Live-browser AnalysisPack URL validation correction
+
+- Made the single ResearchPack source URL validator explicitly browser-safe by using `new globalThis.URL(value)` with the required HTTPS protocol and non-empty hostname checks.
+- Exercised the complete AnalysisPack import path used by `App.tsx`, preserving and asserting the runtime string type and exact value of all five reported source URLs before handing the validated pack to analysis.
+- Added exact nested malformed-URL path coverage and a browser-standard `globalThis.URL` runtime contract check while retaining standalone ResearchPack validation coverage.
+- Verification passed: `npm run lint`; `npm test` (10 files, 121 tests); `npm run build` (Vite production bundle, 26 modules transformed); source and bundle searches confirmed one `globalThis.URL` validator and no `URL.parse` or `URL.canParse`; and `git diff --check`.
