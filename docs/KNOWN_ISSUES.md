@@ -72,6 +72,8 @@ The deterministic weighting and smoothing policy has not undergone a documented 
 ## AnalysisPack v1 limitations
 The combined prompt still depends on manual ChatGPT Search execution and credible current-season sources. Some specialist statistics may be unavailable; FormFirst deliberately reports that evidence gap and does not synthesize a candidate. The legacy workflow remains more verbose but compatible.
 
+The recommended AnalysisPack import does not repair or migrate input. It parses the current textarea contents once and validates that exact object; after pulling a workflow fix, restart Vite and hard-refresh as documented in `README.md`. The footer marker can be used to distinguish the current import-integrity build from a stale browser client.
+
 ## Specialist source availability
 
 Dedicated current-season threshold statistics for corners, cards, team shots, and team shots on target may still be unavailable from credible manually researched sources. The generated request now makes this search a priority, but FormFirst intentionally leaves the market unavailable if exact candidate evidence, required opponent support, or a same-key/same-threshold benchmark cannot be sourced. Availability dropdowns cannot repair these evidence gaps.

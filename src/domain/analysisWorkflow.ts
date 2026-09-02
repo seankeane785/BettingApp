@@ -1,5 +1,11 @@
 import { SUPPORTED_COMPETITIONS, type AnalysisPack, type Competition, type FreshnessOptions, type ValidationResult } from './types'
-import { parseJson, validateAnalysisPack } from './validation'
+import { validateAnalysisPack } from './validation'
+
+export interface AnalysisPackImport {
+  validation: ValidationResult<AnalysisPack>
+  fixturePack?: AnalysisPack['fixturePack']
+  researchPack?: AnalysisPack['researchPack']
+}
 
 export function buildAnalysisPackPrompt(date: string, competitions: Competition[]): string {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) throw new Error('Select a valid date before generating a prompt.')
@@ -28,8 +34,20 @@ CONTEXT: teamNews, fixtureCongestion and managerialContext require scope and app
 The nested objects must conform exactly to schemas/fixture-pack.v1.schema.json and schemas/research-pack.v1.4.schema.json. Output the AnalysisPack JSON object only.`
 }
 
+export function importAnalysisPack(input: string, freshness: FreshnessOptions, validationTime: string = new Date().toISOString()): AnalysisPackImport {
+  if (/^\s*```/.test(input) || !/^\s*\{[\s\S]*\}\s*$/.test(input)) return { validation: { valid: false, errors: [{ code: 'wrapped_json', path: '$', message: 'Paste only the JSON object; prose and Markdown fences are not accepted.' }], warnings: [] } }
+  let parsedValue: unknown
+  try {
+    parsedValue = JSON.parse(input)
+  } catch {
+    return { validation: { valid: false, errors: [{ code: 'invalid_json', path: '$', message: 'Input is not valid JSON.' }], warnings: [] } }
+  }
+
+  const validation = validateAnalysisPack(parsedValue, freshness, validationTime)
+  if (!validation.valid || !validation.data) return { validation }
+  return { validation, fixturePack: validation.data.fixturePack, researchPack: validation.data.researchPack }
+}
+
 export function parseAndValidateAnalysisPack(input: string, freshness: FreshnessOptions, validationTime: string = new Date().toISOString()): ValidationResult<AnalysisPack> {
-  if (/^\s*```/.test(input) || !/^\s*\{[\s\S]*\}\s*$/.test(input)) return { valid: false, errors: [{ code: 'wrapped_json', path: '$', message: 'Paste only the JSON object; prose and Markdown fences are not accepted.' }], warnings: [] }
-  const parsed = parseJson(input)
-  return parsed.valid ? validateAnalysisPack(parsed.data, freshness, validationTime) : parsed as ValidationResult<AnalysisPack>
+  return importAnalysisPack(input, freshness, validationTime).validation
 }
