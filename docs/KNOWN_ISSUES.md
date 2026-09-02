@@ -23,6 +23,8 @@ The local dependency tree does not contain the `vitest` executable. On 2026-09-0
 
 The former fixed prompt-time freshness cutoff has been removed. Freshness is now checked once at ResearchPack import using the captured validation time; previously accepted and saved runs are intentionally not aged against the live clock, preserving reproducible historical analysis.
 
+ResearchPack partial and insufficient evidence may truthfully contain an empty `marketHitRates` array and empty `optionalMetrics` object. This is intentional, not a missing-data validator defect; populated market records still require complete source-backed structure. A complete-quality fixture still requires market hit-rate evidence.
+
 ## Stage 5 limitations
 
 - Fixed scoring and correlation factors are transparent conservative rules, not learned causal estimates. Missing venue or underlying evidence lowers quality and uses a documented midpoint.

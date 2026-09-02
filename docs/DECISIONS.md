@@ -86,3 +86,9 @@ Use a versioned localStorage collection behind a small adapter. Validate before 
 **Status:** Accepted — 2026-09-01
 
 Support exactly Premier League and Championship throughout runtime types, schemas, prompts, validation and persistence. Reject League One and League Two payloads at every manual, import and browser-hydration boundary without repair or deletion. Generated fixture and research hand-offs embed their complete v1 contracts so ChatGPT needs no prior FormFirst context.
+
+## D-016 — Truthful incomplete research evidence
+
+**Status:** Accepted — 2026-09-02
+
+Require `currentSeasonForm`, `marketHitRates` and `optionalMetrics` containers for both teams, while permitting `marketHitRates: []` and `optionalMetrics: {}` for partial or insufficient fixtures. Populated market records remain strictly structured and source-backed. Citation lookup uses every non-empty ID declared by a source object, even if that source has another structural error, so the validator reports the actionable source error without misleading citation cascades.

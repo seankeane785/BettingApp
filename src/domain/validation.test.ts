@@ -33,6 +33,22 @@ describe('ResearchPack validation', () => {
   const freshness = { referenceTimestamp: '2026-09-01T10:00:00Z', maximumAgeHours: 24 }
   const validationTime = '2026-09-01T10:10:00Z'
   it('accepts the source-backed synthetic sample with a warning', () => { const result = validateResearchPack(researchSample, fixtures, freshness, validationTime); expect(result.valid).toBe(true); expect(result.warnings.some(w => w.code === 'synthetic_data')).toBe(true) })
+  it('accepts the imported NBC Sports source object while it is fresh', () => {
+    const value = JSON.parse(JSON.stringify(researchSample).replaceAll('synthetic-source-1', 'src-pl-results'))
+    value.generatedAt = '2026-09-02T16:38:00Z'
+    value.sources[0] = {
+      sourceId: 'src-pl-results',
+      url: 'https://www.nbcsports.com/soccer/news/premier-league-schedule-for-2026-27-season-released',
+      title: 'Premier League 2026-27 schedule and results',
+      retrievedAt: '2026-09-02T16:37:20Z',
+    }
+    expect(validateResearchPack(value, undefined, freshness, '2026-09-02T16:40:00Z').valid).toBe(true)
+  })
+  it.each(['2026-09-01T09:30:00Z', '2026-09-01T09:30:00.000Z'])('accepts ISO UTC source timestamps in the %s form', (retrievedAt) => {
+    const value = copy(researchSample); value.sources[0].retrievedAt = retrievedAt
+    expect(validateResearchPack(value, fixtures, freshness, validationTime).valid).toBe(true)
+  })
+  it('accepts hyphenated source IDs', () => { const value = copy(researchSample); expect(value.sources[0].sourceId).toContain('-'); expect(validateResearchPack(value, fixtures, freshness, validationTime).valid).toBe(true) })
   it('rejects fixture mismatches', () => { const value = copy(researchSample); value.fixtures[0].homeTeam = 'Wrong Fictional Team'; expect(validateResearchPack(value, fixtures).errors.some(e => e.code === 'fixture_mismatch')).toBe(true) })
   it.each(['League One', 'League Two'])('rejects standalone legacy %s research', (competition) => {
     const value = copy(researchSample) as unknown as Record<string, unknown>
@@ -43,8 +59,14 @@ describe('ResearchPack validation', () => {
   it('rejects prohibited content and names its category', () => { const value = copy(researchSample); value.fixtures[0].reasonsFor = ['Contains expected value']; const result = validateResearchPack(value); expect(result.errors.some(e => e.code === 'prohibited_content' && e.message.includes('expected value'))).toBe(true) })
   it('rejects a source older than 24 hours at the injected validation time', () => { const result = validateResearchPack(researchSample, fixtures, freshness, '2026-09-02T09:30:00.001Z'); expect(result.errors.some(e => e.code === 'stale_source')).toBe(true) })
   it('rejects a source later than ResearchPack generatedAt', () => { const value = copy(researchSample); value.sources[0].retrievedAt = '2026-09-01T10:05:01Z'; expect(validateResearchPack(value, fixtures, freshness, validationTime).errors.some(e => e.code === 'source_after_generated_at')).toBe(true) })
+  it.each(['2026-09-01T09:30:00', '2026-02-30T09:30:00Z'])('rejects the invalid source timestamp %s', (retrievedAt) => { const value = copy(researchSample); value.sources[0].retrievedAt = retrievedAt; expect(validateResearchPack(value, fixtures, freshness, validationTime).errors.some(e => e.code === 'invalid_source')).toBe(true) })
+  it('rejects a source timestamp after the import validation time', () => { const value = copy(researchSample); value.generatedAt = '2026-09-01T10:11:00Z'; value.sources[0].retrievedAt = '2026-09-01T10:10:01Z'; expect(validateResearchPack(value, fixtures, freshness, validationTime).errors.some(e => e.code === 'future_source')).toBe(true) })
   it('rejects future-dated ResearchPack generation', () => { const value = copy(researchSample); value.generatedAt = '2026-09-01T10:10:00.001Z'; expect(validateResearchPack(value, fixtures, freshness, validationTime).errors.some(e => e.code === 'future_generated_at')).toBe(true) })
   it('requires ISO UTC timestamps for research generation and retrieval', () => { const generated = copy(researchSample); generated.generatedAt = '2026-09-01T10:05:00+01:00'; expect(validateResearchPack(generated, fixtures, freshness, validationTime).errors.some(e => e.path === '$.generatedAt' && e.code === 'invalid_timestamp')).toBe(true); const retrieved = copy(researchSample); retrieved.sources[0].retrievedAt = '2026-09-01T09:30:00+01:00'; expect(validateResearchPack(retrieved, fixtures, freshness, validationTime).errors.some(e => e.code === 'invalid_source')).toBe(true) })
+  it.each(['partial', 'insufficient'] as const)('accepts empty unavailable evidence for %s fixtures', (dataQuality) => { const value = copy(researchSample); value.fixtures[0].dataQuality = dataQuality; for (const team of [value.fixtures[0].homeEvidence, value.fixtures[0].awayEvidence]) { team.marketHitRates = []; team.optionalMetrics = {} as typeof team.optionalMetrics } expect(validateResearchPack(value, fixtures, freshness, validationTime).valid).toBe(true) })
+  it('rejects invalid populated market hit-rate records', () => { const value = copy(researchSample); value.fixtures[0].homeEvidence.marketHitRates[0].sampleSize = 1.5; expect(validateResearchPack(value, fixtures, freshness, validationTime).errors.some(e => e.code === 'invalid_market_evidence')).toBe(true) })
+  it('does not cascade an invalid declared source into unknown citation errors', () => { const value = copy(researchSample); value.sources[0].url = 'http://example.com'; const result = validateResearchPack(value, fixtures, freshness, validationTime); expect(result.errors.some(e => e.code === 'invalid_source')).toBe(true); expect(result.errors.some(e => e.code === 'unknown_source_citation')).toBe(false) })
+  it('still rejects genuinely undeclared source citations', () => { const value = copy(researchSample); value.fixtures[0].homeEvidence.currentSeasonForm.sourceIds = ['not-declared']; expect(validateResearchPack(value, fixtures, freshness, validationTime).errors.some(e => e.code === 'unknown_source_citation')).toBe(true) })
 })
 
 describe('SavedAnalysisRun validation', () => {

@@ -79,3 +79,9 @@ Focused coverage verifies Premier League and Championship acceptance; League One
 Focused prompt tests assert that no fixed retrieval upper bound is embedded and that actual UTC completion/retrieval instructions remain present. Validation tests inject the import time and cover valid post-prompt retrieval, stale sources, sources after `generatedAt`, future `generatedAt`, UTC formatting and the existing valid sample path.
 
 Verification passed: `npm run lint`; `npm test -- --run` (6 files, 55 tests); `npm run build` (25 modules transformed); `git diff --check`; and `python3 -m json.tool schemas/research-pack.v1.schema.json`.
+
+## ResearchPack import validation regressions (2026-09-02)
+
+Focused cases cover the reported NBC Sports source object, UTC timestamps with and without milliseconds, hyphenated IDs, invalid/stale/future timestamps, truthful empty evidence containers for partial and insufficient fixtures, strict populated market records, malformed declared-source error de-duplication, genuinely undeclared citations and the existing valid sample/import paths.
+
+Verification passed: `npm run lint`; `npm test` (6 files, 67 tests); `npm run build` (25 modules transformed); `python3 -m json.tool schemas/research-pack.v1.schema.json`; and `git diff --check`.

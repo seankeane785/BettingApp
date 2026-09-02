@@ -70,9 +70,9 @@ ResearchPack v1 complete output contract (all shown fields are required; no addi
   "packName": "ResearchPack v1",
   "schemaVersion": "1.0.0",
   "fixturePackRef": {"schemaVersion": "1.0.0", "fixtureDate": "YYYY-MM-DD"},
-  "generatedAt": "ISO 8601 date-time",
+  "generatedAt": "ISO 8601 UTC date-time ending in Z, with optional fractional seconds",
   "dataStatus": "real",
-  "sources": [{"sourceId": "unique non-empty string", "url": "HTTPS URL", "title": "non-empty string", "retrievedAt": "ISO 8601 date-time"}],
+  "sources": [{"sourceId": "unique non-empty string", "url": "HTTPS URL", "title": "non-empty string", "retrievedAt": "ISO 8601 UTC date-time ending in Z, with optional fractional seconds"}],
   "fixtures": [{
     "fixtureId": "copied fixture ID",
     "competition": "Premier League" or "Championship",
@@ -118,6 +118,7 @@ TEAM_EVIDENCE is exactly:
   }],
   "optionalMetrics": {"metric_name": {"value": non-negative number or null, "sourceIds": [one or more source IDs]} or null}
 }
+For partial or insufficient fixture data, marketHitRates may be [] when no supported team-level market evidence is available, and optionalMetrics may be {} when no optional metrics are sourced. Never invent evidence to populate either field.
 
 CONTEXT_EVIDENCE is exactly:
 {
