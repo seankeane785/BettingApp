@@ -111,3 +111,7 @@ Validation tests cover canonical standalone and nested sources, multiple kebab-c
 ## Source URL validation regression coverage
 
 Focused validation covers the five reported Sports Mole and FotMob direct HTTPS pages, an HTTPS URL with query and fragment, and a complete AnalysisPack containing all five sources. Negative cases cover HTTP, protocol-relative, relative, malformed, whitespace-only, and non-string values, including exact standalone and nested error paths. All JSON schemas are parsed and compiled locally in addition to the standard lint, unit, build, and whitespace gates.
+
+## Live-browser AnalysisPack URL regression coverage
+
+The public `parseAndValidateAnalysisPack` workflow used by `App.tsx` now verifies that all five reported URLs remain strings with their exact input values after JSON parsing, validates them through the shared `globalThis.URL` helper, and hands the complete pack to the deterministic analysis pipeline. A malformed first source asserts the exact `$.researchPack.sources[0].url` error path. A focused runtime contract test also verifies the browser-standard `globalThis.URL` constructor exposes the required `https:` protocol and hostname behaviour. Production verification includes searching source and generated assets for stale or duplicate URL validators.

@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import fixtureSample from '../../samples/fixture-pack.v1.sample.json'
 import researchSample from '../../samples/research-pack.v1.sample.json'
 import savedRunSample from '../../samples/saved-analysis-run.v1.sample.json'
-import { validateFixturePack, validateResearchPack, validateSavedAnalysisRun } from './validation'
+import { isAbsoluteHttpsUrl, validateFixturePack, validateResearchPack, validateSavedAnalysisRun } from './validation'
 import type { FixturePack, ResearchPack } from './types'
 
 const copy = <T>(value: T): T => structuredClone(value)
@@ -10,9 +10,19 @@ const validSourceUrls = [
   'https://www.sportsmole.co.uk/football/championship/results.html',
   'https://www.sportsmole.co.uk/football/premier-league/results.html',
   'https://www.fotmob.com/matches/wolverhampton-wanderers-vs-birmingham-city/2goyts',
-  'https://www.fotmob.com/matches/everton-vs-manchester-united/2ynv4k',
+  'https://www.fotmob.com/matches/everton-vs-man-united/2ynv4k',
   'https://www.fotmob.com/matches/chelsea-vs-arsenal/2rhhrp',
 ]
+
+describe('browser URL runtime contract', () => {
+  it('uses the browser-standard globalThis.URL constructor required by source validation', () => {
+    expect(typeof globalThis.URL).toBe('function')
+    const parsed = new globalThis.URL(validSourceUrls[0])
+    expect(parsed.protocol).toBe('https:')
+    expect(parsed.hostname).toBe('www.sportsmole.co.uk')
+    expect(isAbsoluteHttpsUrl(validSourceUrls[0])).toBe(true)
+  })
+})
 
 describe('FixturePack validation', () => {
   it('accepts the synthetic sample', () => expect(validateFixturePack(fixtureSample).valid).toBe(true))
