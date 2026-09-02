@@ -35,3 +35,7 @@ Manual JSON crosses the application boundary through versioned Draft 2020-12 con
 ## Stage 7 local persistence
 
 `src/domain/savedRuns.ts` owns snapshot creation, strict hydration, versioned collection storage, deterministic serialization/import and immutable outcome updates. It depends on a minimal `StorageAdapter`, enabling in-memory tests. `src/domain/savedRunBrowser.ts` contains the small UUID/download browser adapters. React explicitly invokes these services; it never recomputes a historical run or replaces current unsaved workflow state when a snapshot is opened. The only persistent key is `formfirst.saved-analysis-runs.v1`; malformed or competition-incompatible collections are reported and retained rather than repaired, restored or pruned. Import and export use the same strict validation boundary.
+
+## ResearchPack v1.1 and early-season scoring
+
+The import boundary reads both v1.0.0 and v1.1.0. Version 1.1 adds period-labelled league market observations and a sourced historical-representativeness assessment. The pure model selects the final-ten baseline, uses the venue record only for its venue component, and reduces historical weight for material discontinuity.

@@ -52,3 +52,5 @@ Dependencies were present for Stage 5 and lint, tests and build passed. npm stil
 
 - FormFirst now supports exactly Premier League and Championship. Previously stored or exported League One/League Two runs are incompatible and cannot be opened, analysed, re-exported or imported. The application reports the validation error and deliberately leaves browser storage untouched; users must retain or remove that data themselves.
 - Generated prompts remain a manual ChatGPT Search hand-off. FormFirst does not verify whether ChatGPT followed the embedded contract until the returned JSON is pasted and validated.
+
+- Historical representativeness is a manual, source-backed assessment; when it cannot be assessed the deterministic model deliberately returns insufficient evidence and may produce no builder.

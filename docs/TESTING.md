@@ -85,3 +85,7 @@ Verification passed: `npm run lint`; `npm test -- --run` (6 files, 55 tests); `n
 Focused cases cover the reported NBC Sports source object, UTC timestamps with and without milliseconds, hyphenated IDs, invalid/stale/future timestamps, truthful empty evidence containers for partial and insufficient fixtures, strict populated market records, malformed declared-source error de-duplication, genuinely undeclared citations and the existing valid sample/import paths.
 
 Verification passed: `npm run lint`; `npm test` (6 files, 67 tests); `npm run build` (25 modules transformed); `python3 -m json.tool schemas/research-pack.v1.schema.json`; and `git diff --check`.
+
+## Early-season regression coverage
+
+Model tests cover two-match rejection without history, conservative blending with complete period-labelled league history, reduced weight after promotion/material change, source-backed context penalties, unknown-context neutrality, verification independence, and unchanged builder/non-early-season rules. Schema validation covers the v1.1 contract while v1.0.0 remains readable.

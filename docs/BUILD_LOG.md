@@ -74,3 +74,8 @@ This file is append-only. Add a dated entry after each material change; do not r
 - Permitted truthful empty market-hit-rate and optional-metric containers for partial or insufficient fixture evidence; populated market records remain strictly validated and source-backed.
 - Aligned the ResearchPack schema and generated prompt with these rules and added focused import regression coverage.
 - Verification passed: `npm run lint`; `npm test` (6 files, 67 tests); `npm run build` (Vite production bundle, 25 modules transformed); `python3 -m json.tool schemas/research-pack.v1.schema.json`; and `git diff --check`.
+
+## 2026-09-02 — Early-season evidence policy and model v1.1.0
+
+- Added ResearchPack v1.1.0 period-labelled previous-season competitive league evidence while retaining v1.0.0 import support.
+- Added conservative early-season blending, representativeness reductions, corrected source-backed context penalties, prompt guidance, validation and focused regression coverage.

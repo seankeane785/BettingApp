@@ -17,3 +17,7 @@ ResearchPack v1's schema contract and version remain unchanged. At the manual im
 ## Stage 7 SavedAnalysisRun v1
 
 SavedAnalysisRun v1 is the sole persistence/export format. It contains complete immutable FixturePack and ResearchPack inputs, explicit deterministic settings, validation summary, exact candidates and both builder outcomes. Its separate `results` object contains only manually recorded builder/leg states and timestamps. Runtime validation additionally cross-validates embedded packs, exact selected-leg result coverage and safe run IDs. Synthetic samples remain contract fixtures and are rejected by the history import workflow.
+
+## ResearchPack v1.1.0
+
+`research-pack.v1.1.schema.json` adds `currentSeasonLeagueMatches`, separate period-labelled `historicalMarketHitRates`, and `historicalRepresentativeness`. Every historical statistic declares its league competition, period, sample, hits, venue relevance and sources. The runtime reader continues to accept valid v1.0.0 packs for deterministic saved-run replay.

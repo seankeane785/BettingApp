@@ -92,3 +92,7 @@ Support exactly Premier League and Championship throughout runtime types, schema
 **Status:** Accepted — 2026-09-02
 
 Require `currentSeasonForm`, `marketHitRates` and `optionalMetrics` containers for both teams, while permitting `marketHitRates: []` and `optionalMetrics: {}` for partial or insufficient fixtures. Populated market records remain strictly structured and source-backed. Citation lookup uses every non-empty ID declared by a source object, even if that source has another structural error, so the validator reports the actionable source error without misleading citation cascades.
+
+## ADR: Period-separated early-season evidence
+
+**Decision:** Before five league matches, blend add-one-adjusted current form with the previous season final-ten league baseline using observed sample weights capped at ten; halve historical weight for a sourced material discontinuity. Require final-five and venue records as separate checks, never aggregate overlapping windows. Missing or unassessable history is insufficient. Unknown context and manual market verification do not penalise confidence.
