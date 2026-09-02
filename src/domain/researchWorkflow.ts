@@ -45,6 +45,7 @@ export function buildResearchPrompt(
     );
   const settingsError = validateFreshnessSettings(settings);
   if (settingsError) throw new Error(settingsError);
+  const maximumSourceAgeHours = Math.min(settings.maximumAgeHours, 24);
   const fixtures = pack.fixtures.map(
     ({ fixtureId, competition, homeTeam, awayTeam, kickOff }) => ({
       fixtureId,
@@ -58,8 +59,7 @@ export function buildResearchPrompt(
 
 Return only one strict JSON object representing ResearchPack v1 with schema version 1.0.0. Include every supplied fixture even when its dataQuality is "insufficient" or evidence is unknown. Do not add fields.
 
-Deterministic freshness reference timestamp: ${settings.referenceTimestamp}
-Maximum source age: ${settings.maximumAgeHours} hours
+Maximum source age: ${maximumSourceAgeHours} hours
 Set fixturePackRef.schemaVersion to "${pack.schemaVersion}", fixturePackRef.fixtureDate to "${pack.fixtureDate}", and dataStatus to "real".
 
 Fixtures to research (copy all identity and kick-off fields accurately; ResearchPack fixture entries copy fixtureId, competition, homeTeam and awayTeam):
@@ -130,7 +130,9 @@ Use status "unknown", impact "unknown", null detail, and valid supporting source
 
 For every fixture and team, research: current-season form; last 5 and last 10; relevant home/away records; goals scored and conceded; supported team-level market hit rates where evidence exists; shots, shots on target, corners and cards where available; opponent strength; credible team news; fixture congestion; managerial changes; and sourced xG where available. Record shots, shots on target, corners, cards and xG in optionalMetrics. Use team-level evidence only.
 
-Every evidence claim or populated evidence area must reference sourceIds declared in sources. Each source needs a unique ID, a direct HTTPS source URL, a non-empty title, and an ISO retrieval timestamp. Retrieval timestamps must not be after ${settings.referenceTimestamp} or more than ${settings.maximumAgeHours} hours old. Prefer credible primary or official sources and cross-check conflicts.
+Set ResearchPack.generatedAt to the actual UTC time at which you complete the research response. Set each source retrievedAt to its actual UTC retrieval time. Every source retrievedAt must be no later than ResearchPack.generatedAt and must be within ${maximumSourceAgeHours} hours of import/validation.
+
+Every evidence claim or populated evidence area must reference sourceIds declared in sources. Each source needs a unique ID, a direct HTTPS source URL, a non-empty title, and an ISO UTC retrieval timestamp. Prefer credible primary or official sources and cross-check conflicts.
 
 Current-season evidence takes priority. Older seasons are secondary context only and must never override material squad or manager changes. Wherever evidence is unavailable, conflicting, or cannot be sourced, use null or the schema's "unknown" value as applicable. Never invent, estimate, infer, or backfill statistics; mark dataQuality "insufficient" where warranted. Do not omit a supplied fixture.
 
@@ -140,6 +142,7 @@ export function parseAndValidateResearchPack(
   input: string,
   fixtures: FixturePack,
   settings: FreshnessOptions,
+  validationTime: string = new Date().toISOString(),
 ): ValidationResult<ResearchPack> {
   if (/^\s*```/.test(input) || !/^\s*\{[\s\S]*\}\s*$/.test(input))
     return {
@@ -156,7 +159,7 @@ export function parseAndValidateResearchPack(
     };
   const parsed = parseJson(input);
   if (!parsed.valid) return parsed as ValidationResult<ResearchPack>;
-  return validateResearchPack(parsed.data, fixtures, settings);
+  return validateResearchPack(parsed.data, fixtures, settings, validationTime);
 }
 
 export const evidenceCategories = (

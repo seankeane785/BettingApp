@@ -28,7 +28,7 @@ Use strict JSON Schema Draft 2020-12 documents with stable identifiers, major ve
 
 **Status:** Accepted — 2026-09-01
 
-Validation returns structured errors and warnings rather than throwing. It performs relationship, evidence, source, plausibility and prohibited-content checks locally. Freshness uses a caller-provided reference timestamp and maximum age; validators never read uncontrolled current time or contact external services.
+Validation returns structured errors and warnings rather than throwing. It performs relationship, evidence, source, plausibility and prohibited-content checks locally. Research freshness uses an injected import-validation time and a maximum 24-hour source age; sources cannot postdate `ResearchPack.generatedAt`, and `generatedAt` cannot postdate validation time. There is no clock-skew tolerance. Tests inject a fixed time, while the browser supplies the current time at import. Saved historical analysis remains a stored snapshot and is not re-evaluated against the live clock.
 
 ## D-006 — Empty FixturePack days are valid
 
@@ -47,6 +47,8 @@ Build fixture prompts in a pure TypeScript module from explicit date and competi
 **Status:** Accepted — 2026-09-01
 
 Research is gated on a non-empty, non-synthetic validated FixturePack. Its prompt is a pure function of that pack and explicit freshness settings. Input is validated rather than repaired, and evidence output remains descriptive rather than scored or recommended.
+
+The prompt deliberately contains no fixed freshness-reference timestamp. ChatGPT records the real UTC completion time in `generatedAt` and real UTC retrieval times on sources; import validation, rather than prompt creation, establishes the 24-hour freshness boundary.
 
 ## D-010 — Canonical evidence and transparent model scoring
 

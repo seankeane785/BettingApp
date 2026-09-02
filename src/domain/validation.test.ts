@@ -30,7 +30,9 @@ describe('FixturePack validation', () => {
 
 describe('ResearchPack validation', () => {
   const fixtures = fixtureSample as unknown as FixturePack
-  it('accepts the source-backed synthetic sample with a warning', () => { const result = validateResearchPack(researchSample, fixtures, { referenceTimestamp: '2026-09-01T10:00:00Z', maximumAgeHours: 24 }); expect(result.valid).toBe(true); expect(result.warnings.some(w => w.code === 'synthetic_data')).toBe(true) })
+  const freshness = { referenceTimestamp: '2026-09-01T10:00:00Z', maximumAgeHours: 24 }
+  const validationTime = '2026-09-01T10:10:00Z'
+  it('accepts the source-backed synthetic sample with a warning', () => { const result = validateResearchPack(researchSample, fixtures, freshness, validationTime); expect(result.valid).toBe(true); expect(result.warnings.some(w => w.code === 'synthetic_data')).toBe(true) })
   it('rejects fixture mismatches', () => { const value = copy(researchSample); value.fixtures[0].homeTeam = 'Wrong Fictional Team'; expect(validateResearchPack(value, fixtures).errors.some(e => e.code === 'fixture_mismatch')).toBe(true) })
   it.each(['League One', 'League Two'])('rejects standalone legacy %s research', (competition) => {
     const value = copy(researchSample) as unknown as Record<string, unknown>
@@ -39,7 +41,10 @@ describe('ResearchPack validation', () => {
   })
   it('rejects missing and invalid sources', () => { const missing = { ...copy(researchSample), sources: [] }; expect(validateResearchPack(missing).errors.some(e => e.code === 'missing_sources')).toBe(true); const invalid = copy(researchSample); invalid.sources[0].url = 'http://example.com'; expect(validateResearchPack(invalid).errors.some(e => e.code === 'invalid_source')).toBe(true) })
   it('rejects prohibited content and names its category', () => { const value = copy(researchSample); value.fixtures[0].reasonsFor = ['Contains expected value']; const result = validateResearchPack(value); expect(result.errors.some(e => e.code === 'prohibited_content' && e.message.includes('expected value'))).toBe(true) })
-  it('uses the explicit timestamp for deterministic stale-source checks', () => { const result = validateResearchPack(researchSample, fixtures, { referenceTimestamp: '2026-09-03T10:00:00Z', maximumAgeHours: 24 }); expect(result.errors.some(e => e.code === 'stale_source')).toBe(true) })
+  it('rejects a source older than 24 hours at the injected validation time', () => { const result = validateResearchPack(researchSample, fixtures, freshness, '2026-09-02T09:30:00.001Z'); expect(result.errors.some(e => e.code === 'stale_source')).toBe(true) })
+  it('rejects a source later than ResearchPack generatedAt', () => { const value = copy(researchSample); value.sources[0].retrievedAt = '2026-09-01T10:05:01Z'; expect(validateResearchPack(value, fixtures, freshness, validationTime).errors.some(e => e.code === 'source_after_generated_at')).toBe(true) })
+  it('rejects future-dated ResearchPack generation', () => { const value = copy(researchSample); value.generatedAt = '2026-09-01T10:10:00.001Z'; expect(validateResearchPack(value, fixtures, freshness, validationTime).errors.some(e => e.code === 'future_generated_at')).toBe(true) })
+  it('requires ISO UTC timestamps for research generation and retrieval', () => { const generated = copy(researchSample); generated.generatedAt = '2026-09-01T10:05:00+01:00'; expect(validateResearchPack(generated, fixtures, freshness, validationTime).errors.some(e => e.path === '$.generatedAt' && e.code === 'invalid_timestamp')).toBe(true); const retrieved = copy(researchSample); retrieved.sources[0].retrievedAt = '2026-09-01T09:30:00+01:00'; expect(validateResearchPack(retrieved, fixtures, freshness, validationTime).errors.some(e => e.code === 'invalid_source')).toBe(true) })
 })
 
 describe('SavedAnalysisRun validation', () => {
