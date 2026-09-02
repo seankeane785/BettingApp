@@ -6,6 +6,13 @@ import { validateFixturePack, validateResearchPack, validateSavedAnalysisRun } f
 import type { FixturePack, ResearchPack } from './types'
 
 const copy = <T>(value: T): T => structuredClone(value)
+const validSourceUrls = [
+  'https://www.sportsmole.co.uk/football/championship/results.html',
+  'https://www.sportsmole.co.uk/football/premier-league/results.html',
+  'https://www.fotmob.com/matches/wolverhampton-wanderers-vs-birmingham-city/2goyts',
+  'https://www.fotmob.com/matches/everton-vs-manchester-united/2ynv4k',
+  'https://www.fotmob.com/matches/chelsea-vs-arsenal/2rhhrp',
+]
 
 describe('FixturePack validation', () => {
   it('accepts the synthetic sample', () => expect(validateFixturePack(fixtureSample).valid).toBe(true))
@@ -56,6 +63,10 @@ describe('ResearchPack validation', () => {
     expect(validateResearchPack(value).errors.some(e => e.code === 'unsupported_competition')).toBe(true)
   })
   it('rejects missing and invalid sources with field-specific errors', () => { const missing = { ...copy(researchSample), sources: [] }; expect(validateResearchPack(missing).errors.some(e => e.code === 'missing_sources')).toBe(true); const invalid = copy(researchSample); invalid.sources[0].url = 'http://example.com'; expect(validateResearchPack(invalid).errors).toContainEqual(expect.objectContaining({ code: 'invalid_source_url', path: '$.sources[0].url' })) })
+  it.each(validSourceUrls)('accepts the absolute HTTPS source URL %s', (url) => { const value = copy(researchSample); value.sources[0].url = url; expect(validateResearchPack(value).errors.filter(error => error.code === 'invalid_source_url')).toEqual([]) })
+  it.each(['http://example.com', '//example.com/path', '/relative/path', 'not-a-url', '   '])('rejects the invalid source URL %s at its exact path', (url) => { const value = copy(researchSample); value.sources[0].url = url; expect(validateResearchPack(value).errors.filter(error => error.code === 'invalid_source_url')).toEqual([expect.objectContaining({ path: '$.sources[0].url' })]) })
+  it('accepts an HTTPS source URL with a query and fragment', () => { const value = copy(researchSample); value.sources[0].url = 'https://stats.example.com/match-centre?id=123&view=form#results'; expect(validateResearchPack(value).errors.some(error => error.code === 'invalid_source_url')).toBe(false) })
+  it('rejects a non-string source URL only at that source URL path', () => { const value = copy(researchSample) as unknown as { sources: Array<{ url: unknown }> }; value.sources[0].url = 42; expect(validateResearchPack(value).errors.filter(error => error.code === 'invalid_source_url')).toEqual([expect.objectContaining({ path: '$.sources[0].url' })]) })
   it('accepts the canonical Championship results source object', () => { const value = JSON.parse(JSON.stringify(researchSample).replaceAll('synthetic-source-1', 'src-ch-results')); value.sources[0] = { sourceId: 'src-ch-results', url: 'https://www.sportsmole.co.uk/football/championship/results.html', title: 'Championship 2026-27 Results', retrievedAt: '2026-09-02T19:20:00Z' }; value.generatedAt = '2026-09-02T19:20:00Z'; expect(validateResearchPack(value).valid).toBe(true) })
   it('rejects id with the migration message and does not treat it as a citation ID', () => { const value = copy(researchSample) as unknown as Record<string, unknown>; const sources = value.sources as Record<string, unknown>[]; sources[0].id = sources[0].sourceId; delete sources[0].sourceId; const result = validateResearchPack(value); expect(result.errors).toContainEqual(expect.objectContaining({ path: '$.sources[0].id', message: 'Source must use sourceId; id is not supported.' })); expect(result.errors.some(e => e.code === 'unknown_source_citation')).toBe(true) })
   it('rejects underscore source IDs at the exact sourceId path', () => { const value = copy(researchSample); value.sources[0].sourceId = 'src_ch_results'; expect(validateResearchPack(value).errors).toContainEqual(expect.objectContaining({ code: 'invalid_source_id', path: '$.sources[0].sourceId', message: expect.stringContaining('^[a-z0-9]+') })) })

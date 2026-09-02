@@ -9,6 +9,15 @@ const prohibited: [string, RegExp][] = [
 ]
 const issue = (code: string, path: string, message: string): ValidationIssue => ({ code, path, message })
 const record = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value)
+const httpsUrl = (value: unknown): value is string => {
+  if (typeof value !== 'string' || value.length === 0) return false
+  try {
+    const parsed = new URL(value)
+    return parsed.protocol === 'https:' && parsed.hostname.length > 0
+  } catch {
+    return false
+  }
+}
 const timestamp = (value: unknown) => typeof value === 'string' && /T/.test(value) && Number.isFinite(Date.parse(value))
 const utcTimestamp = (value: unknown): value is string => {
   if (typeof value !== 'string') return false
@@ -64,7 +73,7 @@ export function validateResearchPack(value: unknown, fixturePack?: FixturePack, 
       if (sourceIds.has(declaredId)) errors.push(issue('duplicate_source', `${path}.sourceId`, 'Source IDs must be unique.'))
       sourceIds.add(declaredId)
     }
-    if (typeof s.url !== 'string' || !/^https:\/\/[^\s]+$/i.test(s.url)) errors.push(issue('invalid_source_url', `${path}.url`, 'Source URL must be a valid HTTPS URL.'))
+    if (!httpsUrl(s.url)) errors.push(issue('invalid_source_url', `${path}.url`, 'Source URL must be an absolute HTTPS URL with a hostname.'))
     if (typeof s.title !== 'string' || !s.title.trim()) errors.push(issue('invalid_source_title', `${path}.title`, 'Source title must be a non-empty string.'))
     if (!utcTimestamp(s.retrievedAt)) errors.push(issue('invalid_source_timestamp', `${path}.retrievedAt`, 'Source retrievedAt must be a valid ISO 8601 UTC timestamp ending in Z.'))
     else {

@@ -104,8 +104,9 @@
         },
         "url": {
           "type": "string",
+          "minLength": 1,
           "format": "uri",
-          "pattern": "^https://"
+          "pattern": "^[hH][tT][tT][pP][sS]://[^/?#\\s]+(?:[/?#]|$)"
         },
         "title": {
           "type": "string",
