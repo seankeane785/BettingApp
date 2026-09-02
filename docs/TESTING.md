@@ -103,3 +103,7 @@ ResearchPack v1.4 distinguishes selectable `candidate_market` evidence from `sup
 
 ## AnalysisPack checks
 Focused tests cover combined prompt content, successful pipeline hand-off, nested reference/cardinality/duplicate failures, kebab-case source IDs, and non-empty evidence trace labels. Validate all JSON files in `schemas/` in addition to running lint, tests, build, and `git diff --check`.
+
+## Source-contract regression coverage
+
+Validation tests cover canonical standalone and nested sources, multiple kebab-case IDs, `id` migration feedback, underscore rejection at the exact path, and citation lookup against `sourceId`. Workflow tests assert that generated requests state the exact contract and prioritise dedicated corners, cards, shots, and shots-on-target evidence. Existing model tests cover missing specialist gates, forbidden proxy inference, availability isolation, and deterministic saved-run validation/replay.

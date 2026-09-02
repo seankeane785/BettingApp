@@ -35,3 +35,7 @@ ResearchPack v1.4 distinguishes selectable `candidate_market` evidence from `sup
 
 ## AnalysisPack v1
 `analysis-pack.v1.schema.json` is the one-import envelope. It contains exactly FixturePack v1.0.0 and ResearchPack v1.4.0. Runtime validation additionally enforces exact reference date/version, one-to-one fixture identity, source freshness (maximum 24 hours), citation validity, and kebab-case v1.4 source IDs matching `^[a-z0-9]+(?:-[a-z0-9]+)*$`. Older standalone ResearchPack schemas remain supported for saved-run and legacy import compatibility.
+
+## Canonical source object
+
+ResearchPack v1.4, whether imported separately or nested in AnalysisPack v1, declares every source as exactly `{ "sourceId": "non-empty kebab-case string", "url": "HTTPS URL", "title": "non-empty string", "retrievedAt": "ISO 8601 UTC timestamp ending in Z" }`. `sourceId` matches `^[a-z0-9]+(?:-[a-z0-9]+)*$`; `id` and additional source properties are not accepted. Evidence citations contain declared `sourceId` values only.

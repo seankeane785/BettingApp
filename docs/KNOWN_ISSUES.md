@@ -71,3 +71,7 @@ The deterministic weighting and smoothing policy has not undergone a documented 
 
 ## AnalysisPack v1 limitations
 The combined prompt still depends on manual ChatGPT Search execution and credible current-season sources. Some specialist statistics may be unavailable; FormFirst deliberately reports that evidence gap and does not synthesize a candidate. The legacy workflow remains more verbose but compatible.
+
+## Specialist source availability
+
+Dedicated current-season threshold statistics for corners, cards, team shots, and team shots on target may still be unavailable from credible manually researched sources. The generated request now makes this search a priority, but FormFirst intentionally leaves the market unavailable if exact candidate evidence, required opponent support, or a same-key/same-threshold benchmark cannot be sourced. Availability dropdowns cannot repair these evidence gaps.

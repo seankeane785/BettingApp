@@ -113,7 +113,8 @@
         },
         "retrievedAt": {
           "type": "string",
-          "format": "date-time"
+          "format": "date-time",
+          "pattern": "Z$"
         }
       }
     },

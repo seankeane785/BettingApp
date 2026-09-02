@@ -53,3 +53,7 @@ ResearchPack v1.4 distinguishes selectable `candidate_market` evidence from `sup
 
 ## AnalysisPack boundary
 `analysisWorkflow.ts` generates the combined manual-search request and validates `AnalysisPack v1`. Validation delegates to the existing FixturePack and ResearchPack validators, then the UI passes those validated nested objects to the unchanged `analyse` pipeline. Nested validation issues are prefixed with `$.fixturePack` or `$.researchPack`.
+
+## Source boundary and specialist research
+
+The ResearchPack validator is the canonical source boundary for both standalone v1.4 imports and nested AnalysisPack imports. It accepts only `sourceId`, `url`, `title`, and `retrievedAt`, and citation traversal resolves solely through declared kebab-case `sourceId` values. Generated prompts request specialist evidence explicitly, while the unchanged deterministic model continues to enforce candidate, support, and benchmark gates independently of manual availability metadata.

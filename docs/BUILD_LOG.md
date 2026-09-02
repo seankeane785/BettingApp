@@ -102,3 +102,9 @@ This file is append-only. Add a dated entry after each material change; do not r
 - Added nested integrity, freshness, citation and kebab-case source-ID validation while retaining legacy imports.
 - Filtered empty model trace values and added an explicit no-trace fallback without recalculating scoring.
 - Added focused workflow and presentation tests plus schema and product documentation.
+
+## 2026-09-02 — Canonical source contract and specialist research request
+
+- Restored the canonical `sourceId`-only source contract across ResearchPack v1.4 and nested AnalysisPack validation, with field-specific migration and format errors.
+- Expanded both manual research prompts to prioritise exact current-season corners, cards, shots and shots-on-target candidate, opponent-support and benchmark records without inference.
+- Added regression coverage for multi-source AnalysisPack imports, citation resolution, specialist evidence gates, deterministic replay and availability metadata isolation.

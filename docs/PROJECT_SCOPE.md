@@ -36,3 +36,7 @@ ResearchPack v1.4 distinguishes selectable `candidate_market` evidence from `sup
 
 ## AnalysisPack workflow
 The local-only scope includes a manual one-prompt, one-import AnalysisPack workflow for fixture discovery and team-level research. It adds no backend or automated collection. Legacy separate pack imports remain supported. Missing specialist evidence produces unavailable coverage and may validly produce “No qualifying builder today”.
+
+## Research source contract
+
+All current ResearchPack v1.4 sources, including those nested in AnalysisPack v1, use exactly `sourceId`, `url`, `title`, and `retrievedAt`; source IDs are lowercase kebab-case and retrieval timestamps are UTC values ending in `Z`. Specialist research remains manual and must use dedicated current-season team-level records rather than proxies. Market availability settings remain metadata and never generate model inputs.

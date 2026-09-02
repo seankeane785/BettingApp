@@ -68,3 +68,7 @@ ResearchPack v1.4 distinguishes selectable `candidate_market` evidence from `sup
 
 ## One-prompt match research
 Select a Europe/London date and supported competitions, choose **Generate match research request**, run the prompt manually in ChatGPT Search, and import its single `AnalysisPack v1` JSON response. FormFirst validates the nested FixturePack v1.0.0 and ResearchPack v1.4.0 before reusing the existing deterministic analysis pipeline. The former separate imports remain under the legacy/advanced workflow. Specialist markets shown as unavailable indicate missing dedicated evidence, not a negative forecast. ResearchPack v1.4 source IDs use kebab-case.
+
+### Canonical research sources and specialist coverage
+
+ResearchPack v1.4 and the nested AnalysisPack ResearchPack use one strict source shape: `{ "sourceId": "non-empty kebab-case string", "url": "HTTPS URL", "title": "non-empty string", "retrievedAt": "ISO 8601 UTC timestamp ending in Z" }`. The legacy `id` field is not supported. Generated requests explicitly prioritise dedicated current-season corners, cards, team shots and team shots-on-target thresholds, opponent support and exact benchmarks. Missing records leave the market unavailable; manual availability controls never create or alter evidence or candidates.
