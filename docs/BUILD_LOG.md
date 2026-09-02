@@ -127,3 +127,9 @@ This file is append-only. Add a dated entry after each material change; do not r
 - Consolidated the browser's recommended AnalysisPack action on one public import handler that performs one `JSON.parse`, validates that exact object, and returns references to its validated nested packs for the existing analysis state.
 - Added a checked-in raw JSON regression pack containing the five reported URLs and the exact `src-everton-united-fixture` declaration/citations, plus focused preservation, failure-path, citation, and pipeline hand-off tests.
 - Added a non-sensitive workflow build marker and documented the exact Vite restart and browser hard-refresh procedure so stale clients are distinguishable.
+
+## 2026-09-02 — AnalysisPack source URL boundary diagnostics
+
+- Traced the recommended UI import from the controlled textarea through the App handler: input is now trimmed only at its outer boundary, parsed exactly once, and the direct parsed object is validated without URL or source-ID transformation.
+- Added copyable, failure-only `invalid_source_url` diagnostics containing the received JSON value, runtime type, string length, and Unicode code points; successful imports remain unchanged and no console logging was introduced.
+- Added App-handler boundary regressions proving a complex HTTPS URL and the complete reported Everton source object reach validation byte-for-byte unchanged.

@@ -3,6 +3,7 @@ import { analyse, defaultModelSettings } from './analysisModel'
 import rawImportFixture from '../fixtures/analysis-pack-import-regression.json?raw'
 import { buildAnalysisPackPrompt, importAnalysisPack, parseAndValidateAnalysisPack } from './analysisWorkflow'
 import type { AnalysisPack } from './types'
+import { validateAnalysisPack } from './validation'
 
 const pack = (): AnalysisPack => {
   const sourceIds = ['league-source']
@@ -50,6 +51,49 @@ describe('raw AnalysisPack browser import regression', () => {
     expect(JSON.stringify(imported.validation.data)).not.toContain('src-everton-un-everton-united-fixture')
   })
 
+  it('passes a complex source URL to the URL helper byte-for-byte unchanged', () => {
+    const originalUrl = 'https://scores.example-domain.test/team-path/match-centre?tab=team-form&round=4#match-details'
+    const value = pack()
+    value.researchPack.sources[0].url = originalUrl
+    let receivedUrl: unknown
+    const observingValidator: typeof validateAnalysisPack = (parsed, options, validationTime) => {
+      receivedUrl = (parsed as AnalysisPack).researchPack.sources[0].url
+      expect(receivedUrl).toBe(originalUrl)
+      return validateAnalysisPack(parsed, options, validationTime)
+    }
+
+    const imported = importAnalysisPack(`\n${JSON.stringify(value)}\n`, freshness, freshness.referenceTimestamp, observingValidator)
+
+    expect(imported.validation.valid).toBe(true)
+    expect(receivedUrl).toBe(originalUrl)
+  })
+
+  it('preserves the reported literal source immediately before validation in the App handler', () => {
+    const literalSource = {
+      sourceId: 'src-everton-united-fixture',
+      url: 'https://www.fotmob.com/matches/everton-vs-man-united/2ynv4k',
+      title: 'Everton vs Manchester United',
+      retrievedAt: '2026-09-02T20:15:00Z',
+    }
+    const value = pack()
+    value.generatedAt = '2026-09-02T20:15:00Z'
+    value.fixturePack.generatedAt = '2026-09-02T20:15:00Z'
+    value.researchPack.generatedAt = '2026-09-02T20:15:00Z'
+    value.researchPack.sources[0] = literalSource
+    const raw = JSON.stringify(value)
+    let receivedSource: unknown
+    const observingValidator: typeof validateAnalysisPack = (parsed, options, validationTime) => {
+      receivedSource = (parsed as AnalysisPack).researchPack.sources[0]
+      expect((receivedSource as typeof literalSource).sourceId).toBe(literalSource.sourceId)
+      expect((receivedSource as typeof literalSource).url).toBe(literalSource.url)
+      return validateAnalysisPack(parsed, options, validationTime)
+    }
+
+    importAnalysisPack(raw, freshness, '2026-09-02T20:15:00Z', observingValidator)
+
+    expect(receivedSource).toEqual(literalSource)
+  })
+
   it('hands the validated raw fixture to the existing analysis pipeline', () => {
     const imported = importAnalysisPack(rawImportFixture, freshness, freshness.referenceTimestamp)
     expect(imported.fixturePack).toBe(imported.validation.data?.fixturePack)
@@ -60,7 +104,10 @@ describe('raw AnalysisPack browser import regression', () => {
   it('reports a malformed raw source URL at its exact nested path', () => {
     const malformed = rawImportFixture.replace(expectedUrls[0], 'not-a-url')
     const result = importAnalysisPack(malformed, freshness, freshness.referenceTimestamp).validation
-    expect(result.errors.filter(error => error.code === 'invalid_source_url')).toEqual([expect.objectContaining({ path: '$.researchPack.sources[0].url' })])
+    expect(result.errors.filter(error => error.code === 'invalid_source_url')).toEqual([expect.objectContaining({
+      path: '$.researchPack.sources[0].url',
+      message: expect.stringContaining('Received value: "not-a-url" | type: string | length: 9 | code points: U+006E U+006F U+0074 U+002D U+0061 U+002D U+0075 U+0072 U+006C'),
+    })])
   })
 
   it('reports an unknown citation only when that exact unknown value is in the raw JSON', () => {
