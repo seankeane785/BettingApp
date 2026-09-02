@@ -2,7 +2,7 @@
 
 ## Stage 2 validation coverage
 
-Vitest tests cover valid synthetic fixture, research and saved-run samples; duplicate fixtures; unsupported competitions; fixture/research mismatches; missing or invalid sources; prohibited content; synthetic-data warnings; and deterministic stale-source checks using an explicit reference timestamp.
+Vitest tests cover valid synthetic fixture, research and saved-run samples; duplicate fixtures; unsupported competitions; fixture/research mismatches; missing or invalid sources; prohibited content; synthetic-data warnings; and freshness checks using an injected import-validation time. Focused cases cover sources retrieved after prompt creation, the 24-hour boundary, source times after pack completion, future pack completion times and strict ISO UTC timestamps.
 
 Stage 3 tests additionally cover byte-identical prompt output, explicit criteria, FixturePack contract instructions, prohibited categories, empty competition rejection, valid and invalid pasted JSON, Markdown-fence rejection and valid empty fixture days.
 
@@ -73,3 +73,9 @@ Stage 7 automated verification passed on 2026-09-01: `npm run lint`, `npm test -
 Focused coverage verifies Premier League and Championship acceptance; League One and League Two rejection in FixturePack, standalone ResearchPack, saved-run import validation and untouched browser restoration; and complete deterministic fixture/research prompt contracts, criteria, fixture identities, evidence tasks, sourcing/freshness rules and prohibited-content instructions.
 
 `npm test -- --run` passed (6 files, 52 tests) and `npm run build` passed (Vite production bundle, 25 modules transformed).
+
+## Research freshness correction (2026-09-02)
+
+Focused prompt tests assert that no fixed retrieval upper bound is embedded and that actual UTC completion/retrieval instructions remain present. Validation tests inject the import time and cover valid post-prompt retrieval, stale sources, sources after `generatedAt`, future `generatedAt`, UTC formatting and the existing valid sample path.
+
+Verification passed: `npm run lint`; `npm test -- --run` (6 files, 55 tests); `npm run build` (25 modules transformed); `git diff --check`; and `python3 -m json.tool schemas/research-pack.v1.schema.json`.

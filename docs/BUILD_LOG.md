@@ -59,3 +59,10 @@ This file is append-only. Add a dated entry after each material change; do not r
 - Added explicit incompatibility errors for League One and League Two fixture, research, imported-run and browser-stored data; invalid browser data is retained and cannot be restored, analysed or exported.
 - Made both manual ChatGPT Search prompts self-contained with complete versioned output structures, exact selected criteria/fixtures, evidence and source rules, unknown-data handling and prohibited-content boundaries.
 - Added focused regression coverage and updated all project-control documentation. Verification passed: `npm test -- --run` (6 files, 52 tests) and `npm run build` (Vite production bundle, 25 modules transformed).
+
+## 2026-09-02 — ResearchPack freshness correction
+
+- Removed the impossible prompt-time upper bound on source retrieval and instructed ChatGPT to record actual UTC retrieval and response-completion times without changing ResearchPack v1.
+- Changed import freshness validation to use an injectable validation time, enforce a 24-hour ceiling, reject sources after pack completion and reject future pack completion with no clock-skew tolerance.
+- Preserved saved-run determinism by keeping live-clock freshness at the initial ResearchPack import boundary only, and added focused regression tests and documentation.
+- Verification passed: `npm run lint`; `npm test -- --run` (6 files, 55 tests); `npm run build` (Vite production bundle, 25 modules transformed); `git diff --check`; and ResearchPack schema JSON parsing.

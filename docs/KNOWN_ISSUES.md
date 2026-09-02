@@ -21,6 +21,8 @@
 
 The local dependency tree does not contain the `vitest` executable. On 2026-09-01, `npm install` remained blocked by `403 Forbidden - GET https://registry.npmjs.org/vitest`, so Stage 4 tests and build require verification; lint passed once registry access is restored.
 
+The former fixed prompt-time freshness cutoff has been removed. Freshness is now checked once at ResearchPack import using the captured validation time; previously accepted and saved runs are intentionally not aged against the live clock, preserving reproducible historical analysis.
+
 ## Stage 5 limitations
 
 - Fixed scoring and correlation factors are transparent conservative rules, not learned causal estimates. Missing venue or underlying evidence lowers quality and uses a documented midpoint.
