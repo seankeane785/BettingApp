@@ -18,3 +18,7 @@ The tool is intended only to support analysis before a user manually places anyt
 ## Stage 1
 
 Stage 1 delivers governance documentation and an accessible React, TypeScript and Vite application shell. It deliberately excludes fixture import, research import, validation, scoring, accumulator logic, persistence, functional schemas, integrations, accounts, backend services, remote databases and hosting.
+
+## Early-season scope
+
+Early-season analysis uses team-level competitive league evidence only: current-season league form plus separate previous-season final-five, final-ten and relevant venue windows. Friendlies, cups, player markets and automated collection remain excluded.

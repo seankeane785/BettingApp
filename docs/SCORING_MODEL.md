@@ -1,47 +1,25 @@
-# FormFirst Model v1.0.0
+# FormFirst Model v1.1.0
 
-## Contract and inputs
+## Deterministic evidence model
 
-The Stage 5 engine is a pure TypeScript function of a valid FixturePack v1, ResearchPack v1, explicit settings and the fixed model version. It sorts every generated collection and uses no clock, network or random input, so identical inputs serialize byte-for-byte identically. Its whole-number estimated probability is a transparent evidence score, not a guarantee and never a bookmaker-derived or implied probability.
+The engine is a pure function of the imported packs and explicit settings. Scores are transparent evidence scores, not guarantees. Existing Strong (72%+), Good (62–71%), Moderate (50–61%) and Avoid gates and builder correlation rules are unchanged.
 
-Research market entries are canonical, source-backed records: market key/group, exact team-level label and side, optional threshold, full/current-season hits, recent hits, applicable venue hits and underlying support. Free text never creates a market or threshold. Historic-season evidence is not an input.
+## Early-season policy
 
-## Candidate score
+A team is early-season before its fifth current-season league match. ResearchPack v1.1 keeps current league observations separate from the previous season's final-five, final-ten and relevant venue league records. Friendlies and cup matches are outside every league period.
 
-Before quality gates, the score is clamped to 0–100 and rounded once to a whole percentage:
+The model uses the final-ten record as the non-overlapping historical baseline; final-five is required as a recency check and the venue record supplies only the venue component, so overlapping windows are never summed. Each hit rate receives a conservative add-one adjustment: `(hits + 1) / (sample + 2)`. The blended hit rate weights current evidence by its observed sample and the final-ten baseline by `min(sample, 10)`. Historical weight is multiplied by 0.5 when promotion/relegation, material manager change or material squad disruption makes it less representative. An unassessable change or absent final-five/final-ten/venue baseline remains insufficient.
 
-- 55% current-season relevant market hit rate;
-- 10% reliability (`min(sample size / 10, 1)`);
-- 10% recent market hit rate;
-- 10% home/away market hit rate, or a conservative 50 when not applicable/available;
-- 10% source-backed underlying support percentage, or 50 when unavailable;
-- 5% opponent context (positive 100, neutral/unknown 50, caution 25, material 0);
-- minus 10 points for each caution and 30 for each material team-news, congestion or manager context; unknown context subtracts 4.
+Reliable early-season evidence is `usable_partial` when the fixture is labelled partial; it is not rejected merely because the current sample has fewer than three matches. Current form therefore influences but cannot dominate after one or two matches.
 
-The component values and penalty are returned on every candidate. Reasons include cited sample counts, imported reasons and availability/context cautions.
+Outside early season, the v1.0.0 scoring behaviour remains: 55% hit rate, 10% sample reliability, 10% recent form, 10% venue, 10% underlying support and 5% opponent context.
 
-## Quality gates and confidence
+## Context and availability
 
-Missing citations, contradictions, fewer than three observations, stale cited sources, `insufficient` fixture data, or material team-news/manager change makes a candidate **Avoid**. Partial data, fewer than eight observations, or missing venue/underlying support is `usable_partial` and caps confidence at **Moderate**. No absence is silently neutral: missing scoring components use the documented conservative midpoint and lower quality.
+Unknown context subtracts nothing. A 10-point caution or 30-point material penalty applies only to a known, non-empty, source-cited team-level concern. A documented material team-news or manager issue also forces Avoid. Ordinary availability information is neutral unless its cited detail explicitly identifies a meaningful concern.
 
-With qualifying quality and no unresolved material caution: **Strong** is 72%+, **Good** is 62–71%, **Moderate** is 50–61%, and **Avoid** is below 50%. Only Strong/Good can enter builders.
+Manual market availability and settlement verification remains visible metadata. It neither changes probability nor confidence and is never statistical evidence.
 
-## Availability
+## Builders
 
-Settings explicitly list every supported market group as `unknown`, `available` or `unavailable`; defaults are all `unknown`. Unavailable groups are excluded. Unknown groups may qualify from evidence but are marked for manual availability and settlement-rule verification. Availability is never inferred.
-
-## Duplication and correlation
-
-Exact duplicates and these same-fixture evidence families are mutually exclusive: win/double-chance/draw-no-bet for the same side; team-to-score/equivalent team-goals at 0.5 or lower; BTTS/total-goals; shots/shots-on-target for the same side; and identical team market families (including goals, corners and cards). Other same-match pairs receive a 10% multiplicative penalty. The same evidence family across fixtures receives a conservative 2% systemic-context penalty. Every rejection/adjustment retains an explanation and principal risk.
-
-Combined scores multiply leg scores, then multiply every applicable correlation factor. They remain model evidence scores, not guarantees.
-
-## Builder search
-
-All feasible combinations are evaluated. High-probability uses 2–4 Strong legs, each 72%+, and requires 55% adjusted combined score. Balanced uses 2–6 Strong/Good legs, each 62%+, and requires 35%. Invalid, Moderate, Avoid, duplicate and near-duplicate legs are never padding.
-
-Valid combinations sort by highest adjusted combined score, fewer legs, higher aggregate data quality, then joined stable candidate IDs. Same-fixture legs are grouped for Stage 6. If none qualify, the structured result is `no_qualifying_builder`.
-
-## Limitations
-
-The model is only as complete and current as manually imported sources. It does not fetch, predict from player evidence, use historical seasons, inspect market catalogues, determine settlement rules, use prohibited financial/price content or advise stakes. Correlation factors are deliberately conservative fixed rules rather than learned causal estimates.
+High-probability builders require 2–4 Strong legs at 72%+ and a 55% combined score. Balanced builders require 2–6 Strong/Good legs at 62%+ and a 35% combined score. Duplicate, near-duplicate, correlated, weak and under-threshold combinations retain the existing rejection rules. No qualifying builder is a valid result.

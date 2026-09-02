@@ -1,6 +1,6 @@
-import { MARKET_GROUPS, type AnalysisOutput, type BuilderKind, type BuilderOutcome, type BuilderSuccess, type CandidateDataQuality, type CandidateSelection, type Confidence, type FixturePack, type MarketEvidence, type MarketGroup, type ModelSettings, type RejectedCombination, type ResearchFixture, type ResearchPack } from './types'
+import { MARKET_GROUPS, type AnalysisOutput, type BuilderKind, type BuilderOutcome, type BuilderSuccess, type CandidateDataQuality, type CandidateSelection, type Confidence, type FixturePack, type MarketEvidence, type MarketGroup, type ModelSettings, type RejectedCombination, type ResearchFixture, type ResearchPack, type TeamEvidence } from './types'
 
-export const MODEL_VERSION = 'FormFirst Model v1.0.0' as const
+export const MODEL_VERSION = 'FormFirst Model v1.1.0' as const
 export const defaultModelSettings = (referenceTimestamp: string, maximumSourceAgeHours: number): ModelSettings => ({ referenceTimestamp, maximumSourceAgeHours, marketAvailability: Object.fromEntries(MARKET_GROUPS.map(group => [group, 'unknown'])) as Record<MarketGroup, 'unknown'> })
 
 const clamp = (value: number) => Math.max(0, Math.min(100, value))
@@ -13,12 +13,27 @@ const family = (market: MarketEvidence) => {
   if (['team_shots', 'team_shots_on_target'].includes(market.marketGroup)) return `attempts:${market.teamSide}`
   return `${market.marketGroup}:${market.teamSide}`
 }
-const cautionPenalty = (fixture: ResearchFixture) => [fixture.teamNews, fixture.fixtureCongestion, fixture.managerialContext].reduce((sum, item) => sum + (item.impact === 'material' ? 30 : item.impact === 'caution' ? 10 : item.impact === 'unknown' ? 4 : 0), 0)
-const sourceQuality = (market: MarketEvidence, fixture: ResearchFixture, research: ResearchPack, settings: ModelSettings): CandidateDataQuality => {
-  if (!market.sourceIds.length || market.sourceIds.some(id => !research.sources.some(source => source.sourceId === id))) return 'unsourced'
+const cautionPenalty = (fixture: ResearchFixture) => [fixture.teamNews, fixture.fixtureCongestion, fixture.managerialContext].reduce((sum, item) => sum + (item.status === 'known' && item.detail && item.sourceIds.length ? item.impact === 'material' ? 30 : item.impact === 'caution' ? 10 : 0 : 0), 0)
+const earlySeasonScore = (market: MarketEvidence, team: TeamEvidence) => {
+  const played = team.currentSeasonLeagueMatches
+  if (played === undefined || played >= 5) return null
+  const matching = (period: string) => team.historicalMarketHitRates?.find(item => item.evidencePeriod === period && item.marketKey === market.marketKey && item.marketGroup === market.marketGroup && item.teamSide === market.teamSide && item.threshold === market.threshold)
+  const finalFive = matching('previous_season_final_5_league'), baseline = matching('previous_season_final_10_league'), venue = matching('previous_season_venue_league')
+  const representation = team.historicalRepresentativeness
+  if (!finalFive || !baseline || !venue || !representation || representation.status === 'unassessable') return { valid: false as const }
+  const factor = representation.status === 'reduced' ? .5 : 1
+  const historicalWeight = Math.min(baseline.sampleSize, 10) * factor
+  const currentRate = (market.hits + 1) / (market.sampleSize + 2) * 100
+  const historicalRate = (baseline.hits + 1) / (baseline.sampleSize + 2) * 100
+  return { valid: true as const, hitRate: (currentRate * market.sampleSize + historicalRate * historicalWeight) / (market.sampleSize + historicalWeight), reliability: Math.min((market.sampleSize + historicalWeight) / 10, 1) * 100, venue: (venue.hits + 1) / (venue.sampleSize + 2) * 100, sourceIds: [...new Set([...market.sourceIds, ...finalFive.sourceIds, ...baseline.sourceIds, ...venue.sourceIds, ...representation.sourceIds])] }
+}
+const sourceQuality = (market: MarketEvidence, team: TeamEvidence, fixture: ResearchFixture, research: ResearchPack, settings: ModelSettings): CandidateDataQuality => {
+  const early = earlySeasonScore(market, team)
+  const citedIds = early?.valid ? early.sourceIds : market.sourceIds
+  if (!citedIds.length || citedIds.some(id => !research.sources.some(source => source.sourceId === id))) return 'unsourced'
   if (market.hits > market.sampleSize || market.recentHits > market.recentSampleSize || (market.venueHits ?? 0) > (market.venueSampleSize ?? 0)) return 'contradictory'
-  if (market.sampleSize < 3 || fixture.dataQuality === 'insufficient') return 'insufficient'
-  const stale = market.sourceIds.some(id => { const source = research.sources.find(item => item.sourceId === id); return !source || Date.parse(settings.referenceTimestamp) - Date.parse(source.retrievedAt) > settings.maximumSourceAgeHours * 3_600_000 })
+  if ((early && !early.valid) || (!early && market.sampleSize < 3) || fixture.dataQuality === 'insufficient') return 'insufficient'
+  const stale = citedIds.some(id => { const source = research.sources.find(item => item.sourceId === id); return !source || Date.parse(settings.referenceTimestamp) - Date.parse(source.retrievedAt) > settings.maximumSourceAgeHours * 3_600_000 })
   if (stale) return 'stale'
   if (fixture.dataQuality === 'partial' || market.sampleSize < 8 || market.venueSampleSize === null || market.underlyingSupportPercent === null) return 'usable_partial'
   return 'qualifying'
@@ -31,17 +46,18 @@ const confidenceFor = (probability: number, quality: CandidateDataQuality, mater
   return 'Moderate'
 }
 
-function scoreCandidate(fixture: ResearchFixture, market: MarketEvidence, research: ResearchPack, fixturePack: FixturePack, settings: ModelSettings): CandidateSelection {
-  const hitRate = market.hits / market.sampleSize * 100
-  const reliability = Math.min(market.sampleSize / 10, 1) * 100
+function scoreCandidate(fixture: ResearchFixture, team: TeamEvidence, market: MarketEvidence, research: ResearchPack, fixturePack: FixturePack, settings: ModelSettings): CandidateSelection {
+  const early = earlySeasonScore(market, team)
+  const hitRate = early?.valid ? early.hitRate : market.hits / market.sampleSize * 100
+  const reliability = early?.valid ? early.reliability : Math.min(market.sampleSize / 10, 1) * 100
   const recent = market.recentHits / market.recentSampleSize * 100
-  const venue = market.venueSampleSize ? (market.venueHits ?? 0) / market.venueSampleSize * 100 : 50
+  const venue = early?.valid ? early.venue : market.venueSampleSize ? (market.venueHits ?? 0) / market.venueSampleSize * 100 : 50
   const underlying = market.underlyingSupportPercent ?? 50
   const opponent = contextScore(fixture)
   const penalty = cautionPenalty(fixture)
   const probability = round(clamp(hitRate * .55 + reliability * .10 + recent * .10 + venue * .10 + underlying * .10 + opponent * .05 - penalty))
-  const quality = sourceQuality(market, fixture, research, settings)
-  const material = [fixture.teamNews, fixture.managerialContext].some(item => item.impact === 'material')
+  const quality = sourceQuality(market, team, fixture, research, settings)
+  const material = [fixture.teamNews, fixture.managerialContext].some(item => item.status === 'known' && Boolean(item.detail) && item.sourceIds.length > 0 && item.impact === 'material')
   const availability = settings.marketAvailability[market.marketGroup]
   const manual = availability === 'unknown'
   return {
@@ -49,8 +65,8 @@ function scoreCandidate(fixture: ResearchFixture, market: MarketEvidence, resear
     fixtureId: fixture.fixtureId, competition: fixture.competition, homeTeam: fixture.homeTeam, awayTeam: fixture.awayTeam,
     marketKey: market.marketKey, marketGroup: market.marketGroup, selectionLabel: market.selectionLabel,
     estimatedProbability: probability, confidence: confidenceFor(probability, quality, material), dataQuality: quality,
-    supportingEvidence: { sourceIds: [...market.sourceIds].sort(), hitRatePercent: round(hitRate), sampleSize: market.sampleSize, componentScores: { hitRate: round(hitRate), reliability: round(reliability), recentForm: round(recent), venue: round(venue), underlying: round(underlying), opponentContext: opponent, cautionPenalty: penalty } },
-    reasonsFor: [`Current-season hit rate: ${market.hits}/${market.sampleSize}.`, `Recent hit rate: ${market.recentHits}/${market.recentSampleSize}.`, ...fixture.reasonsFor].sort(),
+    supportingEvidence: { sourceIds: [...(early?.valid ? early.sourceIds : market.sourceIds)].sort(), hitRatePercent: round(hitRate), sampleSize: market.sampleSize, componentScores: { hitRate: round(hitRate), reliability: round(reliability), recentForm: round(recent), venue: round(venue), underlying: round(underlying), opponentContext: opponent, cautionPenalty: penalty } },
+    reasonsFor: [`Current-season hit rate: ${market.hits}/${market.sampleSize}.`, ...(early?.valid ? [`Early-season blended hit rate: ${round(hitRate)}%.`] : []), `Recent hit rate: ${market.recentHits}/${market.recentSampleSize}.`, ...fixture.reasonsFor].sort(),
     reasonsAgainst: [...fixture.reasonsAgainst, ...(penalty ? [`Context caution penalty: ${penalty} points.`] : []), ...(manual ? ['Market availability and settlement rules require manual checking.'] : [])].sort(),
     modelVersion: MODEL_VERSION, fixtureSchemaVersion: fixturePack.schemaVersion, researchSchemaVersion: research.schemaVersion,
     manualMarketVerificationRequired: manual, manualMarketVerificationReason: manual ? 'Availability and settlement rules are unknown and require manual checking.' : null,
@@ -86,6 +102,6 @@ const build = (kind: BuilderKind, candidates: CandidateSelection[], fixtureVersi
 }
 
 export function analyse(fixturePack: FixturePack, research: ResearchPack, settings: ModelSettings): AnalysisOutput {
-  const candidates = research.fixtures.flatMap(fixture => ([...fixture.homeEvidence.marketHitRates, ...fixture.awayEvidence.marketHitRates]).filter(market => settings.marketAvailability[market.marketGroup] !== 'unavailable').map(market => scoreCandidate(fixture, market, research, fixturePack, settings))).sort((a, b) => a.id.localeCompare(b.id))
+  const candidates = research.fixtures.flatMap(fixture => ([fixture.homeEvidence, fixture.awayEvidence] as const).flatMap(team => team.marketHitRates.filter(market => settings.marketAvailability[market.marketGroup] !== 'unavailable').map(market => scoreCandidate(fixture, team, market, research, fixturePack, settings)))).sort((a, b) => a.id.localeCompare(b.id))
   return { modelVersion: MODEL_VERSION, settings: { ...settings, marketAvailability: { ...settings.marketAvailability } }, candidates, builders: { highProbability: build('high_probability', candidates, fixturePack.schemaVersion, research.schemaVersion), balanced: build('balanced', candidates, fixturePack.schemaVersion, research.schemaVersion) } }
 }

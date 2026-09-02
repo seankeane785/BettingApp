@@ -54,3 +54,7 @@ Validated, non-synthetic inputs can now be deliberately analysed with explicit p
 ## Stage 7 local saved history
 
 A generated analysis is stored only after **Save current analysis** is selected. SavedAnalysisRun v1 keeps the complete fixture/research inputs, model settings and output as an immutable snapshot; manual builder and leg outcomes remain separate. History stays in this browser, has no remote sync, and may be lost when browser site data is cleared. Complete validated JSON exports can be downloaded and real-data SavedAnalysisRun v1 exports can be imported back into local history. League One and League Two payloads, including legacy browser records, are rejected as incompatible without deleting stored data.
+
+## Early-season evidence
+
+Before five current-season league matches, ResearchPack v1.1 requires separate current league data and source-backed previous-season final-five, final-ten and venue league baselines. The deterministic model blends them conservatively and permits no qualifying builder when history or material-change assessment is unreliable. Manual market verification remains separate from statistical confidence.
