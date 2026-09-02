@@ -29,3 +29,6 @@ SavedAnalysisRun v1 is the sole persistence/export format. It contains complete 
 ## ResearchPack v1.3.0
 
 `research-pack.v1.3.schema.json` requires `competitionBenchmarks` built only from completed current-season league fixtures. It retains current-season team market/form/venue/optional metrics and v1.2 scoped context, and removes historical market records and representativeness from the new contract. v1.0, v1.1, and v1.2 schema files remain unchanged and readable for immutable saved-run replay.
+
+## Model v1.4.0 market coverage
+ResearchPack v1.4 distinguishes selectable `candidate_market` evidence from `supporting_only` evidence. Every approved team-level market family is processed only by its documented market-specific evidence gate; missing current-season support or a same-key/threshold competition benchmark is reported as unavailable. No specialist statistic is inferred from goals, and prior saved schema versions remain readable without recomputation. See `docs/SCORING_MODEL.md` and `schemas/research-pack.v1.4.schema.json`.

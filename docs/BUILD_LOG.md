@@ -92,3 +92,7 @@ This file is append-only. Add a dated entry after each material change; do not r
 - Added ResearchPack v1.3 with sourced current-season competition benchmarks and no prior-season evidence contract.
 - Released deterministic FormFirst Model v1.3.0 with explicit empirical-Bayes smoothing, market-specific candidate/opponent joins, scoped context, insufficiency audits, and evidence-use traces.
 - Updated validation, prompt generation, React presentation, focused tests, and model documentation while retaining legacy schemas and saved snapshots.
+
+## 2026-09-02 — ResearchPack and Model v1.4.0
+- Added explicit candidate/support evidence roles, threshold-matched benchmarks, market-specific evidence gates, coverage reasons, complete traces, partial-data cautions, and focused tests.
+- Preserved saved v1.0–v1.3 inputs as readable immutable snapshots; no migration or recomputation is performed.

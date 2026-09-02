@@ -97,3 +97,6 @@ Focused tests cover home/away material isolation, descriptive squad and manager 
 ## Model v1.3 focused coverage
 
 Unit coverage checks the exact four-fixture smoothing example, opponent moderation, candidate-scoped context isolation, missing-core insufficiency, early-season confidence/builder restrictions, deterministic output, current-only prompt contract, and legacy suite compatibility. Lint, Vitest, production build, and whitespace checks are delivery gates.
+
+## Model v1.4.0 market coverage
+ResearchPack v1.4 distinguishes selectable `candidate_market` evidence from `supporting_only` evidence. Every approved team-level market family is processed only by its documented market-specific evidence gate; missing current-season support or a same-key/threshold competition benchmark is reported as unavailable. No specialist statistic is inferred from goals, and prior saved schema versions remain readable without recomputation. See `docs/SCORING_MODEL.md` and `schemas/research-pack.v1.4.schema.json`.
