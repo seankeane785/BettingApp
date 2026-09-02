@@ -115,3 +115,7 @@ Focused validation covers the five reported Sports Mole and FotMob direct HTTPS 
 ## Live-browser AnalysisPack URL regression coverage
 
 The public `parseAndValidateAnalysisPack` workflow used by `App.tsx` now verifies that all five reported URLs remain strings with their exact input values after JSON parsing, validates them through the shared `globalThis.URL` helper, and hands the complete pack to the deterministic analysis pipeline. A malformed first source asserts the exact `$.researchPack.sources[0].url` error path. A focused runtime contract test also verifies the browser-standard `globalThis.URL` constructor exposes the required `https:` protocol and hostname behaviour. Production verification includes searching source and generated assets for stale or duplicate URL validators.
+
+## Raw AnalysisPack import integrity regression coverage
+
+`src/fixtures/analysis-pack-import-regression.json` is loaded as raw text through the same `importAnalysisPack` function invoked by the UI button. Tests compare the validated object with a direct parse of that text, assert exact URL/source-ID/citation preservation, verify reference-identical nested hand-off to analysis, and cover malformed URLs, genuinely unknown citations, and the reported duplicated-ID corruption string.

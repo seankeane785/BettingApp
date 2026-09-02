@@ -2,7 +2,7 @@ import { useState } from 'react'
 import SavedHistory from './SavedHistory'
 import { analyse, defaultModelSettings } from './domain/analysisModel'
 import { CONFIDENCE_ORDER, evidenceTraceLabels, formatManualEntryList, groupCandidatesByFixture, invalidateAnalysis, isExcludedFromBuilders, noBuilderDisplay, SETTLEMENT_STATEMENT } from './domain/analysisPresentation'
-import { buildAnalysisPackPrompt, parseAndValidateAnalysisPack } from './domain/analysisWorkflow'
+import { buildAnalysisPackPrompt, importAnalysisPack } from './domain/analysisWorkflow'
 import { buildFixturePrompt, parseAndValidateFixturePack } from './domain/fixtureWorkflow'
 import { buildResearchPrompt, evidenceCategories, getResearchGate, parseAndValidateResearchPack, validateFreshnessSettings } from './domain/researchWorkflow'
 import { browserStorage, generateRunId } from './domain/savedRunBrowser'
@@ -40,7 +40,7 @@ function App() {
 
   const toggleCompetition = (competition: Competition) => setCompetitions((current) => current.includes(competition) ? current.filter((item) => item !== competition) : [...current, competition])
   const generateAnalysisRequest = () => { try { setAnalysisPackPrompt(buildAnalysisPackPrompt(date, competitions)); setCriteriaError(''); setCopyStatus('') } catch (error) { setCriteriaError(error instanceof Error ? error.message : 'Unable to generate prompt.'); setAnalysisPackPrompt('') } }
-  const validateAnalysisPackImport = () => { const result = parseAndValidateAnalysisPack(analysisPackJson, freshness); setAnalysisPackValidation(result); setAnalysis(invalidateAnalysis(analysis)); if (result.valid && result.data) { setValidation({ valid: true, data: result.data.fixturePack, errors: [], warnings: [] }); setResearchValidation({ valid: true, data: result.data.researchPack, errors: [], warnings: result.warnings }) } }
+  const validateAnalysisPackImport = () => { const imported = importAnalysisPack(analysisPackJson, freshness); const result = imported.validation; setAnalysisPackValidation(result); setAnalysis(invalidateAnalysis(analysis)); if (result.valid && imported.fixturePack && imported.researchPack) { setValidation({ valid: true, data: imported.fixturePack, errors: [], warnings: [] }); setResearchValidation({ valid: true, data: imported.researchPack, errors: [], warnings: result.warnings }) } }
   const generate = () => { try { setPrompt(buildFixturePrompt({ date, competitions })); setCriteriaError(''); setCopyStatus('') } catch (error) { setCriteriaError(error instanceof Error ? error.message : 'Unable to generate prompt.'); setPrompt('') } }
   const copy = async () => { try { if (!navigator.clipboard) throw new Error(); await navigator.clipboard.writeText(prompt); setCopyStatus('Prompt copied to clipboard.') } catch { setCopyStatus('Copy failed. Select the prompt text and copy it manually.') } }
   const validate = () => { setValidation(parseAndValidateFixturePack(pastedJson)); setAnalysis(invalidateAnalysis(analysis)) }
@@ -127,7 +127,7 @@ function App() {
       <SavedHistory runs={savedRuns} selected={selectedRun} feedback={historyFeedback} onOpen={openSaved} onImport={importFile} onOutcome={updateOutcome}/>
     </section>
     <aside className="guardrails" aria-label="Product guardrails"><strong>Local manual analysis only.</strong><p>Verify market availability and settlement rules in Paddy Power before placing.</p><p>18+; analysis only; only stake what you can afford to lose.</p></aside>
-    <footer><p>Manual analysis only. Your workflow stays under your control. No automated actions, account access or stake advice.</p></footer>
+    <footer><p>Manual analysis only. Your workflow stays under your control. No automated actions, account access or stake advice.</p><p><small>Workflow build: AnalysisPack import integrity v1</small></p></footer>
   </main>
 }
 export default App

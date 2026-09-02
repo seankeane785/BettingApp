@@ -1,0 +1,202 @@
+{
+  "packName": "AnalysisPack v1",
+  "schemaVersion": "1.0.0",
+  "generatedAt": "2026-09-02T10:00:00Z",
+  "fixturePack": {
+    "packName": "FixturePack v1",
+    "schemaVersion": "1.0.0",
+    "fixtureDate": "2026-09-03",
+    "generatedAt": "2026-09-02T10:00:00Z",
+    "competitions": [
+      "Premier League"
+    ],
+    "fixtures": [
+      {
+        "fixtureId": "everton-man-united",
+        "competition": "Premier League",
+        "homeTeam": "Everton",
+        "awayTeam": "Manchester United",
+        "kickOff": {
+          "utc": "2026-09-03T14:00:00Z",
+          "localDate": "2026-09-03",
+          "localTime": "15:00",
+          "timezone": "Europe/London"
+        }
+      }
+    ]
+  },
+  "researchPack": {
+    "packName": "ResearchPack v1",
+    "schemaVersion": "1.4.0",
+    "fixturePackRef": {
+      "schemaVersion": "1.0.0",
+      "fixtureDate": "2026-09-03"
+    },
+    "generatedAt": "2026-09-02T10:00:00Z",
+    "dataStatus": "real",
+    "sources": [
+      {
+        "sourceId": "src-championship-results",
+        "url": "https://www.sportsmole.co.uk/football/championship/results.html",
+        "title": "Source 1",
+        "retrievedAt": "2026-09-02T09:00:00Z"
+      },
+      {
+        "sourceId": "src-premier-league-results",
+        "url": "https://www.sportsmole.co.uk/football/premier-league/results.html",
+        "title": "Source 2",
+        "retrievedAt": "2026-09-02T09:00:00Z"
+      },
+      {
+        "sourceId": "src-wolves-birmingham-fixture",
+        "url": "https://www.fotmob.com/matches/wolverhampton-wanderers-vs-birmingham-city/2goyts",
+        "title": "Source 3",
+        "retrievedAt": "2026-09-02T09:00:00Z"
+      },
+      {
+        "sourceId": "src-everton-united-fixture",
+        "url": "https://www.fotmob.com/matches/everton-vs-man-united/2ynv4k",
+        "title": "Source 4",
+        "retrievedAt": "2026-09-02T09:00:00Z"
+      },
+      {
+        "sourceId": "src-chelsea-arsenal-fixture",
+        "url": "https://www.fotmob.com/matches/chelsea-vs-arsenal/2rhhrp",
+        "title": "Source 5",
+        "retrievedAt": "2026-09-02T09:00:00Z"
+      }
+    ],
+    "competitionBenchmarks": [
+      {
+        "competition": "Premier League",
+        "currentSeasonCompletedFixtures": 10,
+        "marketBenchmarks": [
+          {
+            "marketKey": "result-home",
+            "marketGroup": "match_result",
+            "selectionLabel": "Home",
+            "threshold": null,
+            "sampleSize": 10,
+            "hits": 6,
+            "supportPercent": 60,
+            "sourceIds": [
+              "src-championship-results",
+              "src-premier-league-results",
+              "src-wolves-birmingham-fixture",
+              "src-everton-united-fixture",
+              "src-chelsea-arsenal-fixture"
+            ]
+          }
+        ],
+        "optionalMetrics": {}
+      }
+    ],
+    "fixtures": [
+      {
+        "fixtureId": "everton-man-united",
+        "competition": "Premier League",
+        "homeTeam": "Everton",
+        "awayTeam": "Manchester United",
+        "homeEvidence": {
+          "currentSeasonLeagueMatches": 1,
+          "currentSeasonForm": {
+            "summary": "Current-season league form documented.",
+            "lastFive": null,
+            "lastTen": null,
+            "homeOrAway": "1/1",
+            "goalsScored": 1,
+            "goalsConceded": 0,
+            "sourceIds": [
+              "src-championship-results",
+              "src-premier-league-results",
+              "src-wolves-birmingham-fixture",
+              "src-everton-united-fixture",
+              "src-chelsea-arsenal-fixture"
+            ]
+          },
+          "marketHitRates": [],
+          "optionalMetrics": {}
+        },
+        "awayEvidence": {
+          "currentSeasonLeagueMatches": 1,
+          "currentSeasonForm": {
+            "summary": "Current-season league form documented.",
+            "lastFive": null,
+            "lastTen": null,
+            "homeOrAway": "1/1",
+            "goalsScored": 1,
+            "goalsConceded": 0,
+            "sourceIds": [
+              "src-championship-results",
+              "src-premier-league-results",
+              "src-wolves-birmingham-fixture",
+              "src-everton-united-fixture",
+              "src-chelsea-arsenal-fixture"
+            ]
+          },
+          "marketHitRates": [],
+          "optionalMetrics": {}
+        },
+        "opponentStrength": {
+          "status": "unknown",
+          "impact": "unknown",
+          "scope": "both",
+          "application": "descriptive_only",
+          "detail": null,
+          "sourceIds": [
+            "src-championship-results",
+            "src-premier-league-results",
+            "src-wolves-birmingham-fixture",
+            "src-everton-united-fixture",
+            "src-chelsea-arsenal-fixture"
+          ]
+        },
+        "teamNews": {
+          "status": "unknown",
+          "impact": "unknown",
+          "scope": "both",
+          "application": "descriptive_only",
+          "detail": null,
+          "sourceIds": [
+            "src-championship-results",
+            "src-premier-league-results",
+            "src-wolves-birmingham-fixture",
+            "src-everton-united-fixture",
+            "src-chelsea-arsenal-fixture"
+          ]
+        },
+        "fixtureCongestion": {
+          "status": "unknown",
+          "impact": "unknown",
+          "scope": "both",
+          "application": "descriptive_only",
+          "detail": null,
+          "sourceIds": [
+            "src-championship-results",
+            "src-premier-league-results",
+            "src-wolves-birmingham-fixture",
+            "src-everton-united-fixture",
+            "src-chelsea-arsenal-fixture"
+          ]
+        },
+        "managerialContext": {
+          "status": "unknown",
+          "impact": "unknown",
+          "scope": "both",
+          "application": "descriptive_only",
+          "detail": null,
+          "sourceIds": [
+            "src-championship-results",
+            "src-premier-league-results",
+            "src-wolves-birmingham-fixture",
+            "src-everton-united-fixture",
+            "src-chelsea-arsenal-fixture"
+          ]
+        },
+        "reasonsFor": [],
+        "reasonsAgainst": [],
+        "dataQuality": "insufficient"
+      }
+    ]
+  }
+}

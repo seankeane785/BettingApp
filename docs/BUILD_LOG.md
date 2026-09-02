@@ -121,3 +121,9 @@ This file is append-only. Add a dated entry after each material change; do not r
 - Exercised the complete AnalysisPack import path used by `App.tsx`, preserving and asserting the runtime string type and exact value of all five reported source URLs before handing the validated pack to analysis.
 - Added exact nested malformed-URL path coverage and a browser-standard `globalThis.URL` runtime contract check while retaining standalone ResearchPack validation coverage.
 - Verification passed: `npm run lint`; `npm test` (10 files, 121 tests); `npm run build` (Vite production bundle, 26 modules transformed); source and bundle searches confirmed one `globalThis.URL` validator and no `URL.parse` or `URL.canParse`; and `git diff --check`.
+
+## 2026-09-02 — AnalysisPack raw-import integrity
+
+- Consolidated the browser's recommended AnalysisPack action on one public import handler that performs one `JSON.parse`, validates that exact object, and returns references to its validated nested packs for the existing analysis state.
+- Added a checked-in raw JSON regression pack containing the five reported URLs and the exact `src-everton-united-fixture` declaration/citations, plus focused preservation, failure-path, citation, and pipeline hand-off tests.
+- Added a non-sensitive workflow build marker and documented the exact Vite restart and browser hard-refresh procedure so stale clients are distinguishable.

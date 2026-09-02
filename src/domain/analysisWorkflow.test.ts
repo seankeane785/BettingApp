@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { analyse, defaultModelSettings } from './analysisModel'
-import { buildAnalysisPackPrompt, parseAndValidateAnalysisPack } from './analysisWorkflow'
+import rawImportFixture from '../fixtures/analysis-pack-import-regression.json?raw'
+import { buildAnalysisPackPrompt, importAnalysisPack, parseAndValidateAnalysisPack } from './analysisWorkflow'
 import type { AnalysisPack } from './types'
 
 const pack = (): AnalysisPack => {
@@ -30,4 +31,46 @@ describe('AnalysisPack workflow', () => {
   ])('rejects %s fixture integrity errors', (_, mutate, code) => { const p = pack(); mutate(p); const result = parseAndValidateAnalysisPack(JSON.stringify(p), freshness, freshness.referenceTimestamp); expect(result.errors.some(e => e.code === code && e.path.startsWith('$.'))).toBe(true) })
   it('requires kebab-case source IDs with a nested path', () => { const p = pack(); p.researchPack.sources[0].sourceId = 'league_source'; const result = parseAndValidateAnalysisPack(JSON.stringify(p), freshness, freshness.referenceTimestamp); expect(result.errors).toContainEqual(expect.objectContaining({ code: 'invalid_source_id', path: '$.researchPack.sources[0].sourceId' })) })
   it('requests the exact source contract and prioritises every specialist evidence family', () => { const prompt = buildAnalysisPackPrompt('2026-09-03', ['Premier League']); for (const phrase of ['FIXTURE DISCOVERY', '"sourceId": "non-empty kebab-case string"', '"url": "absolute HTTPS URL with a hostname"', 'do not use a domain allowlist', '"retrievedAt": "ISO 8601 UTC timestamp ending in Z"', 'src-ch-results', 'Match result', 'double chance', 'draw-no-bet', 'BTTS', 'Total goals', 'Team goals', 'Clean sheets', 'Total and team corners', 'Total and team cards', 'Team shots:', 'Team shots on target:', 'supporting_only', 'candidate_market', 'official competition match centres', 'Manual market-availability dropdowns']) expect(prompt).toContain(phrase) })
+})
+
+describe('raw AnalysisPack browser import regression', () => {
+  const expectedUrls = sourceUrls
+  const expectedIds = ['src-championship-results', 'src-premier-league-results', 'src-wolves-birmingham-fixture', 'src-everton-united-fixture', 'src-chelsea-arsenal-fixture']
+
+  it('uses the browser import handler without changing any parsed value before validation', () => {
+    const expected = JSON.parse(rawImportFixture)
+    const imported = importAnalysisPack(rawImportFixture, freshness, freshness.referenceTimestamp)
+
+    expect(imported.validation.valid).toBe(true)
+    expect(imported.validation.data).toEqual(expected)
+    expect(JSON.stringify(imported.validation.data)).toBe(JSON.stringify(expected))
+    expect(imported.researchPack?.sources.map(source => source.url)).toEqual(expectedUrls)
+    expect(imported.researchPack?.sources.map(source => source.sourceId)).toEqual(expectedIds)
+    expect(imported.researchPack?.fixtures[0].homeEvidence.currentSeasonForm.sourceIds).toContain('src-everton-united-fixture')
+    expect(JSON.stringify(imported.validation.data)).not.toContain('src-everton-un-everton-united-fixture')
+  })
+
+  it('hands the validated raw fixture to the existing analysis pipeline', () => {
+    const imported = importAnalysisPack(rawImportFixture, freshness, freshness.referenceTimestamp)
+    expect(imported.fixturePack).toBe(imported.validation.data?.fixturePack)
+    expect(imported.researchPack).toBe(imported.validation.data?.researchPack)
+    expect(analyse(imported.fixturePack!, imported.researchPack!, defaultModelSettings(freshness.referenceTimestamp, 24))).toBeDefined()
+  })
+
+  it('reports a malformed raw source URL at its exact nested path', () => {
+    const malformed = rawImportFixture.replace(expectedUrls[0], 'not-a-url')
+    const result = importAnalysisPack(malformed, freshness, freshness.referenceTimestamp).validation
+    expect(result.errors.filter(error => error.code === 'invalid_source_url')).toEqual([expect.objectContaining({ path: '$.researchPack.sources[0].url' })])
+  })
+
+  it('reports an unknown citation only when that exact unknown value is in the raw JSON', () => {
+    const unknownId = 'src-genuinely-unknown-citation'
+    const changed = rawImportFixture.replace('"sourceIds": [\n              "src-championship-results"', `"sourceIds": [\n              "${unknownId}"`)
+    expect(changed).toContain(unknownId)
+    const result = importAnalysisPack(changed, freshness, freshness.referenceTimestamp).validation
+    expect(result.errors.filter(error => error.code === 'unknown_source_citation')).toEqual([
+      expect.objectContaining({ message: `Unknown source ID: ${unknownId}.` }),
+    ])
+    expect(importAnalysisPack(rawImportFixture, freshness, freshness.referenceTimestamp).validation.errors.some(error => error.code === 'unknown_source_citation')).toBe(false)
+  })
 })

@@ -29,6 +29,15 @@ npm run build
 
 `npm run dev` starts Vite's local development server. `npm run build` type-checks the application and creates a production bundle in `dist/`.
 
+After pulling an import-pipeline fix, stop and restart the local server exactly as follows:
+
+```bash
+Ctrl+C
+npm run dev
+```
+
+Then use `Cmd + Shift + R` in the browser to hard-refresh the client. The footer build marker identifies the AnalysisPack import workflow currently running.
+
 See [`docs/PROJECT_SCOPE.md`](docs/PROJECT_SCOPE.md) for the full scope and product guardrails.
 
 ## Stage 2 data contracts
