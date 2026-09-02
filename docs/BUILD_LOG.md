@@ -52,3 +52,10 @@ This file is append-only. Add a dated entry after each material change; do not r
 - Preserved exact model output snapshots and added safe handling for malformed, duplicate, unavailable and quota-limited storage without automatic deletion or repair.
 - Added focused persistence/serialization/outcome tests and documented that browser site-data clearing can remove local history.
 - Verification passed with dependencies already installed: `git diff --check`; `python3 -m json.tool` for all six schemas/samples; `npm run lint`; `npm test -- --run` (6 files, 42 tests); and `npm run build` (Vite production bundle). npm emitted only its existing non-failing `http-proxy` environment warning.
+
+## 2026-09-01 — Supported competitions and self-contained prompts
+
+- Restricted FormFirst to exactly Premier League and Championship across UI-derived constants, TypeScript contracts, runtime validation, JSON schemas, samples, prompts and persistence boundaries.
+- Added explicit incompatibility errors for League One and League Two fixture, research, imported-run and browser-stored data; invalid browser data is retained and cannot be restored, analysed or exported.
+- Made both manual ChatGPT Search prompts self-contained with complete versioned output structures, exact selected criteria/fixtures, evidence and source rules, unknown-data handling and prohibited-content boundaries.
+- Added focused regression coverage and updated all project-control documentation. Verification passed: `npm test -- --run` (6 files, 52 tests) and `npm run build` (Vite production bundle, 25 modules transformed).
