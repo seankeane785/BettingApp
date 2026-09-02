@@ -26,3 +26,7 @@ Early-season analysis uses team-level competitive league evidence only: current-
 ## v1.2 calibration boundary
 
 Context may alter a team-to-score candidate only when ResearchPack v1.2 marks current, sourced, team-level evidence as `candidate_penalty` and scopes it to that candidate. Generic and descriptive context remains visible without changing probability. Partial evidence is uncertainty rather than missing required evidence; it is capped at Good and must still satisfy every unchanged Balanced builder rule. Builders are never forced.
+
+## v1.3 evidence boundary
+
+New analysis uses current-season league team, opponent, competition-benchmark, small shrunk venue, and candidate-relevant scoped context evidence only. Previous-season results and historic representativeness are outside the v1.3 scoring boundary. No backend, collection automation, non-team market, or forced builder is introduced.

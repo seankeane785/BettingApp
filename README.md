@@ -45,7 +45,7 @@ After accepting a non-empty, non-synthetic FixturePack, FormFirst can generate a
 
 ## Stage 5 analysis model
 
-`FormFirst Model v1.2.0` provides a deterministic, current-season-first domain engine for transparent team-level candidate scoring, confidence and data-quality grading, explicit market availability, duplicate/correlation controls and exhaustive High-probability/Balanced builder search. Results remain domain data only until Stage 6; the UI displays only an analysis-ready status. See [`docs/SCORING_MODEL.md`](docs/SCORING_MODEL.md).
+`FormFirst Model v1.3.0` provides a deterministic, current-season-only benchmark domain engine for transparent team-level candidate scoring, confidence and data-quality grading, explicit market availability, duplicate/correlation controls and exhaustive High-probability/Balanced builder search. Tiny samples are conservatively shrunk toward sourced current-season league benchmarks, missing core evidence is not estimated, and the UI renders the model evidence-use trace without recalculation. The estimates are not yet empirically calibrated. See [`docs/SCORING_MODEL.md`](docs/SCORING_MODEL.md).
 
 ## Stage 6 analysis results
 

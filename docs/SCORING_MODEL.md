@@ -1,23 +1,29 @@
-# FormFirst Model v1.2.0
+# FormFirst Model v1.3.0
 
-## Deterministic evidence model
+Model v1.3.0 is deterministic and evidence-led. It is not claimed to be empirically calibrated; documented out-of-sample calibration remains required.
 
-The engine is a pure function of imported packs and explicit settings. Scores are transparent evidence scores, not guarantees. Probability boundaries remain Strong (72%+), Good (62–71%), Moderate (50–61%) and Avoid below 50 or for invalid evidence.
+## Current-season-only early-season policy
 
-## Early-season historical weighting
+No prior-season results, historic market rates, historic venue records, or historical representativeness enter v1.3 scoring. Every candidate requires current-season candidate evidence, matching current-season opponent evidence, a sourced current-season competition benchmark, fresh source references, and no material contradiction. Missing core evidence yields `insufficient`, `Avoid`, no numerical presentation, and builder exclusion.
 
-Before five current-season league matches, add-one smoothing is retained: `(hits + 1) / (sample + 2)`. The current rate is weighted by its observed sample and the previous final-ten league rate by `min(sample, 10)`. A sourced `reduced` representativeness assessment halves only that historical weight. Separate final-five and venue league records remain mandatory; missing final-five, final-ten, venue or representativeness data is insufficient and Avoid. The venue record supplies only the venue component.
+For each source-backed observed rate `(hits, n)` and league benchmark `b` (as a proportion), empirical-Bayes smoothing uses a fixed prior strength of four fixtures:
 
-## Candidate-scoped direct context
+`smoothedPercent = 100 × (hits + 4 × b) / (n + 4)`
 
-Team news, congestion and manager context can alter probability only in a valid ResearchPack v1.2 object with `application: candidate_penalty`, known caution/material impact, a non-empty detail, valid current candidate-relevant sources, and scope matching the candidate's home/away side or `both`. Caution deducts 10 points and material deducts 30; material forces Avoid only for the affected candidate. `descriptive_only`, generic, unknown, neutral, positive, conflicting and non-directional context deducts zero. Legacy v1.0/v1.1 context is always adapted to descriptive-only. Historical-representativeness evidence cannot also create a direct penalty without distinct present-tense evidence.
+For a team-to-score candidate the unrounded score is:
 
-Outside the penalty correction, scoring remains 55% hit rate, 10% reliability, 10% recent form, 10% venue, 10% underlying support and 5% opponent context.
+`(0.45 × candidateSmoothed + 0.35 × opponentConcedingSmoothed + 0.10 × benchmarkPercent + 0.10 × venueSmoothed) / availableWeight − contextPenalty`
 
-## Evidence quality and tiers
+`availableWeight` is the sum of included weights. Venue is omitted, rather than defaulted, when unavailable, making the denominator `0.90`. The result is clamped to 0–100 and rounded once to a whole percent. Candidate, opponent, benchmark, venue, and context data are each applied once. Source-ID deduplication affects trace output only and cannot alter the score.
 
-`qualifying` uses the normal boundaries. `usable_partial` means sufficient but uncertain evidence: it uses the same boundaries while capping the result at Good. It may therefore be Balanced-eligible at 62–71% (or higher while still capped Good), but can never be Strong or High-probability eligible. Insufficient, stale, contradictory and invalid/unsourced evidence is Avoid and builder-ineligible.
+Constants in `V13_SCORING` are: prior fixtures `4`; candidate `0.45`; opponent `0.35`; benchmark `0.10`; venue `0.10`; scoped caution penalty `10` points; scoped material penalty `30` points.
 
-## Builders
+Equivalent market-specific records are required for BTTS, totals, result families, corners, cards, shots, and shots on target. Dedicated non-goal markets are never inferred from goal evidence. Source-backed, consistently defined xG may support goal totals only; missing optional metrics receive no neutral value.
 
-High-probability builders still require 2–4 Strong legs at 72%+ and at least 55% combined. Balanced builders still require 2–6 Strong/Good legs at 62%+ and at least 35% combined. Existing duplication and correlation rules remain. No builder is manufactured; “No qualifying builder today” remains valid.
+## Quality and builders
+
+Before five current league matches, complete core evidence is `usable_partial`, capped at `Good`; `qualifying` and `Strong` are unavailable. Balanced candidates still require at least 62%, and every combination must meet existing duplication, correlation, and 35% combined-score rules. High-probability candidates require `Strong` at 72% and a 55% combined score, so early-season partial evidence is excluded. “No qualifying builder today” remains a valid output.
+
+Scoped v1.2 context rules continue: unknown, generic, legacy, descriptive-only, neutral, positive, or non-directional context has zero direct effect. Only known, sourced, current, candidate-scoped caution or material disruption receives the explicit penalty.
+
+Legacy v1.0–v1.2 saved runs are immutable stored outputs and are displayed without recomputation.
