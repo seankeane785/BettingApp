@@ -32,3 +32,6 @@ SavedAnalysisRun v1 is the sole persistence/export format. It contains complete 
 
 ## Model v1.4.0 market coverage
 ResearchPack v1.4 distinguishes selectable `candidate_market` evidence from `supporting_only` evidence. Every approved team-level market family is processed only by its documented market-specific evidence gate; missing current-season support or a same-key/threshold competition benchmark is reported as unavailable. No specialist statistic is inferred from goals, and prior saved schema versions remain readable without recomputation. See `docs/SCORING_MODEL.md` and `schemas/research-pack.v1.4.schema.json`.
+
+## AnalysisPack v1
+`analysis-pack.v1.schema.json` is the one-import envelope. It contains exactly FixturePack v1.0.0 and ResearchPack v1.4.0. Runtime validation additionally enforces exact reference date/version, one-to-one fixture identity, source freshness (maximum 24 hours), citation validity, and kebab-case v1.4 source IDs matching `^[a-z0-9]+(?:-[a-z0-9]+)*$`. Older standalone ResearchPack schemas remain supported for saved-run and legacy import compatibility.

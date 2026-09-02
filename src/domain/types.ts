@@ -19,6 +19,7 @@ export interface ContextEvidence { status: 'known' | 'unknown'; impact: 'positiv
 export interface ScopedContextEvidence extends ContextEvidence { scope: 'home' | 'away' | 'both'; application: 'descriptive_only' | 'candidate_penalty' }
 export interface ResearchFixture { fixtureId: string; competition: Competition; homeTeam: string; awayTeam: string; homeEvidence: TeamEvidence; awayEvidence: TeamEvidence; opponentStrength: ContextEvidence; teamNews: ContextEvidence; fixtureCongestion: ContextEvidence; managerialContext: ContextEvidence; reasonsFor: string[]; reasonsAgainst: string[]; dataQuality: 'complete' | 'partial' | 'insufficient' }
 export interface ResearchPack { packName: 'ResearchPack v1'; schemaVersion: '1.0.0' | '1.1.0' | '1.2.0' | '1.3.0' | '1.4.0'; fixturePackRef: { schemaVersion: '1.0.0'; fixtureDate: string }; generatedAt: string; dataStatus: 'synthetic' | 'real'; sources: SourceReference[]; competitionBenchmarks?: CompetitionBenchmark[]; fixtures: ResearchFixture[] }
+export interface AnalysisPack { packName: 'AnalysisPack v1'; schemaVersion: '1.0.0'; generatedAt: string; fixturePack: FixturePack; researchPack: ResearchPack & { schemaVersion: '1.4.0' } }
 export type ManualOutcome = 'pending' | 'won' | 'lost' | 'void'
 export interface RecordedOutcome { outcome: ManualOutcome; updatedAt: string | null }
 export interface SavedAnalysisRun {

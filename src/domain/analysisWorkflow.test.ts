@@ -1,0 +1,23 @@
+import { describe, expect, it } from 'vitest'
+import { analyse, defaultModelSettings } from './analysisModel'
+import { buildAnalysisPackPrompt, parseAndValidateAnalysisPack } from './analysisWorkflow'
+import type { AnalysisPack } from './types'
+
+const pack = (): AnalysisPack => {
+  const sourceIds = ['league-source']
+  const form = { summary: 'Current', lastFive: null, lastTen: null, homeOrAway: '1/1', goalsScored: 1, goalsConceded: 0, sourceIds }
+  const context = { status: 'unknown' as const, impact: 'unknown' as const, scope: 'both' as const, application: 'descriptive_only' as const, detail: null, sourceIds }
+  return { packName: 'AnalysisPack v1', schemaVersion: '1.0.0', generatedAt: '2026-09-02T10:00:00Z', fixturePack: { packName: 'FixturePack v1', schemaVersion: '1.0.0', fixtureDate: '2026-09-03', generatedAt: '2026-09-02T10:00:00Z', competitions: ['Premier League'], fixtures: [{ fixtureId: 'fixture-1', competition: 'Premier League', homeTeam: 'Home', awayTeam: 'Away', kickOff: { utc: '2026-09-03T14:00:00Z', localDate: '2026-09-03', localTime: '15:00', timezone: 'Europe/London' } }] }, researchPack: { packName: 'ResearchPack v1', schemaVersion: '1.4.0', fixturePackRef: { schemaVersion: '1.0.0', fixtureDate: '2026-09-03' }, generatedAt: '2026-09-02T10:00:00Z', dataStatus: 'real', sources: [{ sourceId: 'league-source', url: 'https://example.com/source', title: 'League source', retrievedAt: '2026-09-02T09:00:00Z' }], competitionBenchmarks: [{ competition: 'Premier League', currentSeasonCompletedFixtures: 10, marketBenchmarks: [{ marketKey: 'result-home', marketGroup: 'match_result', selectionLabel: 'Home', threshold: null, sampleSize: 10, hits: 6, supportPercent: 60, sourceIds }], optionalMetrics: {} }], fixtures: [{ fixtureId: 'fixture-1', competition: 'Premier League', homeTeam: 'Home', awayTeam: 'Away', homeEvidence: { currentSeasonLeagueMatches: 1, currentSeasonForm: form, marketHitRates: [], optionalMetrics: {} }, awayEvidence: { currentSeasonLeagueMatches: 1, currentSeasonForm: form, marketHitRates: [], optionalMetrics: {} }, opponentStrength: context, teamNews: context, fixtureCongestion: context, managerialContext: context, reasonsFor: [], reasonsAgainst: [], dataQuality: 'insufficient' }] } }
+}
+const freshness = { referenceTimestamp: '2026-09-02T10:00:00Z', maximumAgeHours: 24 }
+describe('AnalysisPack workflow', () => {
+  it('validates one import and feeds the existing pipeline', () => { const result = parseAndValidateAnalysisPack(JSON.stringify(pack()), freshness, freshness.referenceTimestamp); expect(result.valid).toBe(true); expect(analyse(result.data!.fixturePack, result.data!.researchPack, defaultModelSettings(freshness.referenceTimestamp, 24))).toBeDefined() })
+  it.each([
+    ['reference', (p: AnalysisPack) => { p.researchPack.fixturePackRef.fixtureDate = '2026-09-04' }, 'fixture_pack_ref_mismatch'],
+    ['missing', (p: AnalysisPack) => { p.researchPack.fixtures = [] }, 'missing_fixture'],
+    ['unexpected', (p: AnalysisPack) => { p.researchPack.fixtures.push({ ...p.researchPack.fixtures[0], fixtureId: 'extra' }) }, 'unexpected_fixture'],
+    ['duplicate', (p: AnalysisPack) => { p.fixturePack.fixtures.push(structuredClone(p.fixturePack.fixtures[0])) }, 'duplicate_id'],
+  ])('rejects %s fixture integrity errors', (_, mutate, code) => { const p = pack(); mutate(p); const result = parseAndValidateAnalysisPack(JSON.stringify(p), freshness, freshness.referenceTimestamp); expect(result.errors.some(e => e.code === code && e.path.startsWith('$.'))).toBe(true) })
+  it('requires kebab-case source IDs with a nested path', () => { const p = pack(); p.researchPack.sources[0].sourceId = 'league_source'; const result = parseAndValidateAnalysisPack(JSON.stringify(p), freshness, freshness.referenceTimestamp); expect(result.errors).toContainEqual(expect.objectContaining({ code: 'invalid_source_id', path: '$.researchPack.sources[0].sourceId' })) })
+  it('requests discovery and every specialist evidence family', () => { const prompt = buildAnalysisPackPrompt('2026-09-03', ['Premier League']); for (const phrase of ['FIXTURE DISCOVERY', 'Match result', 'double chance', 'draw-no-bet', 'BTTS', 'Total goals', 'Team goals', 'Clean sheets', 'Corners', 'Cards', 'Shots and shots on target', 'supporting_only', 'candidate_market']) expect(prompt).toContain(phrase) })
+})

@@ -96,3 +96,9 @@ This file is append-only. Add a dated entry after each material change; do not r
 ## 2026-09-02 — ResearchPack and Model v1.4.0
 - Added explicit candidate/support evidence roles, threshold-matched benchmarks, market-specific evidence gates, coverage reasons, complete traces, partial-data cautions, and focused tests.
 - Preserved saved v1.0–v1.3 inputs as readable immutable snapshots; no migration or recomputation is performed.
+
+## 2026-09-02 — AnalysisPack v1 workflow
+- Added a strict combined FixturePack v1.0.0 / ResearchPack v1.4.0 envelope and one-prompt import UI.
+- Added nested integrity, freshness, citation and kebab-case source-ID validation while retaining legacy imports.
+- Filtered empty model trace values and added an explicit no-trace fallback without recalculating scoring.
+- Added focused workflow and presentation tests plus schema and product documentation.
