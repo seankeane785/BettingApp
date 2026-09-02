@@ -64,3 +64,7 @@ Dependencies were present for Stage 5 and lint, tests and build passed. npm stil
 ## Model v1.3 calibration
 
 The deterministic weighting and smoothing policy has not undergone a documented out-of-sample calibration study. Estimates must not be described as empirically calibrated until that validation exists. Canonical market identity currently depends on manually prepared, consistently named candidate/opponent/benchmark records; a mismatch correctly produces insufficient evidence rather than a fallback estimate.
+
+## Model v1.4 calibration
+- Percentages use documented conservative benchmark smoothing and fixed deterministic weights. They are not claimed to be empirically calibrated because no out-of-sample calibration study is available.
+- Coverage depends on manually researched, source-backed current-season statistics; a market remains unavailable when any mandatory component is absent.

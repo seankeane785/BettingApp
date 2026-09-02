@@ -62,3 +62,6 @@ Before five current-season league matches, ResearchPack v1.2 requires separate c
 ## Scoped context calibration
 
 ResearchPack v1.2 distinguishes visible descriptive caveats from current, sourced, candidate-specific penalties. Legacy v1.0/v1.1 fixture context is descriptive when analysed by model v1.2. Partial evidence represents uncertainty, not insufficiency: it may reach Good and the unchanged Balanced threshold, but is capped below Strong and cannot enter the High-probability builder. Existing thresholds remain unchanged, and “No qualifying builder today” remains valid.
+
+## Model v1.4.0 market coverage
+ResearchPack v1.4 distinguishes selectable `candidate_market` evidence from `supporting_only` evidence. Every approved team-level market family is processed only by its documented market-specific evidence gate; missing current-season support or a same-key/threshold competition benchmark is reported as unavailable. No specialist statistic is inferred from goals, and prior saved schema versions remain readable without recomputation. See `docs/SCORING_MODEL.md` and `schemas/research-pack.v1.4.schema.json`.

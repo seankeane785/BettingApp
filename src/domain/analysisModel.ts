@@ -1,6 +1,6 @@
 import { MARKET_GROUPS, type AnalysisOutput, type BuilderKind, type BuilderOutcome, type BuilderSuccess, type CandidateDataQuality, type CandidateSelection, type Confidence, type FixturePack, type MarketEvidence, type MarketGroup, type ModelSettings, type RejectedCombination, type ResearchFixture, type ResearchPack, type TeamEvidence } from './types'
 
-export const MODEL_VERSION = 'FormFirst Model v1.3.0' as const
+export const MODEL_VERSION = 'FormFirst Model v1.4.0' as const
 export const defaultModelSettings = (referenceTimestamp: string, maximumSourceAgeHours: number): ModelSettings => ({ referenceTimestamp, maximumSourceAgeHours, marketAvailability: Object.fromEntries(MARKET_GROUPS.map(group => [group, 'unknown'])) as Record<MarketGroup, 'unknown'> })
 
 const clamp = (value: number) => Math.max(0, Math.min(100, value))
@@ -14,7 +14,7 @@ const family = (market: MarketEvidence) => {
   return `${market.marketGroup}:${market.teamSide}`
 }
 export const directContextPenalty = (fixture: ResearchFixture, candidateSide: MarketEvidence['teamSide'], schemaVersion: ResearchPack['schemaVersion']) => {
-  if (!['1.2.0', '1.3.0'].includes(schemaVersion) || !['home', 'away'].includes(candidateSide)) return { points: 0, material: false }
+  if (!['1.2.0', '1.3.0', '1.4.0'].includes(schemaVersion) || !['home', 'away'].includes(candidateSide)) return { points: 0, material: false }
   const applicable = [fixture.teamNews, fixture.fixtureCongestion, fixture.managerialContext].filter(item => item.application === 'candidate_penalty' && (item.scope === candidateSide || item.scope === 'both'))
   return { points: applicable.reduce((sum, item) => sum + (item.impact === 'material' ? 30 : item.impact === 'caution' ? 10 : 0), 0), material: applicable.some(item => item.impact === 'material') }
 }
@@ -122,6 +122,51 @@ function scoreV13Candidate(fixture: ResearchFixture, team: TeamEvidence, side: '
     reasonsFor: probability === null ? [] : [`Candidate current evidence: ${market.hits}/${market.sampleSize}.`, `Opponent current evidence: ${opponent!.hits}/${opponent!.sampleSize}.`, `Competition benchmark: ${benchmark!.supportPercent}%.`], reasonsAgainst: [...(missing.length ? [`Evidence insufficient: ${missing.join(', ')}.`] : []), ...(context.points ? [`Scoped context penalty: ${context.points} points.`] : [])], modelVersion: MODEL_VERSION, fixtureSchemaVersion: fixturePack.schemaVersion, researchSchemaVersion: research.schemaVersion, manualMarketVerificationRequired: manual, manualMarketVerificationReason: manual ? 'Availability and settlement rules are unknown and require manual checking.' : null, correlation: { fixtureId: fixture.fixtureId, teamSide: market.teamSide, family: family(market), relationships: dedicated.has(market.marketGroup) ? ['Dedicated same-market evidence only.'] : [] } }
 }
 
+export const V14_SCORING = { priorFixtures: 4, candidateWeight: .45, supportWeight: .35, venueWeight: .10, benchmarkWeight: .10 } as const
+const textMatch = (e: MarketEvidence, words: string[]) => words.some(word => e.marketKey.includes(word))
+function v14Requirements(market: MarketEvidence, own: TeamEvidence, opponent: TeamEvidence) {
+  const support = (team: TeamEvidence, predicate: (e: MarketEvidence) => boolean) => team.marketHitRates.find(e => e.evidenceRole === 'supporting_only' && predicate(e))
+  const same = (e: MarketEvidence) => e.marketGroup === market.marketGroup && e.threshold === market.threshold
+  const result = ['match_result','double_chance','draw_no_bet'].includes(market.marketGroup)
+  if (result) return { support: support(opponent, same), missing: [...(market.venueSampleSize ? [] : ['candidate relevant venue record']), ...(support(opponent, same)?.venueSampleSize ? [] : ['opponent win/draw/loss and relevant venue record'])] }
+  if (market.marketGroup === 'both_teams_to_score') {
+    const records = [support(own, e => textMatch(e, ['score'])), support(own, e => textMatch(e, ['concede'])), support(opponent, e => textMatch(e, ['score'])), support(opponent, e => textMatch(e, ['concede']))]
+    return { support: records[0], supports: records, missing: records.map((x, i) => x ? '' : ['home scoring','home conceding','away scoring','away conceding'][i]).filter(Boolean) }
+  }
+  if (['team_goals','team_to_score'].includes(market.marketGroup)) return { support: support(opponent, e => e.threshold === market.threshold && textMatch(e, ['concede'])), missing: [] }
+  if (market.marketGroup === 'clean_sheet') return { support: support(opponent, e => textMatch(e, ['fail_to_score','failed_to_score'])), missing: [] }
+  if (market.marketGroup === 'total_goals') return { support: undefined, missing: [] }
+  return { support: support(opponent, same), missing: [] }
+}
+function scoreV14Candidate(fixture: ResearchFixture, team: TeamEvidence, side: 'home' | 'away', market: MarketEvidence, research: ResearchPack, fixturePack: FixturePack, settings: ModelSettings): { candidate?: CandidateSelection; missing: string[] } {
+  const opponentTeam = side === 'home' ? fixture.awayEvidence : fixture.homeEvidence
+  const req = v14Requirements(market, team, opponentTeam)
+  const supports: MarketEvidence[] = (req.supports ?? (req.support ? [req.support] : [])).filter((item): item is MarketEvidence => Boolean(item))
+  const benchmark = benchmarkEvidence(market, fixture, research)
+  const missing = [...req.missing]
+  if (!market.sourceIds.length || !market.sampleSize) missing.push('candidate current-season evidence')
+  if (!benchmark || benchmark.threshold !== market.threshold || benchmark.supportPercent === null || !benchmark.sourceIds.length) missing.push(`competition benchmark for ${market.marketKey} at threshold ${market.threshold ?? 'none'}`)
+  if (market.marketGroup !== 'total_goals' && !supports.length) missing.push('matching opponent/support evidence')
+  if (missing.length || !benchmark || benchmark.supportPercent === null) return { missing: [...new Set(missing)] }
+  const candidateRate = smoothRate(market.hits, market.sampleSize, benchmark.supportPercent)
+  const supportRates = supports.map(e => smoothRate(e.hits, e.sampleSize, benchmark.supportPercent!))
+  const supportRate = supportRates.length ? supportRates.reduce((a,b) => a+b, 0) / supportRates.length : benchmark.supportPercent
+  const venueRate = market.venueSampleSize && market.venueHits !== null ? smoothRate(market.venueHits, market.venueSampleSize, benchmark.supportPercent) : null
+  const context = v13Context(fixture, side)
+  const supportWeight = supports.length ? V14_SCORING.supportWeight : 0
+  const weight = V14_SCORING.candidateWeight + supportWeight + V14_SCORING.benchmarkWeight + (venueRate === null ? 0 : V14_SCORING.venueWeight)
+  const probability = round(clamp((candidateRate * V14_SCORING.candidateWeight + supportRate * supportWeight + benchmark.supportPercent * V14_SCORING.benchmarkWeight + (venueRate ?? 0) * V14_SCORING.venueWeight) / weight - context.points))
+  const partial = fixture.dataQuality === 'partial' || (team.currentSeasonLeagueMatches ?? market.sampleSize) < 8 || market.sampleSize < 8
+  const quality: CandidateDataQuality = partial ? 'usable_partial' : 'qualifying'
+  const limitation = 'Early-season/small-sample evidence limits confidence; this candidate is capped at Good.'
+  const sourceIds = [...new Set([...market.sourceIds, ...supports.flatMap(x => x.sourceIds), ...benchmark.sourceIds, ...context.sourceIds])].sort()
+  const manual = settings.marketAvailability[market.marketGroup] === 'unknown'
+  const candidate: CandidateSelection = { id:`${fixture.fixtureId}:${market.marketKey}:${market.teamSide}`, fixtureId:fixture.fixtureId, competition:fixture.competition, homeTeam:fixture.homeTeam, awayTeam:fixture.awayTeam, marketKey:market.marketKey, marketGroup:market.marketGroup, selectionLabel:market.selectionLabel, estimatedProbability:probability, confidence:candidateTier(probability, quality, context.material), dataQuality:quality,
+    supportingEvidence:{sourceIds,hitRatePercent:round(candidateRate),sampleSize:market.sampleSize,componentScores:{hitRate:round(candidateRate),reliability:Math.min(market.sampleSize/10,1)*100,recentForm:0,venue:round(venueRate ?? 0),underlying:0,opponentContext:round(supportRate),cautionPenalty:context.points},evidenceUseTrace:{candidate:`${market.selectionLabel}: ${market.hits}/${market.sampleSize}, benchmark-smoothed once.`,opponent:supports.length ? supports.map(e => `${e.selectionLabel}: ${e.hits}/${e.sampleSize}, benchmark-smoothed once.`).join(' ') : 'No opponent component is required by this strategy.',benchmark:`${benchmark.selectionLabel}: ${benchmark.supportPercent}% (${benchmark.hits}/${benchmark.sampleSize}).`,venue:venueRate === null ? 'Venue component omitted because no venue sample was supplied.' : `Venue: ${market.venueHits}/${market.venueSampleSize}, benchmark-smoothed once.`,context:context.points ? `Scoped current context penalty: -${context.points} points.` : 'No qualifying scoped context penalty.',sourceIds}},
+    reasonsFor:[`Current candidate evidence: ${market.hits}/${market.sampleSize}.`,...(supports.map(e=>`Required support evidence: ${e.hits}/${e.sampleSize}.`)),`Current competition benchmark: ${benchmark.supportPercent}%.`],reasonsAgainst:[...(partial?[limitation]:[]),...(context.points?[`Scoped context penalty: ${context.points} points.`]:[])],modelVersion:MODEL_VERSION,fixtureSchemaVersion:fixturePack.schemaVersion,researchSchemaVersion:research.schemaVersion,manualMarketVerificationRequired:manual,manualMarketVerificationReason:manual?'Availability and settlement rules are unknown and require manual checking.':null,correlation:{fixtureId:fixture.fixtureId,teamSide:market.teamSide,family:family(market),relationships:dedicated.has(market.marketGroup)?['Dedicated same-market evidence only.']:[]}}
+  return { candidate, missing: [] }
+}
+
 export const relationship = (a: CandidateSelection, b: CandidateSelection): { excluded: boolean; penalty: number; explanation: string } => {
   if (a.id === b.id) return { excluded: true, penalty: 1, explanation: 'Exact duplicate candidate.' }
   if (a.fixtureId === b.fixtureId && a.correlation.family === b.correlation.family) return { excluded: true, penalty: 1, explanation: `Near-duplicate ${a.correlation.family} selections share the same evidence.` }
@@ -143,13 +188,21 @@ const build = (kind: BuilderKind, candidates: CandidateSelection[], fixtureVersi
     else valid.push({ legs, probability: adjusted, notes: [...new Set(notes)].sort(), quality: legs.reduce((sum, leg) => sum + (leg.dataQuality === 'qualifying' ? 2 : 1), 0) })
   }
   valid.sort((a, b) => b.probability - a.probability || a.legs.length - b.legs.length || b.quality - a.quality || a.legs.map(x => x.id).join('|').localeCompare(b.legs.map(x => x.id).join('|')))
-  if (!valid.length) return { status: 'no_qualifying_builder', kind, reason: 'No candidate combination met every eligibility, duplication, correlation and combined-score rule.', principalRisks: ['Evidence or adjusted combined score did not qualify.'], rejectedCombinations: rejected, modelVersion: MODEL_VERSION, schemaVersions: { fixture: fixtureVersion, research: researchVersion } }
+  if (!valid.length) return { status: 'no_qualifying_builder', kind, reason: 'No candidate combination met every eligibility, duplication, correlation and combined-score rule.', principalRisks: candidates.some(c => c.dataQuality === 'usable_partial') ? ['Early-season/small-sample candidate evidence is capped at Good and did not satisfy every builder rule.'] : ['No eligible set met the stated confidence, combined-score, duplication, and correlation gates.'], rejectedCombinations: rejected, modelVersion: MODEL_VERSION, schemaVersions: { fixture: fixtureVersion, research: researchVersion } }
   const winner = valid[0]
-  const result: BuilderSuccess = { status: 'builder', kind, selectedLegs: winner.legs, fixtureGroups: [...new Set(winner.legs.map(x => x.fixtureId))].sort().map(fixtureId => ({ fixtureId, candidateIds: winner.legs.filter(x => x.fixtureId === fixtureId).map(x => x.id) })), estimatedCombinedProbability: winner.probability, overallConfidence: high ? 'Strong' : winner.legs.every(x => x.confidence === 'Strong') ? 'Strong' : 'Good', sourceIds: [...new Set(winner.legs.flatMap(x => x.supportingEvidence.sourceIds))].sort(), principalRisks: winner.legs.flatMap(x => x.reasonsAgainst).filter((x, i, all) => all.indexOf(x) === i).sort(), correlationNotes: winner.notes, rejectedCombinations: rejected, modelVersion: MODEL_VERSION, schemaVersions: { fixture: fixtureVersion, research: researchVersion } }
+  const result: BuilderSuccess = { status: 'builder', kind, selectedLegs: winner.legs, fixtureGroups: [...new Set(winner.legs.map(x => x.fixtureId))].sort().map(fixtureId => ({ fixtureId, candidateIds: winner.legs.filter(x => x.fixtureId === fixtureId).map(x => x.id) })), estimatedCombinedProbability: winner.probability, overallConfidence: high ? 'Strong' : winner.legs.every(x => x.confidence === 'Strong') ? 'Strong' : 'Good', sourceIds: [...new Set(winner.legs.flatMap(x => x.supportingEvidence.sourceIds))].sort(), principalRisks: (winner.legs.flatMap(x => x.reasonsAgainst).filter((x, i, all) => all.indexOf(x) === i).sort().length ? winner.legs.flatMap(x => x.reasonsAgainst).filter((x, i, all) => all.indexOf(x) === i).sort() : ['Combined selections remain subject to their documented evidence samples and correlation adjustment.']), correlationNotes: winner.notes, rejectedCombinations: rejected, modelVersion: MODEL_VERSION, schemaVersions: { fixture: fixtureVersion, research: researchVersion } }
   return result
 }
 
 export function analyse(fixturePack: FixturePack, research: ResearchPack, settings: ModelSettings): AnalysisOutput {
-  const candidates = research.fixtures.flatMap(fixture => ([['home', fixture.homeEvidence], ['away', fixture.awayEvidence]] as const).flatMap(([side, team]) => team.marketHitRates.filter(market => settings.marketAvailability[market.marketGroup] !== 'unavailable').map(market => research.schemaVersion === '1.3.0' ? scoreV13Candidate(fixture, team, side, market, research, fixturePack, settings) : legacyScoreCandidate(fixture, team, side, market, research, fixturePack, settings)))).sort((a, b) => a.id.localeCompare(b.id))
-  return { modelVersion: MODEL_VERSION, settings: { ...settings, marketAvailability: { ...settings.marketAvailability } }, candidates, builders: { highProbability: build('high_probability', candidates, fixturePack.schemaVersion, research.schemaVersion), balanced: build('balanced', candidates, fixturePack.schemaVersion, research.schemaVersion) } }
+  const missing = new Map<MarketGroup, Set<string>>(MARKET_GROUPS.map(group => [group, new Set<string>()]))
+  const candidates = research.fixtures.flatMap(fixture => ([['home', fixture.homeEvidence], ['away', fixture.awayEvidence]] as const).flatMap(([side, team]) => team.marketHitRates.filter(market => settings.marketAvailability[market.marketGroup] !== 'unavailable').flatMap(market => {
+    if (research.schemaVersion !== '1.4.0') return [research.schemaVersion === '1.3.0' ? scoreV13Candidate(fixture, team, side, market, research, fixturePack, settings) : legacyScoreCandidate(fixture, team, side, market, research, fixturePack, settings)]
+    if (market.evidenceRole !== 'candidate_market') return []
+    const result = scoreV14Candidate(fixture, team, side, market, research, fixturePack, settings)
+    result.missing.forEach(item => missing.get(market.marketGroup)!.add(item))
+    return result.candidate ? [result.candidate] : []
+  }))).sort((a, b) => a.id.localeCompare(b.id))
+  const marketCoverage = MARKET_GROUPS.map(marketGroup => { const analysed = candidates.some(c => c.marketGroup === marketGroup); const supplied = research.fixtures.some(f => [f.homeEvidence,f.awayEvidence].some(t => t.marketHitRates.some(e => e.evidenceRole === 'candidate_market' && e.marketGroup === marketGroup))); return { marketGroup, status: analysed ? 'analysed' as const : 'unavailable' as const, missingEvidence: analysed ? [] : [...missing.get(marketGroup)!, ...(supplied ? [] : ['candidate-market evidence not supplied'])].sort() } })
+  return { modelVersion: MODEL_VERSION, settings: { ...settings, marketAvailability: { ...settings.marketAvailability } }, candidates, marketCoverage, builders: { highProbability: build('high_probability', candidates, fixturePack.schemaVersion, research.schemaVersion), balanced: build('balanced', candidates, fixturePack.schemaVersion, research.schemaVersion) } }
 }
