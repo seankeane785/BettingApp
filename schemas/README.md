@@ -54,3 +54,7 @@ The schemas are unchanged. Both prompt builders now render one typed 14-family a
 
 ### ResearchPack v1.4 contract compatibility
 No schema bump is required for the canonical market contract. The v1.4 evidence and benchmark objects already carry the exact market key/group/threshold, candidate versus `supporting_only` role, team side, venue sample, and source references needed by runtime preflight. Runtime validation supplies the cross-record relationship rules that JSON Schema cannot express cleanly; v1.0–v1.4 saved-run reading remains unchanged.
+
+## ResearchPack v1.5
+
+`research-pack.v1.5.schema.json` adds required `marketResearchAudit` and optional per-fixture `derived1x2FromGoals`. `analysis-pack.v1.schema.json` accepts nested v1.4 or v1.5 packs. Older ResearchPack schemas remain available for standalone imports and saved replay.

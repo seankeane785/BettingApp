@@ -13,13 +13,13 @@ export interface AnalysisPackImport {
 export function buildAnalysisPackPrompt(date: string, competitions: Competition[]): string {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) throw new Error('Select a valid date before generating a prompt.')
   if (!competitions.length || new Set(competitions).size !== competitions.length || competitions.some(c => !SUPPORTED_COMPETITIONS.includes(c))) throw new Error('Select at least one unique supported competition.')
-  return `Use ChatGPT Search to discover fixtures and research them. Return one strict JSON object only: AnalysisPack v1 schemaVersion "1.0.0", with an actual UTC generatedAt, a complete FixturePack v1 schemaVersion "1.0.0", and a complete ResearchPack v1 schemaVersion "1.4.0". No prose, Markdown, or additional fields.
+  return `Use ChatGPT Search to discover fixtures and research them. Return one strict JSON object only: AnalysisPack v1 schemaVersion "1.0.0", with an actual UTC generatedAt, a complete FixturePack v1 schemaVersion "1.0.0", and a complete ResearchPack v1 schemaVersion "1.5.0". No prose, Markdown, or additional fields.
 
 FIXTURE DISCOVERY: Interpret ${date} in Europe/London. Include only verified scheduled fixtures in: ${competitions.join(', ')}. Return an empty fixtures array when none match. Use stable durable unique fixture IDs and verified UTC plus Europe/London kick-off values. The ResearchPack fixturePackRef must exactly match fixture schemaVersion and fixtureDate. Include exactly one matching research fixture for every discovered fixture, including insufficient fixtures; match fixtureId, competition, homeTeam and awayTeam exactly.
 
 ${RESEARCH_ACQUISITION_POLICY}
 
-The nested objects must conform exactly to schemas/fixture-pack.v1.schema.json and schemas/research-pack.v1.4.schema.json. Output the AnalysisPack JSON object only.`
+The nested objects must conform exactly to schemas/fixture-pack.v1.schema.json and schemas/research-pack.v1.5.schema.json. Output the AnalysisPack JSON object only.`
 }
 
 const receivedValueDetail = (value: unknown): string => {

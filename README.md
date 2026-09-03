@@ -102,3 +102,7 @@ The same matrix renders `selectionLabel` as mandatory contract data for every ca
 
 ### ResearchPack v1.4 market contract
 All 14 team-level market families now share one typed, executable contract. Research attempts each family independently, while import validation and analysis require the exact candidate key, reciprocal `supporting_only` evidence, threshold, venue record (where applicable), and competition benchmark. Missing exact evidence leaves that family unavailable and does not manufacture or infer a candidate.
+
+## ResearchPack v1.5
+
+ResearchPack v1.5 adds a complete 14-family research audit, a strict five-or-fewer current-season league window, and an optional source-backed `derived_1x2_from_goals` result path. The direct researched result path remains supported. Derived estimates are visibly labelled, use the existing confidence and builder gates, and never force a builder.

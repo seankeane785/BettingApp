@@ -99,3 +99,9 @@ Public statistics pages may omit threshold counts, opponent-allowed splits, venu
 ## Canonical selection-label input
 
 ResearchPack v1.4 labels are intentionally strict input contract data. Manually authored or generated packs using a synonym, extra team prefix/suffix on a static label, a different threshold, or a team name inconsistent with `teamSide` are rejected; import does not normalize or repair them. Users must regenerate or correct the source JSON to the exact label displayed in the generated matrix.
+
+## ResearchPack v1.5 limitations
+
+- Research remains manual; an audit demonstrates the requested route was attempted, not that a provider will always expose a usable value.
+- Venue evidence can be sparse early in a season and is omitted when below the two-match minimum.
+- The 0–10 Poisson grid is deliberately finite and its result outcomes are normalised after aggregation.

@@ -143,3 +143,10 @@ ResearchPack 1.4 already represents all candidate/support/benchmark relationship
 ## 2026-09-03 — Selection labels are canonical contract data
 
 ResearchPack v1.4 candidate and supporting-only labels are defined beside their market keys in the executable market contract. Static labels compare exactly; dynamic labels use only the contract's `{team}` placeholder and exact threshold text. Both prompt paths render these rules, and preflight reports rather than repairs a mismatch. No schema, routing, support, scoring, threshold, builder, import, replay, URL, or availability policy changed.
+
+## 2026-09-03 — v1.5 audit and derived result path
+
+- Preserve v1.0–v1.4 parsing and replay behavior; AnalysisPack v1 accepts v1.4 or v1.5.
+- Require exactly one v1.5 audit row per canonical family. An unavailable row must complete its component route and cite the research attempt.
+- Treat audit data as explainability only.
+- Show estimates from two matches as `usable_partial`, cap them at Good, and retain the existing builder thresholds rather than creating a special promotion or forced selection rule.

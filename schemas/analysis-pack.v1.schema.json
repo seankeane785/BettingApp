@@ -27,7 +27,14 @@
       "$ref": "fixture-pack.v1.schema.json"
     },
     "researchPack": {
-      "$ref": "research-pack.v1.4.schema.json"
+      "oneOf": [
+        {
+          "$ref": "research-pack.v1.4.schema.json"
+        },
+        {
+          "$ref": "research-pack.v1.5.schema.json"
+        }
+      ]
     }
   }
 }
