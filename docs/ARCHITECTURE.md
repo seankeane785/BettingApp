@@ -76,3 +76,5 @@ Both manual prompt builders interpolate a single deterministic research-acquisit
 
 ### Canonical market contract
 `src/domain/marketContract.ts` is the sole executable definition for the 14 ResearchPack v1.4 families. Both prompts render it, validation calls its pure preflight audit, the analysis model consumes the same audit for candidates and coverage, and presentation obtains family labels from it. The JSON Schema remains v1.4.0 because its evidence records already represent exact keys, roles, groups, thresholds, sides, venue samples, sources, and benchmarks.
+
+Candidate and supporting-only variants each carry a label template in that contract. Prompt generation renders those templates directly, while preflight resolves `{team}` from the record side and compares the resulting value exactly. This keeps label presentation out of prompt, validation, and React-specific lookup maps and leaves imported data untouched.

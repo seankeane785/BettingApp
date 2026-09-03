@@ -95,3 +95,7 @@ Public statistics pages may omit threshold counts, opponent-allowed splits, venu
 - Exact current-season threshold observations may remain unavailable after every routed source is checked, particularly for specialist statistics and the optional 2.5 goal thresholds. The prompt must report the first missing component and omit the affected candidate; it must not infer a rate or substitute another goal family.
 
 - Exact current-season threshold evidence may not be exposed by an eligible source, especially for cards, shots, and shots on target. In that case the contract reports the first missing requirement and the family remains unavailable; it never falls back to averages, proxy statistics, player totals, or a nearby threshold.
+
+## Canonical selection-label input
+
+ResearchPack v1.4 labels are intentionally strict input contract data. Manually authored or generated packs using a synonym, extra team prefix/suffix on a static label, a different threshold, or a team name inconsistent with `teamSide` are rejected; import does not normalize or repair them. Users must regenerate or correct the source JSON to the exact label displayed in the generated matrix.

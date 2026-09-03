@@ -140,3 +140,7 @@ Focused prompt-policy tests assert that both generated workflows render one matr
 
 ### Market-contract checks
 `src/domain/marketContract.test.ts` enumerates every supported variant and verifies all 14 families, exact reciprocal keys/roles/groups/thresholds/sides, venue and benchmark gates, and non-substitution. Prompt tests assert that both generated prompts render the shared 14-row matrix exactly once. Run with `npm test`.
+
+## ResearchPack v1.4 selection-label contract
+
+Focused contract tests enumerate every candidate and supporting-only label rule, verify both generated prompt paths render each candidate rule exactly once, and cover exact result labels, team-name templates, thresholds, support labels, and rejected paraphrases/prefixes/suffixes. The full suite remains the regression gate for source routing, evidence support, venue and benchmark gates, scoring, builders, validation, imports, and saved-run replay.

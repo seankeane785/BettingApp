@@ -98,5 +98,7 @@ Generated AnalysisPack and standalone ResearchPack v1.4 prompts now apply the sa
 
 Both generated v1.4 research requests render one shared 14-family matrix. Goal records are disjoint: `team_to_score` means 1+ at threshold `0.5`; `team_goals` means over 1.5 at `1.5`, with over 2.5 at `2.5` attempted only with exact evidence; and `total_goals` uses dedicated match-total records at `1.5` and, where exact evidence exists, `2.5`. Candidate, opponent support, required venue, and same-key/same-threshold benchmark evidence remain mandatory and cannot be substituted across families.
 
+The same matrix renders `selectionLabel` as mandatory contract data for every candidate and supporting-only variant. Static labels such as `Home win`, `Away win`, and `Draw` must be emitted verbatim; team-specific templates replace only `{team}` with the fixture's exact team name, and threshold labels retain the exact canonical threshold. Imports report mismatches without rewriting them.
+
 ### ResearchPack v1.4 market contract
 All 14 team-level market families now share one typed, executable contract. Research attempts each family independently, while import validation and analysis require the exact candidate key, reciprocal `supporting_only` evidence, threshold, venue record (where applicable), and competition benchmark. Missing exact evidence leaves that family unavailable and does not manufacture or infer a candidate.

@@ -4,6 +4,7 @@ import type { FixturePack } from "./types";
 import { MARKET_GROUPS } from "./types";
 import { buildAnalysisPackPrompt } from "./analysisWorkflow";
 import { CANONICAL_MARKET_MATRIX } from "./researchPromptPolicy";
+import { MARKET_CONTRACT } from "./marketContract";
 import { buildResearchPrompt } from "./researchWorkflow";
 
 const fixture = structuredClone(fixtureSample) as unknown as FixturePack;
@@ -27,6 +28,12 @@ describe("v1.4 canonical research prompt policy", () => {
       for (const { marketGroup, label } of CANONICAL_MARKET_MATRIX) {
         expect(occurrences(prompt, `[${marketGroup}]`)).toBe(1);
         expect(prompt).toContain(label);
+      }
+      expect(occurrences(prompt, "selectionLabel is contract data, not prose.")).toBe(1);
+      for (const variant of MARKET_CONTRACT) {
+        expect(occurrences(prompt, `${variant.marketKey}: threshold ${variant.threshold ?? "null"}; selectionLabel \`${variant.selectionLabel.template}\``)).toBe(1);
+        for (const support of variant.support)
+          expect(prompt).toContain(`${support.marketKey} (${support.marketGroup}, threshold ${support.threshold ?? "null"}, selectionLabel \`${support.selectionLabel.template}\`)`);
       }
       for (const heading of ["FIXTURE DISCOVERY:", "SOURCE HIERARCHY", "NO DOUBLE HANDLING:", "PRIVATE RESEARCH WORKFLOW", "OUTPUT INTEGRITY AND SOURCE CONTRACT:", "SCOPED CONTEXT:"])
         expect(occurrences(prompt, heading)).toBe(1);

@@ -139,3 +139,7 @@ Use one typed 14-family definition for both v1.4 prompt workflows rather than re
 
 ## 2026-09-03 — Retain ResearchPack 1.4.0 and centralise market gates
 ResearchPack 1.4 already represents all candidate/support/benchmark relationships without ambiguity. We retained the version and moved variant rules into one typed contract rather than duplicating them in prompts, validation, analysis, and labels. Imported data is audited without mutation; incomplete independent families remain unavailable.
+
+## 2026-09-03 — Selection labels are canonical contract data
+
+ResearchPack v1.4 candidate and supporting-only labels are defined beside their market keys in the executable market contract. Static labels compare exactly; dynamic labels use only the contract's `{team}` placeholder and exact threshold text. Both prompt paths render these rules, and preflight reports rather than repairs a mismatch. No schema, routing, support, scoring, threshold, builder, import, replay, URL, or availability policy changed.

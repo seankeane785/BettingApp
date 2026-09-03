@@ -166,3 +166,10 @@ This file is append-only. Add a dated entry after each material change; do not r
 - Reused a pure contract preflight in strict runtime validation, candidate analysis, diagnostics, and presentation labels without changing scoring or builder behaviour.
 - Retained schema version 1.4.0 and deterministic legacy saved-run compatibility.
 - Added focused exhaustive contract, reciprocal support, exact threshold/group/role/side, venue, benchmark, and substitution tests.
+
+## 2026-09-03 — ResearchPack v1.4 selection-label contract
+
+- Added deterministic candidate and supporting-only label templates to the existing canonical market contract for every variant.
+- Rendered mandatory exact labels and team templates from that contract into both generated prompt paths, with explicit non-prose instructions.
+- Extended pure preflight diagnostics with paths, keys, received and expected labels, and evidence roles while retaining strict, non-mutating runtime rejection.
+- Added focused static, dynamic, threshold, support-label, prompt-rendering, and invalid-paraphrase regressions without changing schemas, routing, scoring, thresholds, builders, URLs, imports, replay, or availability controls.
