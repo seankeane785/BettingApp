@@ -91,3 +91,5 @@ The enhanced prompt makes a structured attempt across every supported family, bu
 ## Research-source limitations
 
 Public statistics pages may omit threshold counts, opponent-allowed splits, venue records, benchmarks, or numeric completed-match statistics, and providers may disagree. After the full specified route is attempted, affected families remain unavailable; the application does not scrape, automate, repair, reconcile, or fabricate missing evidence. A conflict in an exact duplicate component suppresses only candidates dependent on that component.
+
+- Exact current-season threshold observations may remain unavailable after every routed source is checked, particularly for specialist statistics and the optional 2.5 goal thresholds. The prompt must report the first missing component and omit the affected candidate; it must not infer a rate or substitute another goal family.

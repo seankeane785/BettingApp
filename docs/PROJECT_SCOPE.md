@@ -44,3 +44,7 @@ All current ResearchPack v1.4 sources, including those nested in AnalysisPack v1
 ## Manual all-family research
 
 Version 1 directs a manual ChatGPT Search session to attempt every supported team-level family using a deterministic public-source hierarchy. It does not add a backend, API integration, automated collection, or scraping. It excludes player evidence and prohibited prediction/price material and permits every family—and therefore every builder—to remain unavailable.
+
+## Prompt acquisition matrix
+
+The local-first manual workflow uses one shared 14-family prompt matrix. `team_to_score` is restricted to 1+ (`0.5`), while `team_goals` and dedicated match `total_goals` use `1.5` and optionally exact `2.5` records. Families cannot substitute for one another or for BTTS. This cleanup changes generated instructions only; it adds no data collection, presentation scoring, player markets, or odds content.
