@@ -203,6 +203,22 @@ export function analyse(fixturePack: FixturePack, research: ResearchPack, settin
     result.missing.forEach(item => missing.get(market.marketGroup)!.add(item))
     return result.candidate ? [result.candidate] : []
   }))).sort((a, b) => a.id.localeCompare(b.id))
-  const marketCoverage = MARKET_GROUPS.map(marketGroup => { const analysed = candidates.some(c => c.marketGroup === marketGroup); const supplied = research.fixtures.some(f => [f.homeEvidence,f.awayEvidence].some(t => t.marketHitRates.some(e => e.evidenceRole === 'candidate_market' && e.marketGroup === marketGroup))); return { marketGroup, status: analysed ? 'analysed' as const : 'unavailable' as const, missingEvidence: analysed ? [] : [...missing.get(marketGroup)!, ...(supplied ? [] : ['candidate-market evidence not supplied'])].sort() } })
+  const marketCoverage = MARKET_GROUPS.map(marketGroup => {
+    const records = research.fixtures.flatMap(f => [f.homeEvidence, f.awayEvidence]).flatMap(t => t.marketHitRates).filter(e => e.marketGroup === marketGroup)
+    const candidateRecords = records.filter(e => e.evidenceRole === 'candidate_market')
+    const supportingRecords = records.filter(e => e.evidenceRole === 'supporting_only')
+    const benchmarkRecords = (research.competitionBenchmarks ?? []).flatMap(b => b.marketBenchmarks).filter(b => b.marketGroup === marketGroup && candidateRecords.some(c => c.marketKey === b.marketKey && c.threshold === b.threshold))
+    const candidateCount = candidates.filter(c => c.marketGroup === marketGroup).length
+    const missingEvidence = candidateCount ? [] : [...missing.get(marketGroup)!, ...(candidateRecords.length ? [] : ['candidate-market evidence not supplied'])].sort()
+    const family = ({ both_teams_to_score: 'BTTS', match_result: 'Match result', double_chance: 'Double chance', draw_no_bet: 'Draw no bet', total_goals: 'Total goals', team_goals: 'Team goals', team_to_score: 'Team to score', clean_sheet: 'Clean sheet', total_corners: 'Total corners', team_corners: 'Team corners', total_cards: 'Total cards', team_cards: 'Team cards', team_shots: 'Team shots', team_shots_on_target: 'Team shots on target' } as Record<MarketGroup, string>)[marketGroup]
+    let unavailableReason: string | null = null
+    if (!candidateCount) {
+      if (!candidateRecords.length) unavailableReason = `${family} unavailable: ${['total_corners','team_corners','total_cards','team_cards','team_shots','team_shots_on_target'].includes(marketGroup) ? 'no dedicated current-season threshold records were supplied' : `dedicated ${family} candidate evidence was not supplied`}.`
+      else if (!benchmarkRecords.length || missingEvidence.some(reason => reason.startsWith('competition benchmark'))) unavailableReason = `${family} unavailable: no matching current-season competition benchmark was supplied.`
+      else if (!supportingRecords.length && marketGroup !== 'total_goals') unavailableReason = `${family} unavailable: ${marketGroup === 'team_shots' ? 'opponent shots-allowed support' : marketGroup === 'team_shots_on_target' ? 'opponent shots-on-target-allowed support' : 'required supporting-only evidence'} was not supplied.`
+      else unavailableReason = `${family} unavailable: ${missingEvidence.join('; ')}.`
+    }
+    return { marketGroup, status: candidateCount ? 'analysed' as const : 'unavailable' as const, candidateMarketRecordsSupplied: candidateRecords.length, supportingOnlyRecordsSupplied: supportingRecords.length, matchingBenchmarksSupplied: benchmarkRecords.length, candidateCount, missingEvidence, unavailableReason }
+  })
   return { modelVersion: MODEL_VERSION, settings: { ...settings, marketAvailability: { ...settings.marketAvailability } }, candidates, marketCoverage, builders: { highProbability: build('high_probability', candidates, fixturePack.schemaVersion, research.schemaVersion), balanced: build('balanced', candidates, fixturePack.schemaVersion, research.schemaVersion) } }
 }

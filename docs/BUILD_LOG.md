@@ -133,3 +133,9 @@ This file is append-only. Add a dated entry after each material change; do not r
 - Traced the recommended UI import from the controlled textarea through the App handler: input is now trimmed only at its outer boundary, parsed exactly once, and the direct parsed object is validated without URL or source-ID transformation.
 - Added copyable, failure-only `invalid_source_url` diagnostics containing the received JSON value, runtime type, string length, and Unicode code points; successful imports remain unchanged and no console logging was introduced.
 - Added App-handler boundary regressions proving a complex HTTPS URL and the complete reported Everton source object reach validation byte-for-byte unchanged.
+
+## 2026-09-03 — ResearchPack v1.4 research-coverage enhancement
+
+- Strengthened both manual research prompts to require a fixture-by-fixture specialist-source search across every enabled team-level family, exact candidate/support/venue/benchmark gates, and JSON Unicode slash-escaped source URLs.
+- Added model-produced, deterministic per-family coverage counts and precise unavailability reasons, rendered in an auditable detail table without presentation-layer scoring.
+- Added focused gate, non-proxy, support-only, prompt-contract, and diagnostic-presentation regression tests; scoring thresholds, early-season cap, builders, imports, saved runs, and runtime URL validation remain unchanged.

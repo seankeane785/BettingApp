@@ -29,3 +29,7 @@ AnalysisPack changes acquisition and validation, not scoring. Candidate evidence
 ## Specialist evidence acquisition boundary
 
 Research requests seek dedicated current-season threshold hit rates for total/team corners, total/team cards, team shots, and team shots on target, plus required opponent allowance/support and exact same-key/same-threshold competition benchmarks. The scoring model is unchanged: it does not infer these records from goals, possession, generic averages, xG alone, narrative reporting, fouls, or referee averages. Manual availability cannot create evidence, probabilities, confidence, or candidates.
+
+## v1.4 research-coverage audit
+
+Coverage reporting does not alter scoring. For each enabled family, the model counts supplied candidate and supporting records, benchmarks whose key and threshold match a supplied candidate, and candidates that passed the existing evidence matrix. An unavailable reason identifies the absent dedicated candidate evidence, mandatory opponent support, relevant venue record, or exact current-season benchmark. `supporting_only` inputs remain non-selectable, the early-season partial-data cap is unchanged, and no candidate or builder is forced.
