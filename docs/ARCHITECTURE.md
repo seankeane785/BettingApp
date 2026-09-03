@@ -65,3 +65,7 @@ The ResearchPack validator is the canonical source boundary for both standalone 
 ## Research source routing
 
 Prompt generation owns a deterministic source hierarchy without fetching data: official fixture verification, SoccerStats current-season aggregates, then FotMob, SofaScore, and official completed-match centres for explicit specialist values. Imported JSON still passes through the unchanged v1.4 schema and validation boundary. Analysis and presentation do not identify sources or derive records; the model consumes only supplied evidence and the coverage view renders model-owned diagnostics.
+
+## Shared research-acquisition policy
+
+Both manual prompt builders interpolate a single deterministic research-acquisition policy. The browser still performs no network request: ChatGPT Search executes the instructed public-source research, and the unchanged import validators enforce the existing AnalysisPack v1, FixturePack v1.0.0, and ResearchPack v1.4.0 contracts. Component ownership prevents duplicate-provider blending; conflicts omit only the affected market candidate.

@@ -40,3 +40,7 @@ The local-only scope includes a manual one-prompt, one-import AnalysisPack workf
 ## Research source contract
 
 All current ResearchPack v1.4 sources, including those nested in AnalysisPack v1, use exactly `sourceId`, `url`, `title`, and `retrievedAt`; source IDs are lowercase kebab-case and retrieval timestamps are UTC values ending in `Z`. Specialist research remains manual and must use dedicated current-season team-level records rather than proxies. Market availability settings remain metadata and never generate model inputs.
+
+## Manual all-family research
+
+Version 1 directs a manual ChatGPT Search session to attempt every supported team-level family using a deterministic public-source hierarchy. It does not add a backend, API integration, automated collection, or scraping. It excludes player evidence and prohibited prediction/price material and permits every family—and therefore every builder—to remain unavailable.

@@ -43,3 +43,7 @@ ResearchPack v1.4, whether imported separately or nested in AnalysisPack v1, dec
 ## ResearchPack v1.4 research-coverage acquisition
 
 The v1.4 schema continues to keep `candidate_market` and `supporting_only` records distinct. Generated prompts require an individual current-season league-only search for every supported team-level family and an exact same-key/same-threshold competition benchmark plus matrix-required support for each candidate. Missing evidence is omitted rather than defaulted. Prompts request URL slashes as JSON Unicode escapes (for example `https:\u002F\u002Fexample.com\u002Fmatch`); JSON decoding restores the ordinary HTTPS URL before the unchanged runtime validation runs.
+
+## v1.4 acquisition policy (contract unchanged)
+
+The generated prompts share a component-level hierarchy and independently attempt all 14 existing market groups. FootyStats is preferred for exact aggregate components, with exact-component-only fallbacks and no merging or double counting. Missing, proxy, player-derived, or conflicting evidence is omitted. No fields, enum values, schema versions, source-validation rules, or saved-pack compatibility changed.

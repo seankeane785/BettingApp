@@ -87,3 +87,7 @@ The enhanced prompt makes a structured attempt across every supported family, bu
 - Source pages can change layout or omit exact current-season thresholds. The workflow deliberately leaves affected families unavailable rather than deriving rates from averages.
 - Cards, shots, and shots-on-target coverage depends on visible numeric values in completed-match pages and may require manual counting across many matches.
 - The application does not fetch, scrape, or verify sources; users remain responsible for running the generated prompt in ChatGPT Search and importing its strict JSON response.
+
+## Research-source limitations
+
+Public statistics pages may omit threshold counts, opponent-allowed splits, venue records, benchmarks, or numeric completed-match statistics, and providers may disagree. After the full specified route is attempted, affected families remain unavailable; the application does not scrape, automate, repair, reconcile, or fabricate missing evidence. A conflict in an exact duplicate component suppresses only candidates dependent on that component.

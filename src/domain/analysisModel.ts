@@ -213,8 +213,26 @@ export function analyse(fixturePack: FixturePack, research: ResearchPack, settin
     const family = ({ both_teams_to_score: 'BTTS', match_result: 'Match result', double_chance: 'Double chance', draw_no_bet: 'Draw no bet', total_goals: 'Total goals', team_goals: 'Team goals', team_to_score: 'Team to score', clean_sheet: 'Clean sheet', total_corners: 'Total corners', team_corners: 'Team corners', total_cards: 'Total cards', team_cards: 'Team cards', team_shots: 'Team shots', team_shots_on_target: 'Team shots on target' } as Record<MarketGroup, string>)[marketGroup]
     let unavailableReason: string | null = null
     if (!candidateCount) {
-      if (!candidateRecords.length) unavailableReason = `${family} unavailable: ${['total_cards','team_cards','team_shots','team_shots_on_target'].includes(marketGroup) ? 'Direct specialist match-stat evidence not supplied' : 'SoccerStats threshold evidence not supplied'}.`
-      else if (!supportingRecords.length && marketGroup !== 'total_goals') unavailableReason = `${family} unavailable: Mandatory opponent support not supplied.`
+      if (!candidateRecords.length) {
+        const firstMissing: Partial<Record<MarketGroup, string>> = {
+          both_teams_to_score: 'dedicated BTTS candidate evidence missing; team-to-score evidence is not a substitute',
+          team_cards: 'no exact current-season team-card threshold observations found after StatBunker, FotMob, SofaScore and official match-centre checks',
+          total_cards: 'no exact current-season total-card threshold observations found after FootyStats, SoccerStats, StatBunker, FotMob, SofaScore and official match-centre checks',
+          team_shots: 'no exact current-season team-shot threshold observations found after FootyStats, SoccerStats, FotMob, SofaScore, official match-centre and eligible WhoScored checks',
+          team_shots_on_target: 'no exact current-season shots-on-target threshold observations found after FootyStats, SoccerStats, FotMob, SofaScore, official match-centre and eligible WhoScored checks',
+          match_result: 'exact current-season candidate W/D/L evidence missing',
+        }
+        unavailableReason = `${family} unavailable: ${firstMissing[marketGroup] ?? 'exact current-season candidate threshold evidence missing after the specified source route was attempted'}.`
+      }
+      else if (!supportingRecords.length && marketGroup !== 'total_goals') {
+        const missingSupport: Partial<Record<MarketGroup, string>> = {
+          team_corners: 'opponent corners-conceded support missing',
+          team_shots: 'explicit opponent shots-allowed threshold support missing',
+          team_shots_on_target: 'explicit opponent shots-on-target-allowed threshold support missing',
+          match_result: 'relevant venue W/D/L evidence or opponent support missing',
+        }
+        unavailableReason = `${family} unavailable: ${missingSupport[marketGroup] ?? 'mandatory opponent support missing'}.`
+      }
       else if (!benchmarkRecords.length || missingEvidence.some(reason => reason.startsWith('competition benchmark'))) unavailableReason = `${family} unavailable: Matching competition benchmark not supplied.`
       else unavailableReason = `${family} unavailable: ${missingEvidence.join('; ')}.`
     }

@@ -37,3 +37,7 @@ Coverage reporting does not alter scoring. For each enabled family, the model co
 ## Source-routing boundary
 
 Source routing changes research instructions, not scoring. SoccerStats-supported evidence and exact specialist match-centre evidence enter the same v1.4 gates and formulas. An average in `optionalMetrics` is not a threshold record and cannot create a candidate. Missing candidate evidence, mandatory opponent support, required venue evidence, or an exact matching competition benchmark continues to produce no candidate. Coverage reasons now distinguish missing SoccerStats thresholds, missing direct specialist values, missing opponent support, and missing benchmarks.
+
+## Acquisition does not change scoring
+
+The expanded 14-family research checklist changes only how a manual ChatGPT Search session attempts to acquire eligible evidence. Every candidate still needs exact candidate evidence, matrix-required opponent support, venue evidence where required, and a same-key/same-threshold benchmark. No checked source creates points, no average or proxy creates a record, and all weights, thresholds, quality caps, correlations, builder rules, and “No qualifying builder today” behaviour remain unchanged.
