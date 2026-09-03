@@ -1,53 +1,71 @@
-import { describe, expect, it } from 'vitest'
-import fixtureSample from '../../samples/fixture-pack.v1.sample.json'
-import type { FixturePack } from './types'
-import { buildAnalysisPackPrompt } from './analysisWorkflow'
-import { buildResearchPrompt } from './researchWorkflow'
+import { describe, expect, it } from "vitest";
+import fixtureSample from "../../samples/fixture-pack.v1.sample.json";
+import type { FixturePack } from "./types";
+import { MARKET_GROUPS } from "./types";
+import { buildAnalysisPackPrompt } from "./analysisWorkflow";
+import { CANONICAL_MARKET_MATRIX } from "./researchPromptPolicy";
+import { buildResearchPrompt } from "./researchWorkflow";
 
-const fixture = structuredClone(fixtureSample) as unknown as FixturePack
-fixture.fixtures[0].fixtureId = 'real-fixture'
-fixture.fixtures[0].homeTeam = 'Home FC'
-fixture.fixtures[0].awayTeam = 'Away FC'
-const prompts = () => [buildAnalysisPackPrompt('2026-09-03', ['Premier League']), buildResearchPrompt(fixture, { referenceTimestamp: '2026-09-03T08:00:00Z', maximumAgeHours: 24 })]
+const fixture = structuredClone(fixtureSample) as unknown as FixturePack;
+fixture.fixtures[0].fixtureId = "real-fixture";
+fixture.fixtures[0].homeTeam = "Home FC";
+fixture.fixtures[0].awayTeam = "Away FC";
+const prompts = () => [
+  buildAnalysisPackPrompt("2026-09-03", ["Premier League"]),
+  buildResearchPrompt(fixture, {
+    referenceTimestamp: "2026-09-03T08:00:00Z",
+    maximumAgeHours: 24,
+  }),
+];
+const occurrences = (text: string, needle: string) => text.split(needle).length - 1;
 
-describe('v1.4 research acquisition policy', () => {
-  it('embeds the complete ordered hierarchy and all 14 independently attempted families in both prompts', () => {
+describe("v1.4 canonical research prompt policy", () => {
+  it("defines all 14 displayed families once in one shared typed matrix", () => {
+    expect(CANONICAL_MARKET_MATRIX.map(({ marketGroup }) => marketGroup)).toEqual(MARKET_GROUPS);
     for (const prompt of prompts()) {
-      const hierarchy = ['1. Official Premier League / EFL fixture pages', '2. FootyStats', '3. SoccerStats', '4. StatBunker', '5. Direct completed-match pages', '6. WhoScored', '7. PROHIBITED']
-      hierarchy.forEach((entry, index) => { expect(prompt).toContain(entry); if (index) expect(prompt.indexOf(entry)).toBeGreaterThan(prompt.indexOf(hierarchy[index - 1])) })
-      for (const family of ['Match result', 'Double chance', 'Draw no bet', 'Both teams to score (BTTS)', 'Total goals', 'Team goals', 'Team to score', 'Clean sheets', 'Total corners', 'Team corners', 'Total cards', 'Team cards', 'Team shots', 'Team shots on target']) expect(prompt).toMatch(new RegExp(`\\d+\\. ${family.replace(/[()]/g, '\\$&')} — attempt`))
-      expect(prompt).toContain('Attempt each market family independently')
+      expect(occurrences(prompt, "CANONICAL MARKET MATRIX")).toBe(1);
+      for (const { marketGroup, label } of CANONICAL_MARKET_MATRIX) {
+        expect(occurrences(prompt, `[${marketGroup}]`)).toBe(1);
+        expect(prompt).toContain(label);
+      }
+      for (const heading of ["FIXTURE DISCOVERY:", "SOURCE HIERARCHY", "NO DOUBLE HANDLING:", "PRIVATE RESEARCH WORKFLOW", "OUTPUT INTEGRITY AND SOURCE CONTRACT:", "SCOPED CONTEXT:"])
+        expect(occurrences(prompt, heading)).toBe(1);
     }
-  })
+  });
 
-  it('makes component ownership and fallback selection deterministic without duplicate handling', () => {
+  it("keeps goal families distinct and non-substitutable", () => {
     for (const prompt of prompts()) {
-      expect(prompt).toContain('preferred aggregate source')
-      expect(prompt).toContain('fallback aggregate source only when FootyStats does not expose the exact required component')
-      expect(prompt).toContain("Once a source supplies a valid component, retain that source's value and do not collect a fallback duplicate")
-      expect(prompt).toContain('Never combine, average, merge or double-count')
-      expect(prompt).toContain('conflicting values for the exact same current-season metric and scope')
-      expect(prompt).toContain('treat only that market component as unreliable')
+      const teamToScore = CANONICAL_MARKET_MATRIX.findIndex(({ marketGroup }) => marketGroup === "team_to_score");
+      const rows = prompt.split("\n").filter((line) => /^\d+\./.test(line));
+      const ttsRow = rows.find((line) => line.includes("[team_to_score]"))!;
+      const teamGoalsRow = rows.find((line) => line.includes("[team_goals]"))!;
+      const totalGoalsRow = rows.find((line) => line.includes("[total_goals]"))!;
+      expect(teamToScore).toBeGreaterThan(-1);
+      expect(ttsRow).toContain("threshold 0.5");
+      expect(ttsRow).toContain("BTTS");
+      expect(ttsRow).not.toMatch(/1\.5|2\.5/);
+      expect(teamGoalsRow).toContain("threshold 1.5");
+      expect(teamGoalsRow).toContain("threshold 2.5");
+      expect(teamGoalsRow).toContain("never 0.5");
+      expect(teamGoalsRow).toContain("team_to_score substitution");
+      expect(totalGoalsRow).toContain("threshold 1.5");
+      expect(totalGoalsRow).toContain("threshold 2.5");
+      expect(totalGoalsRow).toContain("team-goal substitution");
+      expect(rows.find((line) => line.includes("[both_teams_to_score]"))).toContain("team_to_score record");
     }
-  })
+  });
 
-  it('restricts specialist sources and disallows averages, proxies, and player aggregation', () => {
+  it("retains hierarchy, component ownership, gates, conflicts, and diagnostics", () => {
     for (const prompt of prompts()) {
-      expect(prompt).toContain('targeted fallback only for team discipline and team-card evidence')
-      expect(prompt).toContain('never aggregate or sum player statistics into team evidence')
-      expect(prompt).toContain('FotMob; then SofaScore; then official Premier League or EFL completed-match centre')
-      expect(prompt).toContain('An average alone is never sufficient')
-      expect(prompt).toContain('merely an average/proxy, omit that candidate market')
-      expect(prompt).toContain('WhoScored — Premier League-only fallback')
+      for (const source of ["Official Premier League / EFL", "FootyStats", "SoccerStats", "StatBunker", "FotMob → SofaScore → official", "WhoScored", "WinDrawWin", "Flashscore"])
+        expect(prompt).toContain(source);
+      for (const gate of ["exact candidate evidence", "mandatory supporting_only opponent evidence", "required venue evidence", "exact same-marketKey/same-threshold competition benchmark"])
+        expect(prompt).toContain(gate);
+      for (const diagnostic of ["missing candidate evidence", "missing supporting-only evidence", "missing required venue evidence", "missing matching benchmark", "source conflict", "no exact source-backed threshold observations"])
+        expect(prompt).toContain(diagnostic);
+      expect(prompt).toContain("never combine, average, merge, or double-count");
+      expect(prompt).toContain("omit only the affected candidate");
+      expect(prompt).toContain("attempt every row independently");
     }
-  })
-
-  it('retains every mandatory candidate gate and defines unavailable as researched', () => {
-    for (const prompt of prompts()) {
-      for (const gate of ['exact candidate current-season threshold evidence', 'mandatory supporting_only opponent evidence', 'required current home/away venue evidence', 'exact same-marketKey, same-threshold competition benchmark', 'declared source citations for every populated component']) expect(prompt).toContain(gate)
-      expect(prompt).toContain('it must never mean “not researched.”')
-      expect(prompt).toContain('Include every discovered fixture even where all families are insufficient')
-      expect(prompt).toContain('no exact current-season team-card threshold observations found after StatBunker, FotMob, SofaScore and official match-centre checks')
-    }
-  })
-})
+  });
+});

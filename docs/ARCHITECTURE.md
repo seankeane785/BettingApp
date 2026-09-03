@@ -69,3 +69,7 @@ Prompt generation owns a deterministic source hierarchy without fetching data: o
 ## Shared research-acquisition policy
 
 Both manual prompt builders interpolate a single deterministic research-acquisition policy. The browser still performs no network request: ChatGPT Search executes the instructed public-source research, and the unchanged import validators enforce the existing AnalysisPack v1, FixturePack v1.0.0, and ResearchPack v1.4.0 contracts. Component ownership prevents duplicate-provider blending; conflicts omit only the affected market candidate.
+
+## Shared canonical prompt matrix
+
+`researchPromptPolicy.ts` owns a typed 14-row market matrix and renders it into both AnalysisPack and standalone ResearchPack prompts. Prompt-specific code supplies fixture scope only; source hierarchy, component ownership, private workflow, evidence gates, output/source contract, diagnostics, and scoped context are emitted once. This is prompt acquisition policy only and does not alter schemas, validation, scoring, builders, routing, imports, or replay.

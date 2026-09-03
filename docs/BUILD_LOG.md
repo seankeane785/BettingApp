@@ -153,3 +153,9 @@ This file is append-only. Add a dated entry after each material change; do not r
 - Made FootyStats the preferred aggregate component owner, SoccerStats the exact-component fallback, StatBunker the team-discipline fallback, and FotMob → SofaScore → official completed-match centre the direct-stat route, with Premier League-only WhoScored shot fallback.
 - Required an independent attempt for all 14 supported market families, exact candidate/support/venue/benchmark gates, no duplicate-provider handling, and component-specific conflict rejection.
 - Improved unavailable-family diagnostics without changing evidence schemas, candidate calculations, thresholds, builders, correlations, validation, or saved-run replay.
+
+## 2026-09-03 — Canonical research-prompt market matrix
+
+- Replaced repeated market-coverage prose in both generated v1.4 prompts with one shared typed 14-family matrix.
+- Corrected prompt acquisition definitions so team-to-score is only threshold 0.5, while team goals and total goals use exact 1.5 and optional exact 2.5 evidence without cross-family or BTTS substitution.
+- Preserved source routing, component ownership, evidence gates, conflict isolation, model-owned diagnostics, schemas, validation, scoring, builders, imports, and saved-run replay; added focused prompt tests and policy documentation.

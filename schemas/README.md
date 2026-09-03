@@ -47,3 +47,7 @@ The v1.4 schema continues to keep `candidate_market` and `supporting_only` recor
 ## v1.4 acquisition policy (contract unchanged)
 
 The generated prompts share a component-level hierarchy and independently attempt all 14 existing market groups. FootyStats is preferred for exact aggregate components, with exact-component-only fallbacks and no merging or double counting. Missing, proxy, player-derived, or conflicting evidence is omitted. No fields, enum values, schema versions, source-validation rules, or saved-pack compatibility changed.
+
+## Canonical v1.4 prompt matrix
+
+The schemas are unchanged. Both prompt builders now render one typed 14-family acquisition matrix. It distinguishes `team_to_score` threshold `0.5`, `team_goals` thresholds `1.5`/optional exact `2.5`, and dedicated `total_goals` thresholds `1.5`/optional exact `2.5`; records and benchmarks cannot substitute across those groups or BTTS. Existing candidate/support/venue/benchmark validation remains unchanged.
