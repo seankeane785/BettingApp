@@ -75,4 +75,28 @@ describe("v1.5 canonical research prompt policy", () => {
       expect(prompt).toContain("attempt every row independently");
     }
   });
+
+  it("renders import-safe v1.5 audit, derived-input, and empty-result contracts", () => {
+    const auditFields = ['"marketGroup"', '"attempted"', '"routesAttempted"', '"candidateEvidenceFound"', '"supportEvidenceFound"', '"benchmarkFound"', '"status"', '"firstBlockingReason"', '"sourceIds"'];
+    const marketGroups = ["match_result", "double_chance", "draw_no_bet", "both_teams_to_score", "total_goals", "team_goals", "team_to_score", "clean_sheet", "total_corners", "team_corners", "total_cards", "team_cards", "team_shots", "team_shots_on_target"];
+    const routes = ["official_fixture", "footystats", "soccerstats", "fotmob", "sofascore", "official_match_centre", "statbunker", "whoscored"];
+    const blockers = ["missing_candidate_observation", "missing_support_observation", "missing_venue_observation", "missing_benchmark", "source_conflict", "no_exact_threshold_observation"];
+    const derivedShape = '{ "strategy": "derived_1x2_from_goals", "home": { "matchesPlayed": 2, "goalsScored": 0, "goalsConceded": 0, "sourceIds": ["declared-source-id"] }, "away": { "matchesPlayed": 2, "goalsScored": 0, "goalsConceded": 0, "sourceIds": ["declared-source-id"] }, "competitionCompletedFixtures": 1, "competitionPerTeamGoals": 1, "competitionSourceIds": ["declared-source-id"], "sourceConflict": false }';
+    for (const prompt of prompts()) {
+      expect(prompt).toContain("ResearchPack.marketResearchAudit (JSON path $.researchPack.marketResearchAudit inside AnalysisPack, or $.marketResearchAudit for a standalone ResearchPack)");
+      for (const value of [...marketGroups, ...routes, ...blockers, "available", "unavailable"]) expect(prompt).toContain(value);
+      for (const field of auditFields) expect(prompt).toContain(field);
+      expect(prompt).toContain("one and only one entry for each of the 14 marketGroup enum values");
+      expect(prompt).toContain("sourceIds is a non-empty array of unique, non-empty IDs declared in ResearchPack.sources");
+      expect(prompt).toContain("additional properties are forbidden");
+      expect(prompt).toContain("ResearchPack.fixtures[].derived1x2FromGoals (JSON path $.researchPack.fixtures[].derived1x2FromGoals inside AnalysisPack)");
+      expect(prompt).toContain(derivedShape);
+      expect(prompt).toContain('{ "matchesPlayed": 1, "goalsScored": 0, "goalsConceded": 0, "sourceIds": ["declared-source-id"] }');
+      expect(prompt).toContain("FormFirst—not ChatGPT Search—calculates the seven Poisson-derived result outputs");
+      expect(prompt).toContain("FixturePack.fixtures: [], ResearchPack.fixtures: [], ResearchPack.competitionBenchmarks: [], and ResearchPack.marketResearchAudit: []");
+      expect(prompt).toContain("No scheduled fixtures for the selected date and competitions");
+      expect(prompt).not.toMatch(/"(?:field|property|value|key)(?:Name)?"/i);
+      expect(prompt).not.toContain("...");
+    }
+  });
 });
