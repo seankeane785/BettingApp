@@ -48,3 +48,7 @@ Prompt acquisition now states the existing goal evidence identities explicitly. 
 
 ### v1.4 contract preflight
 The canonical market-contract preflight is a gate before the unchanged v1.4 scoring calculation. A candidate reaches scoring only with its exact key, group, side and threshold; every defined reciprocal support record; required venue sample; and exact current-season competition benchmark. No weights, priors, confidence thresholds, builder rules, or correlation rules changed.
+
+## Model-derived current-season 1X2 estimate (v1.5)
+
+The optional strategy uses prior strength 4 and the competition per-team-goal baseline to smooth each team's rolling attack and defence rates. Expected goals are the baseline multiplied by the square root of candidate attack index and opponent defence index and are conservatively clamped to 0.2–3.5. A sourced venue component is averaged in only with at least two venue matches; otherwise it is omitted. Independent Poisson values for 0–10 goals are aggregated and normalised into home win, draw and away win. Double chance is the relevant win plus draw; draw-no-bet is the relevant win divided by the two decisive outcomes. Values are rounded only when presented.

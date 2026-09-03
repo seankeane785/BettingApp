@@ -78,3 +78,7 @@ Both manual prompt builders interpolate a single deterministic research-acquisit
 `src/domain/marketContract.ts` is the sole executable definition for the 14 ResearchPack v1.4 families. Both prompts render it, validation calls its pure preflight audit, the analysis model consumes the same audit for candidates and coverage, and presentation obtains family labels from it. The JSON Schema remains v1.4.0 because its evidence records already represent exact keys, roles, groups, thresholds, sides, venue samples, sources, and benchmarks.
 
 Candidate and supporting-only variants each carry a label template in that contract. Prompt generation renders those templates directly, while preflight resolves `{team}` from the record side and compares the resulting value exactly. This keeps label presentation out of prompt, validation, and React-specific lookup maps and leaves imported data untouched.
+
+## ResearchPack v1.5 boundary
+
+The import boundary validates the audit before analysis. Audit metadata is presentation-only. The deterministic model separately validates and consumes `derived1x2FromGoals`; it smooths current goal rates, optionally incorporates qualifying sourced venue samples, clamps expected goals to 0.2–3.5, evaluates an independent Poisson grid from 0–10, and normalises the three result outcomes.

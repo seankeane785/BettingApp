@@ -51,3 +51,7 @@ The local-first manual workflow uses one shared 14-family prompt matrix. `team_t
 
 ### Team-market research coverage
 Version 1 attempts all 14 configured team-level market families. Availability is evidence-dependent: a family can be analysed only from exact current-season league, source-backed contract evidence, and may otherwise report unavailable. Player markets and automated collection remain out of scope.
+
+## v1.5 scope
+
+Version 1.5 remains local and manual. It covers all 14 team-level families independently, records attempted source routes, restricts team observations to the latest five-or-fewer completed current-season league matches, and may derive result estimates from complete sourced goal inputs. Missing or conflicting inputs produce no derived candidate.

@@ -1,7 +1,7 @@
 import { marketFamilyLabel, preflightCandidate } from './marketContract'
 import { MARKET_GROUPS, type AnalysisOutput, type BuilderKind, type BuilderOutcome, type BuilderSuccess, type CandidateDataQuality, type CandidateSelection, type Confidence, type FixturePack, type MarketEvidence, type MarketGroup, type ModelSettings, type RejectedCombination, type ResearchFixture, type ResearchPack, type TeamEvidence } from './types'
 
-export const MODEL_VERSION = 'FormFirst Model v1.4.0' as const
+export const MODEL_VERSION = 'FormFirst Model v1.5.0' as const
 export const defaultModelSettings = (referenceTimestamp: string, maximumSourceAgeHours: number): ModelSettings => ({ referenceTimestamp, maximumSourceAgeHours, marketAvailability: Object.fromEntries(MARKET_GROUPS.map(group => [group, 'unknown'])) as Record<MarketGroup, 'unknown'> })
 
 const clamp = (value: number) => Math.max(0, Math.min(100, value))
@@ -15,7 +15,7 @@ const family = (market: MarketEvidence) => {
   return `${market.marketGroup}:${market.teamSide}`
 }
 export const directContextPenalty = (fixture: ResearchFixture, candidateSide: MarketEvidence['teamSide'], schemaVersion: ResearchPack['schemaVersion']) => {
-  if (!['1.2.0', '1.3.0', '1.4.0'].includes(schemaVersion) || !['home', 'away'].includes(candidateSide)) return { points: 0, material: false }
+  if (!['1.2.0', '1.3.0', '1.4.0', '1.5.0'].includes(schemaVersion) || !['home', 'away'].includes(candidateSide)) return { points: 0, material: false }
   const applicable = [fixture.teamNews, fixture.fixtureCongestion, fixture.managerialContext].filter(item => item.application === 'candidate_penalty' && (item.scope === candidateSide || item.scope === 'both'))
   return { points: applicable.reduce((sum, item) => sum + (item.impact === 'material' ? 30 : item.impact === 'caution' ? 10 : 0), 0), material: applicable.some(item => item.impact === 'material') }
 }
@@ -161,6 +161,42 @@ export const relationship = (a: CandidateSelection, b: CandidateSelection): { ex
 }
 
 const combinations = <T>(items: T[], min: number, max: number) => { const output: T[][] = []; const visit = (start: number, chosen: T[]) => { if (chosen.length >= min) output.push([...chosen]); if (chosen.length === max) return; for (let i = start; i < items.length; i++) visit(i + 1, [...chosen, items[i]]) }; visit(0, []); return output }
+
+const poisson = (goals: number, lambda: number) => Math.exp(-lambda) * lambda ** goals / Array.from({ length: goals }, (_, i) => i + 1).reduce((a, b) => a * b, 1)
+export function derive1x2(fixture: ResearchFixture) {
+  const input = fixture.derived1x2FromGoals
+  if (!input || input.sourceConflict || input.competitionPerTeamGoals <= 0 || input.competitionCompletedFixtures < 1 || input.home.matchesPlayed < 2 || input.away.matchesPlayed < 2) return null
+  const baseline = input.competitionPerTeamGoals, prior = 4
+  const indices = (team: typeof input.home) => {
+    const attack = ((team.goalsScored + prior * baseline) / (team.matchesPlayed + prior)) / baseline
+    const defence = ((team.goalsConceded + prior * baseline) / (team.matchesPlayed + prior)) / baseline
+    if (!team.venue || team.venue.matchesPlayed < 2) return { attack, defence }
+    return { attack: (attack + ((team.venue.goalsScored + prior * baseline) / (team.venue.matchesPlayed + prior)) / baseline) / 2, defence: (defence + ((team.venue.goalsConceded + prior * baseline) / (team.venue.matchesPlayed + prior)) / baseline) / 2 }
+  }
+  const home = indices(input.home), away = indices(input.away)
+  const homeXg = Math.max(.2, Math.min(3.5, baseline * Math.sqrt(home.attack * away.defence)))
+  const awayXg = Math.max(.2, Math.min(3.5, baseline * Math.sqrt(away.attack * home.defence)))
+  const hp = Array.from({ length: 11 }, (_, goals) => poisson(goals, homeXg)), ap = Array.from({ length: 11 }, (_, goals) => poisson(goals, awayXg))
+  let homeWin = 0, draw = 0, awayWin = 0
+  for (let h = 0; h <= 10; h++) for (let a = 0; a <= 10; a++) { const p = hp[h] * ap[a]; if (h > a) homeWin += p; else if (h === a) draw += p; else awayWin += p }
+  const total = homeWin + draw + awayWin; homeWin /= total; draw /= total; awayWin /= total
+  return { homeWin, draw, awayWin, homeOrDraw: homeWin + draw, awayOrDraw: awayWin + draw, homeDrawNoBet: homeWin / (homeWin + awayWin), awayDrawNoBet: awayWin / (awayWin + homeWin), expectedGoals: { home: homeXg, away: awayXg } }
+}
+
+const derivedCandidates = (fixture: ResearchFixture, research: ResearchPack, fixturePack: FixturePack, settings: ModelSettings): CandidateSelection[] => {
+  const result = derive1x2(fixture), input = fixture.derived1x2FromGoals
+  if (!result || !input) return []
+  const rows = [
+    ['match_result','match_result_home_win','Home win','home',result.homeWin], ['match_result','match_result_away_win','Away win','away',result.awayWin], ['match_result','match_result_draw','Draw','match',result.draw],
+    ['double_chance','double_chance_home_or_draw','Home or draw','home',result.homeOrDraw], ['double_chance','double_chance_away_or_draw','Away or draw','away',result.awayOrDraw],
+    ['draw_no_bet','draw_no_bet_home','Home draw no bet','home',result.homeDrawNoBet], ['draw_no_bet','draw_no_bet_away','Away draw no bet','away',result.awayDrawNoBet],
+  ] as const
+  const partial = input.home.matchesPlayed < 5 || input.away.matchesPlayed < 5
+  const quality: CandidateDataQuality = partial ? 'usable_partial' : 'qualifying'
+  const sourceIds = [...new Set([...input.home.sourceIds, ...input.away.sourceIds, ...(input.home.venue?.sourceIds ?? []), ...(input.away.venue?.sourceIds ?? []), ...input.competitionSourceIds])].sort()
+  return rows.filter(([group]) => settings.marketAvailability[group] !== 'unavailable').map(([marketGroup, marketKey, selectionLabel, teamSide, probability]) => ({ id: `${fixture.fixtureId}:${marketKey}:derived`, fixtureId: fixture.fixtureId, competition: fixture.competition, homeTeam: fixture.homeTeam, awayTeam: fixture.awayTeam, marketKey, marketGroup, selectionLabel, estimatedProbability: round(probability * 100), confidence: candidateTier(probability * 100, quality, false), dataQuality: quality, supportingEvidence: { sourceIds, hitRatePercent: round(probability * 100), sampleSize: Math.min(input.home.matchesPlayed, input.away.matchesPlayed), componentScores: { hitRate: round(probability * 100), reliability: partial ? 40 : 70, recentForm: 0, venue: 0, underlying: 0, opponentContext: 0, cautionPenalty: 0 }, evidenceUseTrace: { candidate: `Model-derived current-season 1X2 estimate from ${input.home.matchesPlayed} home-team and ${input.away.matchesPlayed} away-team rolling-window matches.`, opponent: 'Opponent attack and defence goal indices included.', benchmark: `Current-season per-team-goal baseline ${baselineText(input.competitionPerTeamGoals)} across ${input.competitionCompletedFixtures} completed fixtures.`, venue: input.home.venue || input.away.venue ? 'Only sourced venue components meeting the two-match minimum were applied.' : 'Venue component omitted; no neutral substitute inserted.', context: 'No contextual input changes the derived calculation.', sourceIds } }, reasonsFor: ['Model-derived current-season 1X2 estimate.', `Independent Poisson score grid used goals 0–10 with expected goals clamped to 0.2–3.5.`], reasonsAgainst: partial ? ['Two-to-four-match evidence is usable_partial, capped at Good, and remains subject to unchanged builder gates.'] : [], modelVersion: MODEL_VERSION, fixtureSchemaVersion: fixturePack.schemaVersion, researchSchemaVersion: research.schemaVersion, manualMarketVerificationRequired: true, manualMarketVerificationReason: 'Availability and settlement rules are separate metadata and require manual checking.', correlation: { fixtureId: fixture.fixtureId, teamSide, family: `result:${teamSide}`, relationships: ['Model-derived current-season 1X2 estimate.'] } }))
+}
+const baselineText = (value: number) => String(Math.round(value * 1000) / 1000)
 const build = (kind: BuilderKind, candidates: CandidateSelection[], fixtureVersion: string, researchVersion: string): BuilderOutcome => {
   const high = kind === 'high_probability', minProbability = high ? 72 : 62, minimumCombined = high ? 55 : 35, max = high ? 4 : 6
   const eligible = candidates.filter(item => item.estimatedProbability >= minProbability && (high ? item.confidence === 'Strong' : ['Strong', 'Good'].includes(item.confidence))).sort((a, b) => a.id.localeCompare(b.id))
@@ -181,13 +217,13 @@ const build = (kind: BuilderKind, candidates: CandidateSelection[], fixtureVersi
 
 export function analyse(fixturePack: FixturePack, research: ResearchPack, settings: ModelSettings): AnalysisOutput {
   const missing = new Map<MarketGroup, Set<string>>(MARKET_GROUPS.map(group => [group, new Set<string>()]))
-  const candidates = research.fixtures.flatMap(fixture => ([['home', fixture.homeEvidence], ['away', fixture.awayEvidence]] as const).flatMap(([side, team]) => team.marketHitRates.filter(market => settings.marketAvailability[market.marketGroup] !== 'unavailable').flatMap(market => {
-    if (research.schemaVersion !== '1.4.0') return [research.schemaVersion === '1.3.0' ? scoreV13Candidate(fixture, team, side, market, research, fixturePack, settings) : legacyScoreCandidate(fixture, team, side, market, research, fixturePack, settings)]
+  const candidates = research.fixtures.flatMap(fixture => [...([['home', fixture.homeEvidence], ['away', fixture.awayEvidence]] as const).flatMap(([side, team]) => team.marketHitRates.filter(market => settings.marketAvailability[market.marketGroup] !== 'unavailable').flatMap(market => {
+    if (!['1.4.0','1.5.0'].includes(research.schemaVersion)) return [research.schemaVersion === '1.3.0' ? scoreV13Candidate(fixture, team, side, market, research, fixturePack, settings) : legacyScoreCandidate(fixture, team, side, market, research, fixturePack, settings)]
     if (market.evidenceRole !== 'candidate_market') return []
     const result = scoreV14Candidate(fixture, team, side, market, research, fixturePack, settings)
     result.missing.forEach(item => missing.get(market.marketGroup)!.add(item))
     return result.candidate ? [result.candidate] : []
-  }))).sort((a, b) => a.id.localeCompare(b.id))
+  })), ...(research.schemaVersion === '1.5.0' ? derivedCandidates(fixture, research, fixturePack, settings) : [])]).sort((a, b) => a.id.localeCompare(b.id))
   const marketCoverage = MARKET_GROUPS.map(marketGroup => {
     const records = research.fixtures.flatMap(f => [f.homeEvidence, f.awayEvidence]).flatMap(t => t.marketHitRates).filter(e => e.marketGroup === marketGroup)
     const candidateRecords = records.filter(e => e.evidenceRole === 'candidate_market')
@@ -221,7 +257,9 @@ export function analyse(fixturePack: FixturePack, research: ResearchPack, settin
       else if (!benchmarkRecords.length || missingEvidence.some(reason => reason.startsWith('competition benchmark'))) unavailableReason = `${family} unavailable: Matching competition benchmark not supplied.`
       else unavailableReason = `${family} unavailable: ${missingEvidence.join('; ')}.`
     }
-    return { marketGroup, status: candidateCount ? 'analysed' as const : 'unavailable' as const, candidateMarketRecordsSupplied: candidateRecords.length, supportingOnlyRecordsSupplied: supportingRecords.length, matchingBenchmarksSupplied: benchmarkRecords.length, candidateCount, missingEvidence, unavailableReason }
+    const audit = research.schemaVersion === '1.5.0' ? research.marketResearchAudit?.find(item => item.marketGroup === marketGroup) : undefined
+    const hasDerived = candidates.some(candidate => candidate.marketGroup === marketGroup && candidate.id.endsWith(':derived'))
+    return { marketGroup, status: candidateCount ? 'analysed' as const : 'unavailable' as const, candidateMarketRecordsSupplied: candidateRecords.length, supportingOnlyRecordsSupplied: supportingRecords.length, matchingBenchmarksSupplied: benchmarkRecords.length, candidateCount, missingEvidence, unavailableReason: audit?.status === 'unavailable' ? `${family} unavailable: ${audit.firstBlockingReason}.` : unavailableReason, researchAuditStatus: audit?.status, routesAttempted: audit?.routesAttempted, firstBlockingReason: audit?.firstBlockingReason, resultEvidencePath: ['match_result','double_chance','draw_no_bet'].includes(marketGroup) ? hasDerived ? 'model_derived' as const : candidateCount ? 'direct_researched' as const : 'none' as const : undefined }
   })
   return { modelVersion: MODEL_VERSION, settings: { ...settings, marketAvailability: { ...settings.marketAvailability } }, candidates, marketCoverage, builders: { highProbability: build('high_probability', candidates, fixturePack.schemaVersion, research.schemaVersion), balanced: build('balanced', candidates, fixturePack.schemaVersion, research.schemaVersion) } }
 }

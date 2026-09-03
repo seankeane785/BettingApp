@@ -144,3 +144,7 @@ Focused prompt-policy tests assert that both generated workflows render one matr
 ## ResearchPack v1.4 selection-label contract
 
 Focused contract tests enumerate every candidate and supporting-only label rule, verify both generated prompt paths render each candidate rule exactly once, and cover exact result labels, team-name templates, thresholds, support labels, and rejected paraphrases/prefixes/suffixes. The full suite remains the regression gate for source routing, evidence support, venue and benchmark gates, scoring, builders, validation, imports, and saved-run replay.
+
+## v1.5 checks
+
+Coverage includes audit shape/route exhaustion, exact rolling windows, derived probability identities, missing/conflicting derived inputs, prompt policy, direct v1.4 compatibility, schema parsing, lint, unit tests, production build and `git diff --check`.

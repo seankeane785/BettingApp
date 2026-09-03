@@ -56,7 +56,7 @@ export function buildResearchPrompt(
       kickOff,
     }),
   );
-  return `Research every supplied Premier League and Championship fixture and return only strict ResearchPack v1 JSON with schemaVersion "1.4.0".
+  return `Research every supplied Premier League and Championship fixture and return only strict ResearchPack v1 JSON with schemaVersion "1.5.0".
 
 FixturePack reference: schema ${pack.schemaVersion}, date ${pack.fixtureDate}. Maximum source age: ${maximumSourceAgeHours} hours.
 Fixtures: ${JSON.stringify(fixtures, null, 2)}

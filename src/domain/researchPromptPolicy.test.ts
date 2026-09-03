@@ -20,7 +20,7 @@ const prompts = () => [
 ];
 const occurrences = (text: string, needle: string) => text.split(needle).length - 1;
 
-describe("v1.4 canonical research prompt policy", () => {
+describe("v1.5 canonical research prompt policy", () => {
   it("defines all 14 displayed families once in one shared typed matrix", () => {
     expect(CANONICAL_MARKET_MATRIX.map(({ marketGroup }) => marketGroup)).toEqual(MARKET_GROUPS);
     for (const prompt of prompts()) {
@@ -64,7 +64,7 @@ describe("v1.4 canonical research prompt policy", () => {
 
   it("retains hierarchy, component ownership, gates, conflicts, and diagnostics", () => {
     for (const prompt of prompts()) {
-      for (const source of ["Official Premier League / EFL", "FootyStats", "SoccerStats", "StatBunker", "FotMob → SofaScore → official", "WhoScored", "WinDrawWin", "Flashscore"])
+      for (const source of ["Official Premier League / EFL", "FootyStats", "SoccerStats", "StatBunker", "FotMob", "WhoScored", "WinDrawWin", "Flashscore"])
         expect(prompt).toContain(source);
       for (const gate of ["exact candidate evidence", "mandatory supporting_only opponent evidence", "required venue evidence", "exact same-marketKey/same-threshold competition benchmark"])
         expect(prompt).toContain(gate);
