@@ -57,3 +57,7 @@ ResearchPack v1.4 distinguishes selectable `candidate_market` evidence from `sup
 ## Source boundary and specialist research
 
 The ResearchPack validator is the canonical source boundary for both standalone v1.4 imports and nested AnalysisPack imports. It accepts only `sourceId`, `url`, `title`, and `retrievedAt`, and citation traversal resolves solely through declared kebab-case `sourceId` values. Generated prompts request specialist evidence explicitly, while the unchanged deterministic model continues to enforce candidate, support, and benchmark gates independently of manual availability metadata.
+
+## Research coverage diagnostics
+
+`analysisModel.ts` now emits the complete per-family coverage audit alongside candidates: supplied `candidate_market` and `supporting_only` counts, candidate-matching benchmark count, produced candidate count, and a deterministic unavailable reason. `App.tsx` and `analysisPresentation.ts` only format those model fields; they do not reconstruct evidence gates or scores. Acquisition remains a manually copied prompt and locally imported JSON.

@@ -77,3 +77,7 @@ The recommended AnalysisPack import does not repair or migrate input. It parses 
 ## Specialist source availability
 
 Dedicated current-season threshold statistics for corners, cards, team shots, and team shots on target may still be unavailable from credible manually researched sources. The generated request now makes this search a priority, but FormFirst intentionally leaves the market unavailable if exact candidate evidence, required opponent support, or a same-key/same-threshold benchmark cannot be sourced. Availability dropdowns cannot repair these evidence gaps.
+
+## Manual specialist research remains source-dependent
+
+The enhanced prompt makes a structured attempt across every supported family, but credible current-season match statistics and exact competition benchmarks may not exist or may not be accessible for every fixture. Such families deliberately remain unavailable with a specific model diagnostic; the application does not collect data automatically, substitute proxies, or increase candidate counts artificially.

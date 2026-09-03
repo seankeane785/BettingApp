@@ -81,3 +81,7 @@ Select a Europe/London date and supported competitions, choose **Generate match 
 ### Canonical research sources and specialist coverage
 
 ResearchPack v1.4 and the nested AnalysisPack ResearchPack use one strict source shape: `{ "sourceId": "non-empty kebab-case string", "url": "HTTPS URL", "title": "non-empty string", "retrievedAt": "ISO 8601 UTC timestamp ending in Z" }`. The legacy `id` field is not supported. Generated requests explicitly prioritise dedicated current-season corners, cards, team shots and team shots-on-target thresholds, opponent support and exact benchmarks. Missing records leave the market unavailable; manual availability controls never create or alter evidence or candidates.
+
+### Research coverage audit (v1.4 enhancement)
+
+Generated AnalysisPack and standalone ResearchPack requests now begin with official match-centre and established specialist-statistics research for every completed current-season league match involving each fixture team, and explicitly attempt every supported family. Candidate records remain optional and require exact candidate, matrix support, applicable venue, and competition-benchmark evidence. Source URLs are requested with JSON `\u002F` slash escapes so copied JSON is not changed into Markdown links; runtime URL validation is unchanged. Analysis results show model-provided candidate-record, support-record, matching-benchmark, produced-candidate, and unavailability diagnostics for every family.

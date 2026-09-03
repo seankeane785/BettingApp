@@ -39,3 +39,7 @@ ResearchPack v1.4 distinguishes selectable `candidate_market` evidence from `sup
 ## Canonical source object
 
 ResearchPack v1.4, whether imported separately or nested in AnalysisPack v1, declares every source as exactly `{ "sourceId": "non-empty kebab-case string", "url": "absolute HTTPS URL with a hostname", "title": "non-empty string", "retrievedAt": "ISO 8601 UTC timestamp ending in Z" }`. URLs may contain normal paths, query strings, fragments, and hyphens, and no source-domain allowlist is applied. HTTP, protocol-relative, relative, malformed, empty, and non-string URL values are rejected. `sourceId` matches `^[a-z0-9]+(?:-[a-z0-9]+)*$`; `id` and additional source properties are not accepted. Evidence citations contain declared `sourceId` values only.
+
+## ResearchPack v1.4 research-coverage acquisition
+
+The v1.4 schema continues to keep `candidate_market` and `supporting_only` records distinct. Generated prompts require an individual current-season league-only search for every supported team-level family and an exact same-key/same-threshold competition benchmark plus matrix-required support for each candidate. Missing evidence is omitted rather than defaulted. Prompts request URL slashes as JSON Unicode escapes (for example `https:\u002F\u002Fexample.com\u002Fmatch`); JSON decoding restores the ordinary HTTPS URL before the unchanged runtime validation runs.

@@ -1,4 +1,4 @@
-import type { AnalysisOutput, BuilderOutcome, BuilderSuccess, CandidateSelection, Confidence, EvidenceUseTrace, FixturePack } from './types'
+import type { AnalysisOutput, BuilderOutcome, BuilderSuccess, CandidateSelection, Confidence, EvidenceUseTrace, FixturePack, MarketCoverage } from './types'
 
 export const SETTLEMENT_STATEMENT = 'Verify market availability and settlement rules in Paddy Power before placing.'
 export const NO_BUILDER_STATEMENT = 'No qualifying builder today'
@@ -44,3 +44,7 @@ export function evidenceTraceLabels(trace?: EvidenceUseTrace): string[] {
   const values: [string, string | null][] = [['Candidate record', trace.candidate], ['Opponent support', trace.opponent], ['Competition benchmark', trace.benchmark], ['Relevant venue record', trace.venue], ['Scoped context penalty', trace.context]]
   return values.filter(([, value]) => typeof value === 'string' && value.trim().length > 0).map(([label, value]) => `${label}: ${value!.trim()}`)
 }
+
+/** Presentation-only wording: counts and availability decisions are model output. */
+export const marketCoverageLabel = (coverage: MarketCoverage): string =>
+  coverage.status === 'analysed' ? 'Available for analysis.' : coverage.unavailableReason ?? 'Unavailable: required evidence was not supplied.'
