@@ -81,3 +81,9 @@ Dedicated current-season threshold statistics for corners, cards, team shots, an
 ## Manual specialist research remains source-dependent
 
 The enhanced prompt makes a structured attempt across every supported family, but credible current-season match statistics and exact competition benchmarks may not exist or may not be accessible for every fixture. Such families deliberately remain unavailable with a specific model diagnostic; the application does not collect data automatically, substitute proxies, or increase candidate counts artificially.
+
+## Research source availability (2026-09-03)
+
+- Source pages can change layout or omit exact current-season thresholds. The workflow deliberately leaves affected families unavailable rather than deriving rates from averages.
+- Cards, shots, and shots-on-target coverage depends on visible numeric values in completed-match pages and may require manual counting across many matches.
+- The application does not fetch, scrape, or verify sources; users remain responsible for running the generated prompt in ChatGPT Search and importing its strict JSON response.

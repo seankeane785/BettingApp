@@ -85,3 +85,7 @@ ResearchPack v1.4 and the nested AnalysisPack ResearchPack use one strict source
 ### Research coverage audit (v1.4 enhancement)
 
 Generated AnalysisPack and standalone ResearchPack requests now begin with official match-centre and established specialist-statistics research for every completed current-season league match involving each fixture team, and explicitly attempt every supported family. Candidate records remain optional and require exact candidate, matrix support, applicable venue, and competition-benchmark evidence. Source URLs are requested with JSON `\u002F` slash escapes so copied JSON is not changed into Markdown links; runtime URL validation is unchanged. Analysis results show model-provided candidate-record, support-record, matching-benchmark, produced-candidate, and unavailability diagnostics for every family.
+
+### Research source routing (ResearchPack v1.4)
+
+Generated combined and standalone research prompts use SoccerStats as the mandatory primary current-season aggregate route for Premier League and Championship result, BTTS, goals, clean-sheet, and corner families. Exact specialist match statistics fall back, in order, to FotMob, SofaScore, then official Premier League/EFL completed-match centres. WinDrawWin is prohibited. Averages are not threshold hit rates; missing exact counts, opponent support, venue evidence, or matching benchmarks leave a family unavailable.

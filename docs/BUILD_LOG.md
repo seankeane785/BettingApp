@@ -139,3 +139,10 @@ This file is append-only. Add a dated entry after each material change; do not r
 - Strengthened both manual research prompts to require a fixture-by-fixture specialist-source search across every enabled team-level family, exact candidate/support/venue/benchmark gates, and JSON Unicode slash-escaped source URLs.
 - Added model-produced, deterministic per-family coverage counts and precise unavailability reasons, rendered in an auditable detail table without presentation-layer scoring.
 - Added focused gate, non-proxy, support-only, prompt-contract, and diagnostic-presentation regression tests; scoring thresholds, early-season cap, builders, imports, saved runs, and runtime URL validation remain unchanged.
+
+## 2026-09-03 — ResearchPack v1.4 source routing
+
+- Replaced generic source guidance in both generated prompts with official fixture verification, mandatory SoccerStats aggregate research, and the FotMob → SofaScore → official match-centre specialist fallback order.
+- Prohibited WinDrawWin, made exact threshold-count requirements explicit, and retained all current-season, team-only, source-citation, evidence, venue, benchmark, and no-default gates.
+- Added source-aware unavailable reasons and focused prompt/model regressions without changing schemas, scoring, builders, validation, availability controls, persistence, or presentation calculations.
+- Verification passed: `npm run lint`; `npm test` (10 files, 140 tests); `npm run build`; JSON parsing for every schema, sample, and JSON fixture; and `git diff --check`.
