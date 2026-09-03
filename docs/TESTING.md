@@ -137,3 +137,6 @@ Prompt tests assert both generated workflows contain the complete ordered source
 ## Canonical prompt-matrix checks (2026-09-03)
 
 Focused prompt-policy tests assert that both generated workflows render one matrix with all 14 families exactly once; keep the three goal families and BTTS non-substitutable; retain candidate, supporting-only, venue, and matching-benchmark gates; and preserve ordered source routing, ownership, conflict isolation, and model-owned missing-evidence diagnostics. The full suite continues to cover unchanged v1.4 validation, scoring, builders, imports, and saved-run replay.
+
+### Market-contract checks
+`src/domain/marketContract.test.ts` enumerates every supported variant and verifies all 14 families, exact reciprocal keys/roles/groups/thresholds/sides, venue and benchmark gates, and non-substitution. Prompt tests assert that both generated prompts render the shared 14-row matrix exactly once. Run with `npm test`.

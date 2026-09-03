@@ -136,3 +136,6 @@ FootyStats owns an exact aggregate component when available; SoccerStats is cons
 ## 2026-09-03 — One canonical research-prompt market matrix
 
 Use one typed 14-family definition for both v1.4 prompt workflows rather than repeating coverage prose. Treat `team_to_score` (`0.5`), `team_goals` (`1.5`, optional exact `2.5`), and `total_goals` (`1.5`, optional exact `2.5`) as non-substitutable evidence families. Preserve model-owned diagnostics and every existing acquisition gate and source route.
+
+## 2026-09-03 — Retain ResearchPack 1.4.0 and centralise market gates
+ResearchPack 1.4 already represents all candidate/support/benchmark relationships without ambiguity. We retained the version and moved variant rules into one typed contract rather than duplicating them in prompts, validation, analysis, and labels. Imported data is audited without mutation; incomplete independent families remain unavailable.

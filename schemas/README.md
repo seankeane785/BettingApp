@@ -51,3 +51,6 @@ The generated prompts share a component-level hierarchy and independently attemp
 ## Canonical v1.4 prompt matrix
 
 The schemas are unchanged. Both prompt builders now render one typed 14-family acquisition matrix. It distinguishes `team_to_score` threshold `0.5`, `team_goals` thresholds `1.5`/optional exact `2.5`, and dedicated `total_goals` thresholds `1.5`/optional exact `2.5`; records and benchmarks cannot substitute across those groups or BTTS. Existing candidate/support/venue/benchmark validation remains unchanged.
+
+### ResearchPack v1.4 contract compatibility
+No schema bump is required for the canonical market contract. The v1.4 evidence and benchmark objects already carry the exact market key/group/threshold, candidate versus `supporting_only` role, team side, venue sample, and source references needed by runtime preflight. Runtime validation supplies the cross-record relationship rules that JSON Schema cannot express cleanly; v1.0–v1.4 saved-run reading remains unchanged.

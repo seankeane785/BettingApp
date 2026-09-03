@@ -1,3 +1,4 @@
+import { marketFamilyLabel, preflightCandidate } from './marketContract'
 import { MARKET_GROUPS, type AnalysisOutput, type BuilderKind, type BuilderOutcome, type BuilderSuccess, type CandidateDataQuality, type CandidateSelection, type Confidence, type FixturePack, type MarketEvidence, type MarketGroup, type ModelSettings, type RejectedCombination, type ResearchFixture, type ResearchPack, type TeamEvidence } from './types'
 
 export const MODEL_VERSION = 'FormFirst Model v1.4.0' as const
@@ -123,30 +124,14 @@ function scoreV13Candidate(fixture: ResearchFixture, team: TeamEvidence, side: '
 }
 
 export const V14_SCORING = { priorFixtures: 4, candidateWeight: .45, supportWeight: .35, venueWeight: .10, benchmarkWeight: .10 } as const
-const textMatch = (e: MarketEvidence, words: string[]) => words.some(word => e.marketKey.includes(word))
-function v14Requirements(market: MarketEvidence, own: TeamEvidence, opponent: TeamEvidence) {
-  const support = (team: TeamEvidence, predicate: (e: MarketEvidence) => boolean) => team.marketHitRates.find(e => e.evidenceRole === 'supporting_only' && predicate(e))
-  const same = (e: MarketEvidence) => e.marketGroup === market.marketGroup && e.threshold === market.threshold
-  const result = ['match_result','double_chance','draw_no_bet'].includes(market.marketGroup)
-  if (result) return { support: support(opponent, same), missing: [...(market.venueSampleSize ? [] : ['candidate relevant venue record']), ...(support(opponent, same)?.venueSampleSize ? [] : ['opponent win/draw/loss and relevant venue record'])] }
-  if (market.marketGroup === 'both_teams_to_score') {
-    const records = [support(own, e => textMatch(e, ['score'])), support(own, e => textMatch(e, ['concede'])), support(opponent, e => textMatch(e, ['score'])), support(opponent, e => textMatch(e, ['concede']))]
-    return { support: records[0], supports: records, missing: records.map((x, i) => x ? '' : ['home scoring','home conceding','away scoring','away conceding'][i]).filter(Boolean) }
-  }
-  if (['team_goals','team_to_score'].includes(market.marketGroup)) return { support: support(opponent, e => e.threshold === market.threshold && textMatch(e, ['concede'])), missing: [] }
-  if (market.marketGroup === 'clean_sheet') return { support: support(opponent, e => textMatch(e, ['fail_to_score','failed_to_score'])), missing: [] }
-  if (market.marketGroup === 'total_goals') return { support: undefined, missing: [] }
-  return { support: support(opponent, same), missing: [] }
-}
 function scoreV14Candidate(fixture: ResearchFixture, team: TeamEvidence, side: 'home' | 'away', market: MarketEvidence, research: ResearchPack, fixturePack: FixturePack, settings: ModelSettings): { candidate?: CandidateSelection; missing: string[] } {
-  const opponentTeam = side === 'home' ? fixture.awayEvidence : fixture.homeEvidence
-  const req = v14Requirements(market, team, opponentTeam)
-  const supports: MarketEvidence[] = (req.supports ?? (req.support ? [req.support] : [])).filter((item): item is MarketEvidence => Boolean(item))
-  const benchmark = benchmarkEvidence(market, fixture, research)
-  const missing = [...req.missing]
+  const candidateArray = side === 'home' ? 'homeEvidence' : 'awayEvidence'
+  const audit = preflightCandidate(research, fixture, candidateArray, team.marketHitRates.indexOf(market))
+  const supports = audit.support
+  const benchmark = audit.benchmark
+  const missing = audit.issues.map(item => item.message)
   if (!market.sourceIds.length || !market.sampleSize) missing.push('candidate current-season evidence')
-  if (!benchmark || benchmark.threshold !== market.threshold || benchmark.supportPercent === null || !benchmark.sourceIds.length) missing.push(`competition benchmark for ${market.marketKey} at threshold ${market.threshold ?? 'none'}`)
-  if (market.marketGroup !== 'total_goals' && !supports.length) missing.push('matching opponent/support evidence')
+  if (benchmark && (benchmark.supportPercent === null || !benchmark.sourceIds.length)) missing.push(`competition benchmark for ${market.marketKey} lacks source-backed support percent`)
   if (missing.length || !benchmark || benchmark.supportPercent === null) return { missing: [...new Set(missing)] }
   const candidateRate = smoothRate(market.hits, market.sampleSize, benchmark.supportPercent)
   const supportRates = supports.map(e => smoothRate(e.hits, e.sampleSize, benchmark.supportPercent!))
@@ -210,7 +195,7 @@ export function analyse(fixturePack: FixturePack, research: ResearchPack, settin
     const benchmarkRecords = (research.competitionBenchmarks ?? []).flatMap(b => b.marketBenchmarks).filter(b => b.marketGroup === marketGroup && candidateRecords.some(c => c.marketKey === b.marketKey && c.threshold === b.threshold))
     const candidateCount = candidates.filter(c => c.marketGroup === marketGroup).length
     const missingEvidence = candidateCount ? [] : [...missing.get(marketGroup)!, ...(candidateRecords.length ? [] : ['candidate-market evidence not supplied'])].sort()
-    const family = ({ both_teams_to_score: 'BTTS', match_result: 'Match result', double_chance: 'Double chance', draw_no_bet: 'Draw no bet', total_goals: 'Total goals', team_goals: 'Team goals', team_to_score: 'Team to score', clean_sheet: 'Clean sheet', total_corners: 'Total corners', team_corners: 'Team corners', total_cards: 'Total cards', team_cards: 'Team cards', team_shots: 'Team shots', team_shots_on_target: 'Team shots on target' } as Record<MarketGroup, string>)[marketGroup]
+    const family = marketFamilyLabel(marketGroup)
     let unavailableReason: string | null = null
     if (!candidateCount) {
       if (!candidateRecords.length) {

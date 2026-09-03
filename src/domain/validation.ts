@@ -1,3 +1,4 @@
+import { preflightCandidate } from './marketContract'
 import { MARKET_GROUPS, SUPPORTED_COMPETITIONS, type AnalysisPack, type FixturePack, type FreshnessOptions, type ResearchPack, type SavedAnalysisRun, type ValidationIssue, type ValidationResult } from './types'
 
 const datePattern = /^\d{4}-\d{2}-\d{2}$/
@@ -102,11 +103,8 @@ export function validateResearchPack(value: unknown, fixturePack?: FixturePack, 
       const path = `$.fixtures[${fi}].${sideName}.marketHitRates[${mi}]`
       if (!['candidate_market','supporting_only'].includes(String(market.evidenceRole))) errors.push(issue('invalid_evidence_role', `${path}.evidenceRole`, 'ResearchPack 1.4 market evidence requires an explicit candidate_market or supporting_only role.'))
       if (market.evidenceRole !== 'candidate_market') continue
-      const benchmark = typed.competitionBenchmarks?.find(b => b.competition === fixture.competition)?.marketBenchmarks.find(b => b.marketKey === market.marketKey && b.marketGroup === market.marketGroup && b.threshold === market.threshold)
-      if (!benchmark) errors.push(issue('missing_matching_benchmark', path, 'Candidate market evidence requires the same current-season competition market key and threshold benchmark.'))
-      const requiresSupport = market.marketGroup !== 'total_goals'
-      const hasSupport = opponent.marketHitRates.some(e => e.evidenceRole === 'supporting_only' && (e.marketGroup === market.marketGroup || ['team_goals','team_to_score','clean_sheet','both_teams_to_score'].includes(market.marketGroup)))
-      if (requiresSupport && !hasSupport) errors.push(issue('missing_required_support', path, 'Candidate market evidence requires explicit matching current-season opponent/support evidence.'))
+      void opponent
+      errors.push(...preflightCandidate(typed, fixture, sideName, mi).issues)
     }
   }
   const checkCitations = (x: unknown, path: string) => { if (record(x) && 'sourceIds' in x) { if (!Array.isArray(x.sourceIds) || x.sourceIds.length === 0) errors.push(issue('missing_source_citation', `${path}.sourceIds`, 'Populated evidence requires at least one source citation.')); else x.sourceIds.forEach((id, i) => { if (typeof id !== 'string' || !sourceIds.has(id)) errors.push(issue('unknown_source_citation', `${path}.sourceIds[${i}]`, `Unknown source ID: ${String(id)}.`)) }) } if (Array.isArray(x)) x.forEach((n, i) => checkCitations(n, `${path}[${i}]`)); else if (record(x)) Object.entries(x).forEach(([k, n]) => checkCitations(n, `${path}.${k}`)) }; checkCitations(v.fixtures, '$.fixtures'); if (v.schemaVersion === '1.3.0' || v.schemaVersion === '1.4.0') checkCitations(v.competitionBenchmarks, '$.competitionBenchmarks')

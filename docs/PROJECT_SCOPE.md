@@ -48,3 +48,6 @@ Version 1 directs a manual ChatGPT Search session to attempt every supported tea
 ## Prompt acquisition matrix
 
 The local-first manual workflow uses one shared 14-family prompt matrix. `team_to_score` is restricted to 1+ (`0.5`), while `team_goals` and dedicated match `total_goals` use `1.5` and optionally exact `2.5` records. Families cannot substitute for one another or for BTTS. This cleanup changes generated instructions only; it adds no data collection, presentation scoring, player markets, or odds content.
+
+### Team-market research coverage
+Version 1 attempts all 14 configured team-level market families. Availability is evidence-dependent: a family can be analysed only from exact current-season league, source-backed contract evidence, and may otherwise report unavailable. Player markets and automated collection remain out of scope.

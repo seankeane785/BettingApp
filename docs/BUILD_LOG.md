@@ -159,3 +159,10 @@ This file is append-only. Add a dated entry after each material change; do not r
 - Replaced repeated market-coverage prose in both generated v1.4 prompts with one shared typed 14-family matrix.
 - Corrected prompt acquisition definitions so team-to-score is only threshold 0.5, while team goals and total goals use exact 1.5 and optional exact 2.5 evidence without cross-family or BTTS substitution.
 - Preserved source routing, component ownership, evidence gates, conflict isolation, model-owned diagnostics, schemas, validation, scoring, builders, imports, and saved-run replay; added focused prompt tests and policy documentation.
+
+## 2026-09-03 — ResearchPack v1.4 market-contract hardening
+- Added one typed contract covering every supported variant across all 14 team-level market dropdown families.
+- Rendered the same contract into standalone ResearchPack and generated AnalysisPack prompts with the mandatory private audit and reciprocal-side guidance.
+- Reused a pure contract preflight in strict runtime validation, candidate analysis, diagnostics, and presentation labels without changing scoring or builder behaviour.
+- Retained schema version 1.4.0 and deterministic legacy saved-run compatibility.
+- Added focused exhaustive contract, reciprocal support, exact threshold/group/role/side, venue, benchmark, and substitution tests.
