@@ -33,3 +33,7 @@ Research requests seek dedicated current-season threshold hit rates for total/te
 ## v1.4 research-coverage audit
 
 Coverage reporting does not alter scoring. For each enabled family, the model counts supplied candidate and supporting records, benchmarks whose key and threshold match a supplied candidate, and candidates that passed the existing evidence matrix. An unavailable reason identifies the absent dedicated candidate evidence, mandatory opponent support, relevant venue record, or exact current-season benchmark. `supporting_only` inputs remain non-selectable, the early-season partial-data cap is unchanged, and no candidate or builder is forced.
+
+## Source-routing boundary
+
+Source routing changes research instructions, not scoring. SoccerStats-supported evidence and exact specialist match-centre evidence enter the same v1.4 gates and formulas. An average in `optionalMetrics` is not a threshold record and cannot create a candidate. Missing candidate evidence, mandatory opponent support, required venue evidence, or an exact matching competition benchmark continues to produce no candidate. Coverage reasons now distinguish missing SoccerStats thresholds, missing direct specialist values, missing opponent support, and missing benchmarks.

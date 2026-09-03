@@ -125,3 +125,7 @@ The import boundary trims only leading/trailing whitespace, parses once, and sen
 ## ResearchPack v1.4 coverage-enhancement checks
 
 Focused tests exercise a team-to-score-only pack, dedicated corners/cards/shots/shots-on-target/BTTS/total-goals/clean-sheet/result records, exact support and benchmark failures, non-candidate support records, goal-only non-inference, deterministic diagnostics, presentation-only diagnostic formatting, and both prompts' complete family/evidence matrix and `\u002F` URL-copy contract. The full suite remains the regression gate for import, source validation, scoring, builders, and saved runs.
+
+## ResearchPack v1.4 source-routing checks (2026-09-03)
+
+Focused prompt tests require SoccerStats as the primary source, the FotMob → SofaScore → official match-centre fallback order, WinDrawWin prohibition, exact threshold counts rather than averages, supported families, and unchanged evidence gates. Model tests cover SoccerStats-supported and specialist records passing existing gates, average-only optional metrics remaining non-candidates, direct-stat families remaining unavailable without records, and source-specific coverage reasons. The complete lint, Vitest, build, schema-JSON, and whitespace suites remain delivery gates.

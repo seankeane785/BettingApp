@@ -61,3 +61,7 @@ The ResearchPack validator is the canonical source boundary for both standalone 
 ## Research coverage diagnostics
 
 `analysisModel.ts` now emits the complete per-family coverage audit alongside candidates: supplied `candidate_market` and `supporting_only` counts, candidate-matching benchmark count, produced candidate count, and a deterministic unavailable reason. `App.tsx` and `analysisPresentation.ts` only format those model fields; they do not reconstruct evidence gates or scores. Acquisition remains a manually copied prompt and locally imported JSON.
+
+## Research source routing
+
+Prompt generation owns a deterministic source hierarchy without fetching data: official fixture verification, SoccerStats current-season aggregates, then FotMob, SofaScore, and official completed-match centres for explicit specialist values. Imported JSON still passes through the unchanged v1.4 schema and validation boundary. Analysis and presentation do not identify sources or derive records; the model consumes only supplied evidence and the coverage view renders model-owned diagnostics.
