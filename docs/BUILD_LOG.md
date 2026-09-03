@@ -186,3 +186,9 @@ This file is append-only. Add a dated entry after each material change; do not r
 - Made both generated v1.5 prompts self-contained with strict top-level, fixture, 14-family audit, and optional derived-goal input shapes taken from the existing schema.
 - Clarified that ChatGPT Search returns sourced inputs only and FormFirst owns all seven Poisson-derived result calculations.
 - Defined the empty-fixture AnalysisPack response and aligned the browser's no-fixture message, without changing schemas, validation, routing, markets, or model calculations.
+
+## 2026-09-03 — AnalysisPack v1 prompt-envelope correction
+
+- Added the exact five-field AnalysisPack envelope ahead of the ResearchPack skeleton in both generated prompts, including nesting, cross-reference, audit-path, and empty-fixture requirements.
+- Corrected the ResearchPack v1.5 contract to state and enumerate exactly nine top-level fields, with focused regression coverage excluding stale eight-field wording.
+- Left schemas, calculations, validators, source routing, audit rules, and market rules unchanged.
