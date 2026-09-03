@@ -180,3 +180,9 @@ This file is append-only. Add a dated entry after each material change; do not r
 - Added strict 14-family research audit and rolling-window validation.
 - Added deterministic source-backed derived result calculations, coverage presentation and prompt instructions.
 - Added derived-model tests and refreshed prompt regression expectations.
+
+## 2026-09-03 — ResearchPack v1.5 prompt-output contracts
+
+- Made both generated v1.5 prompts self-contained with strict top-level, fixture, 14-family audit, and optional derived-goal input shapes taken from the existing schema.
+- Clarified that ChatGPT Search returns sourced inputs only and FormFirst owns all seven Poisson-derived result calculations.
+- Defined the empty-fixture AnalysisPack response and aligned the browser's no-fixture message, without changing schemas, validation, routing, markets, or model calculations.

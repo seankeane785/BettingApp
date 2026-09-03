@@ -105,3 +105,4 @@ ResearchPack v1.4 labels are intentionally strict input contract data. Manually 
 - Research remains manual; an audit demonstrates the requested route was attempted, not that a provider will always expose a usable value.
 - Venue evidence can be sparse early in a season and is omitted when below the two-match minimum.
 - The 0–10 Poisson grid is deliberately finite and its result outcomes are normalised after aggregation.
+- Generated prompts now spell out the strict v1.5 nested contracts, but ChatGPT Search can still return malformed JSON; FormFirst remains the authoritative import validator and never repairs invented fields.
