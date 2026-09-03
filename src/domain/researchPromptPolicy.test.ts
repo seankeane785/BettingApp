@@ -96,7 +96,30 @@ describe("v1.5 canonical research prompt policy", () => {
       expect(prompt).toContain("FixturePack.fixtures: [], ResearchPack.fixtures: [], ResearchPack.competitionBenchmarks: [], and ResearchPack.marketResearchAudit: []");
       expect(prompt).toContain("No scheduled fixtures for the selected date and competitions");
       expect(prompt).not.toMatch(/"(?:field|property|value|key)(?:Name)?"/i);
-      expect(prompt).not.toContain("...");
+      expect(prompt).not.toContain("eight top-level fields");
+    }
+  });
+
+  it("renders the strict AnalysisPack envelope before the nine-field ResearchPack skeleton", () => {
+    const envelope = `{
+  "packName": "AnalysisPack v1",
+  "schemaVersion": "1.0.0",
+  "generatedAt": "ISO UTC timestamp ending in Z",
+  "fixturePack": { ...FixturePack v1.0.0... },
+  "researchPack": { ...ResearchPack v1.5.0... }
+}`;
+    const researchFields = ["packName", "schemaVersion", "fixturePackRef", "generatedAt", "dataStatus", "sources", "competitionBenchmarks", "marketResearchAudit", "fixtures"];
+    for (const prompt of prompts()) {
+      expect(prompt).toContain("AnalysisPack has exactly these five top-level fields and no additional properties");
+      expect(prompt).toContain(envelope);
+      expect(prompt.indexOf(envelope)).toBeLessThan(prompt.indexOf("STRICT V1.5 TOP-LEVEL RESEARCHPACK SKELETON"));
+      expect(prompt).toContain("fixturePack and researchPack are nested objects, not sibling loose JSON fragments");
+      expect(prompt).toContain("ResearchPack.fixturePackRef must exactly match fixturePack.schemaVersion and fixturePack.fixtureDate");
+      expect(prompt).toContain("ResearchPack.marketResearchAudit is at $.researchPack.marketResearchAudit");
+      expect(prompt).toContain("ResearchPack has exactly nine top-level fields");
+      expect(prompt).toContain("packName, schemaVersion, fixturePackRef, generatedAt, dataStatus, sources, competitionBenchmarks, marketResearchAudit, and fixtures");
+      for (const field of researchFields) expect(prompt).toContain(`"${field}"`);
+      expect(prompt.toLowerCase()).not.toContain("eight top-level fields");
     }
   });
 });
