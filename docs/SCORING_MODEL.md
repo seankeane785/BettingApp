@@ -45,3 +45,6 @@ The expanded 14-family research checklist changes only how a manual ChatGPT Sear
 ## Goal-family acquisition boundaries
 
 Prompt acquisition now states the existing goal evidence identities explicitly. `team_to_score` is only team 1+ at threshold `0.5`. `team_goals` is team over 1.5 at `1.5`, optionally over 2.5 at `2.5` when exact observations exist. `total_goals` is the dedicated match total at those same two thresholds. Each candidate needs its own exact record, family-matching opponent support, any matrix-required venue sample, and a same-family/key/threshold benchmark. No family can supply another family's candidate or support, and team-to-score cannot create BTTS evidence. Scoring and builder thresholds are unchanged.
+
+### v1.4 contract preflight
+The canonical market-contract preflight is a gate before the unchanged v1.4 scoring calculation. A candidate reaches scoring only with its exact key, group, side and threshold; every defined reciprocal support record; required venue sample; and exact current-season competition benchmark. No weights, priors, confidence thresholds, builder rules, or correlation rules changed.

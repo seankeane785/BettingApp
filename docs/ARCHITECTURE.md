@@ -73,3 +73,6 @@ Both manual prompt builders interpolate a single deterministic research-acquisit
 ## Shared canonical prompt matrix
 
 `researchPromptPolicy.ts` owns a typed 14-row market matrix and renders it into both AnalysisPack and standalone ResearchPack prompts. Prompt-specific code supplies fixture scope only; source hierarchy, component ownership, private workflow, evidence gates, output/source contract, diagnostics, and scoped context are emitted once. This is prompt acquisition policy only and does not alter schemas, validation, scoring, builders, routing, imports, or replay.
+
+### Canonical market contract
+`src/domain/marketContract.ts` is the sole executable definition for the 14 ResearchPack v1.4 families. Both prompts render it, validation calls its pure preflight audit, the analysis model consumes the same audit for candidates and coverage, and presentation obtains family labels from it. The JSON Schema remains v1.4.0 because its evidence records already represent exact keys, roles, groups, thresholds, sides, venue samples, sources, and benchmarks.
