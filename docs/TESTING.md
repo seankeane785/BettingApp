@@ -129,3 +129,7 @@ Focused tests exercise a team-to-score-only pack, dedicated corners/cards/shots/
 ## ResearchPack v1.4 source-routing checks (2026-09-03)
 
 Focused prompt tests require SoccerStats as the primary source, the FotMob → SofaScore → official match-centre fallback order, WinDrawWin prohibition, exact threshold counts rather than averages, supported families, and unchanged evidence gates. Model tests cover SoccerStats-supported and specialist records passing existing gates, average-only optional metrics remaining non-candidates, direct-stat families remaining unavailable without records, and source-specific coverage reasons. The complete lint, Vitest, build, schema-JSON, and whitespace suites remain delivery gates.
+
+## Research acquisition coverage
+
+Prompt tests assert both generated workflows contain the complete ordered source hierarchy, all 14 independently attempted families, component ownership, fallback ordering, duplicate/conflict handling, specialist restrictions, and all mandatory candidate gates. Model tests continue to prove averages and manual availability cannot manufacture evidence and that missing specialist records remain unavailable.

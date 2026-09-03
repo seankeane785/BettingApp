@@ -146,3 +146,10 @@ This file is append-only. Add a dated entry after each material change; do not r
 - Prohibited WinDrawWin, made exact threshold-count requirements explicit, and retained all current-season, team-only, source-citation, evidence, venue, benchmark, and no-default gates.
 - Added source-aware unavailable reasons and focused prompt/model regressions without changing schemas, scoring, builders, validation, availability controls, persistence, or presentation calculations.
 - Verification passed: `npm run lint`; `npm test` (10 files, 140 tests); `npm run build`; JSON parsing for every schema, sample, and JSON fixture; and `git diff --check`.
+
+## 2026-09-03 — deterministic all-family research acquisition
+
+- Added one shared acquisition policy to generated AnalysisPack and standalone ResearchPack v1.4 prompts.
+- Made FootyStats the preferred aggregate component owner, SoccerStats the exact-component fallback, StatBunker the team-discipline fallback, and FotMob → SofaScore → official completed-match centre the direct-stat route, with Premier League-only WhoScored shot fallback.
+- Required an independent attempt for all 14 supported market families, exact candidate/support/venue/benchmark gates, no duplicate-provider handling, and component-specific conflict rejection.
+- Improved unavailable-family diagnostics without changing evidence schemas, candidate calculations, thresholds, builders, correlations, validation, or saved-run replay.

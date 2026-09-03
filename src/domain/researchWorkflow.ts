@@ -6,6 +6,7 @@ import type {
   ValidationResult,
 } from "./types";
 import { parseJson, validateResearchPack } from "./validation";
+import { RESEARCH_ACQUISITION_POLICY } from "./researchPromptPolicy";
 
 export type ResearchGate = "missing" | "empty" | "synthetic" | "ready";
 
@@ -60,9 +61,7 @@ export function buildResearchPrompt(
 FixturePack reference: schema ${pack.schemaVersion}, date ${pack.fixtureDate}. Maximum source age: ${maximumSourceAgeHours} hours.
 Fixtures: ${JSON.stringify(fixtures, null, 2)}
 
-For every fixture, first verify it with the official competition fixture source. SoccerStats is the mandatory primary current-season aggregate source for both Premier League and Championship. Use current-season SoccerStats competition pages and relevant team, home, away, and statistics pages first for match result, double chance, draw no bet, both teams to score, total goals, team goals, team to score, clean sheets, total corners, and team corners; attempt every one before declaring it unavailable. Where explicitly available, collect completed current-season league match count, W/D/L and home/away records, scored and conceded records, BTTS and goal-threshold hit rates, clean sheets, match-corner threshold hit rates, team corners-for and opponent corners-against evidence, relevant home/away splits, and current-season competition benchmarks.
-
-Use direct match-centre sources only for specialist evidence unavailable from SoccerStats, in this exact order: FotMob direct completed-match page; SofaScore direct completed-match page; official Premier League or EFL completed-match centre. Use them only when an exact numeric team-level value is visibly available for a completed current-season league match: total cards, team cards, team shots, team shots on target, or a missing team-corner or match-corner observation needed for an exact threshold count. A page merely stating that it offers statistics without exposing the numeric value is not evidence. WinDrawWin is prohibited and must never be cited or used for evidence, benchmarks, candidates, probabilities, confidence, or availability.
+${RESEARCH_ACQUISITION_POLICY}
 
 Do not treat a SoccerStats average or other generic average as a threshold hit rate. Populate a threshold record only where the source explicitly supplies the threshold percentage/count or a direct completed-match table permits an exact manual count of verified observations. Verify underlying matches before calculating any exact hit rate. If a required metric remains unavailable, leave that family unavailable; never create neutral defaults, proxies, inferred values, or synthetic hit rates.
 
